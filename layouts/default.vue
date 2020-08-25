@@ -107,6 +107,11 @@ export default {
           title: 'coinbase',
           to: '/coinbase'
         },
+        {
+          icon: 'mdi-bitcoin',
+          title: 'binance',
+          to: '/binance'
+        },
       ],
       miniVariant: false,
       right: true,

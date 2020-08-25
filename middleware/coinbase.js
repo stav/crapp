@@ -7,12 +7,7 @@ export default {
   /*
   ** Coinbase API Middleware
   **
-  ** https://nuxtjs.org/guide/runtime-config
-  ** https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config#using-your-config-values
-  **
   ** See nuxt.config.js for privateRuntimeConfig
-  ** \/ Can't figure out how to get the Nuxt context in a middleware
-  ** ^^ context.$config.apiSecret is what we want
   */
   async handler(req, res, next) {
     console.log('middleware', req.url)
@@ -30,8 +25,7 @@ export default {
     const path = url.pathname + url.search
     const body = ''
     const message = timestamp + method + path + body;
-    const signature = crypto.createHmac("sha256", process.env.APISECRET).update(message).digest("hex");
-    console.log('secret', process.env.APISECRET, message, signature);
+    const signature = crypto.createHmac("sha256", process.env.COINBASE_API_SECRET).update(message).digest("hex");
 
     // Third config the request
     const config = {
@@ -51,7 +45,7 @@ export default {
       headers: {
         'CB-ACCESS-SIGN': signature,
         'CB-ACCESS-TIMESTAMP': timestamp,
-        'CB-ACCESS-KEY': process.env.APIKEY,
+        'CB-ACCESS-KEY': process.env.COINBASE_API_KEY,
         'CB-VERSION': '2015-07-22',
       },
     }

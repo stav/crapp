@@ -15,14 +15,15 @@ export default {
  
  /*
  ** Runtime config
+ **
  ** See https://nuxtjs.org/guide/runtime-config
  ** See https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config#using-your-config-values
  **
  ** \/ Can't figure out how to get the Nuxt context in a middleware
- ** ^^ context.$config.apiSecret is what we want
+ ** ^^ context.$config.coinbaseApiSecret is what we want
  */
   privateRuntimeConfig: {
-    apiSecret: process.env.APISECRET
+    coinbaseApiSecret: process.env.COINBASE_API_SECRET
   },
 
   /*
@@ -67,6 +68,7 @@ export default {
   */
   serverMiddleware: [
     { path: '/api/coinbase', handler: '~/middleware/coinbase' },
+    { path: '/api/binance', handler: '~/middleware/binance' },
   ],
 
   /*

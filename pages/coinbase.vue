@@ -142,8 +142,10 @@ export default {
 
       response = await fetch(`api/coinbase/v2/prices/${currency_pair}/buy`)
       this.buy = response.status === 200 ? await response.json() : {status: response.status}
+
       response = await fetch(`api/coinbase/v2/prices/${currency_pair}/spot`)
       this.spot = response.status === 200 ? await response.json() : {status: response.status}
+
       response = await fetch(`api/coinbase/v2/prices/${currency_pair}/sell`)
       this.sell = response.status === 200 ? await response.json() : {status: response.status}
 
