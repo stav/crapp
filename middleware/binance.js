@@ -13,10 +13,21 @@ export default {
     let config
 
     // Configure the request
-    if (req.url.endsWith('account')) {
-      config = configAccountRequest(req)
-    } else {
-      config = configRequest(req)
+    switch (req.url) {
+      case '/account':
+        config = configAccountRequest('/api/v3/account')
+        break
+
+      case '/system.status':
+        config = configRequest('/wapi/v3/systemStatus.html')
+        break
+
+      case '/time':
+        config = configRequest('/api/v3/time')
+        break
+
+      default:
+        break
     }
 
     // Make the reqeuest
@@ -38,11 +49,11 @@ export default {
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-function configRequest (req) {
+function configRequest (path) {
   // Send back the request configuration
   return {
     baseURL: 'https://api.binance.com',
-    url: req.url,
+    url: path,
     method: 'GET',
     headers: {
       'X-MBX-APIKEY': process.env.BINANCE_API_KEY,
@@ -55,11 +66,11 @@ function configRequest (req) {
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-function configAccountRequest (req) {
+function configAccountRequest (path) {
   // Create the URL
   const url = new URL('https://api.binance.com/')
-  url.pathname = req.url
-  url.searchParams.append('timestamp', Math.floor(Date.now()))
+  url.pathname = path
+  url.searchParams.append('timestamp', Date.now())
   // url.searchParams.append('recvWindow', 5000)
   const search = url.search.slice(1)
 

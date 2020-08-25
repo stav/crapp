@@ -10,52 +10,15 @@
           Binance
         </v-toolbar-title>
         <v-spacer />
-        <v-btn
-          title="Clear"
-          @click="clear"
-        >
-          X
-        </v-btn>
-        <v-btn
-          title="Ping the server"
-          color="secondary"
-          @click="() => get('ping')"
-        >
-          Ping
-        </v-btn>
-        <v-btn
-          title="Check the system status"
-          color="secondary"
-          @click="() => get('/wapi/v3/systemStatus.html')"
-        >
-          Status
-        </v-btn>
-        <v-btn
-          title="Query server time"
-          color="secondary"
-          @click="() => get('time')"
-        >
-          Time
-        </v-btn>
-        <!-- <v-btn
-          title="Query Exchange Information"
-          color="secondary"
-          @click="() => get('exchangeInfo')"
-        >
-          Exchange Info
-        </v-btn> -->
-        <v-btn
-          title="Account Information"
-          color="primary"
-          @click="() => get('account')"
-        >
-          Account
-        </v-btn>
+        <v-btn title="Clear" @click="clear"> X </v-btn>
+        <v-btn @click="() => fetch('system.status')" color="secondary" title="Check the system status"> Status </v-btn>
+        <v-btn @click="() => fetch('time')" color="secondary" title="Query server time"> Time </v-btn>
+        <v-btn @click="() => fetch('account')" color="primary" title="Fetch account information"> Account </v-btn>
       </v-app-bar>
       <v-container>
         <v-row dense>
           <v-col cols="12">
-            <json-view :data="account" />
+            <json-view :data="result" />
           </v-col>
           <v-col
             v-for="(balance, i) in balances"
@@ -96,7 +59,7 @@ export default {
 
   data () {
     return {
-      account: {},
+      result: {},
       loading: false,
     }
   },
@@ -104,10 +67,10 @@ export default {
   computed: {
     balances () {
       if (
-        this.account &&
-        this.account.balances
+        this.result &&
+        this.result.balances
       ) {
-        return this.account.balances
+        return this.result.balances
           .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
           .map(balance => Object.assign(balance, { locked: parseFloat(balance.locked) }))
       } else {
@@ -118,13 +81,12 @@ export default {
 
   methods: {
     clear () {
-      this.account = {}
+      this.result = {}
     },
-    async get (path) {
+    async fetch (resource) {
       this.loading = true
-      const url = path.startsWith('/') ? path : '/api/v3/' + path
-      const response = await fetch('/api/binance' + url)
-      this.account = response.status === 200 ? await response.json() : { status: response.status }
+      const response = await fetch('/api/binance/' + resource)
+      this.result = response.status === 200 ? await response.json() : { status: response.status }
       this.loading = false
     },
   },
