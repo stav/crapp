@@ -50,6 +50,7 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
+      <v-icon>mdi-bitcoin</v-icon>
       <v-btn
         icon
         @click.stop="rightDrawer = !rightDrawer"
@@ -110,7 +111,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'CrApp'
     }
   }
 }
