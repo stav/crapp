@@ -11,17 +11,17 @@ export default {
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
   */
- target: 'static',
- 
- /*
- ** Runtime config
- **
- ** See https://nuxtjs.org/guide/runtime-config
- ** See https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config#using-your-config-values
- **
- ** \/ Can't figure out how to get the Nuxt context in a middleware
- ** ^^ context.$config.coinbaseApiSecret is what we want
- */
+  target: 'static',
+
+  /*
+  ** Runtime config
+  **
+  ** See https://nuxtjs.org/guide/runtime-config
+  ** See https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config#using-your-config-values
+  **
+  ** \/ Can't figure out how to get the Nuxt context in a middleware
+  ** ^^ context.$config.coinbaseApiSecret is what we want
+  */
   privateRuntimeConfig: {
     coinbaseApiSecret: process.env.COINBASE_API_SECRET
   },

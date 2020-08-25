@@ -88,7 +88,6 @@
 </template>
 
 <script>
-import crypto from 'crypto'
 import { JSONView } from 'vue-json-component'
 
 export default {
@@ -110,7 +109,7 @@ export default {
       ) {
         return this.account.balances
           .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
-          .map(balance => Object.assign(balance, {locked: parseFloat(balance.locked)}))
+          .map(balance => Object.assign(balance, { locked: parseFloat(balance.locked) }))
       } else {
         return []
       }
@@ -125,7 +124,7 @@ export default {
       this.loading = true
       const url = path.startsWith('/') ? path : '/api/v3/' + path
       const response = await fetch('/api/binance' + url)
-      this.account = response.status === 200 ? await response.json() : {status: response.status}
+      this.account = response.status === 200 ? await response.json() : { status: response.status }
       this.loading = false
     },
   },

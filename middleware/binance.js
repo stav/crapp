@@ -1,4 +1,4 @@
-import crypto, { sign } from 'crypto'
+import crypto from 'crypto'
 import axios from 'axios'
 
 export default {
@@ -9,15 +9,14 @@ export default {
   **
   ** https://binance-docs.github.io/apidocs/spot/en/#general-info
   */
-  async handler(req, res, next) {
+  async handler (req, res) {
     let config
 
     // Configure the request
     if (req.url.endsWith('account')) {
-      config = await configAccountRequest(req)
-    }
-    else {
-      config = await configRequest(req)
+      config = configAccountRequest(req)
+    } else {
+      config = configRequest(req)
     }
 
     // Make the reqeuest
@@ -25,9 +24,8 @@ export default {
     try {
       const response = await axios(config)
       data = response.data
-    }
-    catch (error) {
-      data = {error}
+    } catch (error) {
+      data = { error }
     }
 
     // Send the response
@@ -40,7 +38,7 @@ export default {
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-async function configRequest(req) {
+function configRequest (req) {
   // Send back the request configuration
   return {
     baseURL: 'https://api.binance.com',
@@ -57,22 +55,21 @@ async function configRequest(req) {
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-async function configAccountRequest(req) {
-
+function configAccountRequest (req) {
   // Create the URL
   const url = new URL('https://api.binance.com/')
   url.pathname = req.url
   url.searchParams.append('timestamp', Math.floor(Date.now()))
   // url.searchParams.append('recvWindow', 5000)
   const search = url.search.slice(1)
-  
+
   // Create the signature hash from the URL using the secret
   const signature = crypto
-  .createHmac("sha256", process.env.BINANCE_API_SECRET)
-  .update(search)
-  .digest("hex")
+    .createHmac('sha256', process.env.BINANCE_API_SECRET)
+    .update(search)
+    .digest('hex')
   // var signature, hmac;
-  // hmac = crypto.createHmac('sha256', process.env.BINANCE_API_SECRET);    
+  // hmac = crypto.createHmac('sha256', process.env.BINANCE_API_SECRET);
   // hmac.write(search); // write in to the stream
   // hmac.end();       // can't read from the stream until you call end()
   // signature = hmac.read().toString('hex');    // read out hmac digest

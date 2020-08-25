@@ -41,7 +41,8 @@
           >
             <v-card>
               <div class="d-flex flex-no-wrap justify-space-between">
-                <v-btn x-large block :color="wallet.primary ? 'primary' : ''"
+                <v-btn
+                  x-large block :color="wallet.primary ? 'primary' : ''"
                   @click="() => getAccountData(wallet.resource_path, wallet.balance.currency, wallet.native_balance.currency)"
                 >
                   <v-card-subtitle
@@ -67,21 +68,21 @@
         </v-row>
         <v-row>
           <v-col cols="12" v-if="account.data">
-            {{account.data.name}}
+            {{ account.data.name }}
             <json-view :data="account" class="pt-0" />
           </v-col>
         </v-row>
         <v-row>
           <v-col v-if="buy.data">
-            BUY Price: 1 {{buy.data.base}} = {{buy.data.amount}} {{buy.data.currency}}
+            BUY Price: 1 {{ buy.data.base }} = {{ buy.data.amount }} {{ buy.data.currency }}
             <json-view :data="buy" class="pt-0" />
           </v-col>
           <v-col v-if="spot.data">
-            SPOT Price: 1 {{spot.data.base}} = {{spot.data.amount}} {{spot.data.currency}}
+            SPOT Price: 1 {{ spot.data.base }} = {{ spot.data.amount }} {{ spot.data.currency }}
             <json-view :data="spot" class="pt-0" />
           </v-col>
           <v-col v-if="sell.data">
-            SELL Price: 1 {{sell.data.base}} = {{sell.data.amount}} {{sell.data.currency}}
+            SELL Price: 1 {{ sell.data.base }} = {{ sell.data.amount }} {{ sell.data.currency }}
             <json-view :data="sell" class="pt-0" />
           </v-col>
         </v-row>
@@ -91,7 +92,6 @@
 </template>
 
 <script>
-import crypto from 'crypto'
 import { JSONView } from 'vue-json-component'
 
 export default {
@@ -131,30 +131,30 @@ export default {
       this.account = {}
       this.accounts = {}
     },
-    async getAccountData (resource_path, coin_currency, native_currency) {
-      console.log('resource_path', resource_path)
+    async getAccountData (resourcePath, coinCurrency, nativeCurrency) {
+      console.log('resource path', resourcePath)
       this.loading = true
 
-      let response = await fetch('/api/coinbase' + resource_path)
-      this.account = response.status === 200 ? await response.json() : {status: response.status}
+      let response = await fetch('/api/coinbase' + resourcePath)
+      this.account = response.status === 200 ? await response.json() : { status: response.status }
 
-      const currency_pair = `${coin_currency}-${native_currency}`
+      const currencyPair = `${coinCurrency}-${nativeCurrency}`
 
-      response = await fetch(`api/coinbase/v2/prices/${currency_pair}/buy`)
-      this.buy = response.status === 200 ? await response.json() : {status: response.status}
+      response = await fetch(`api/coinbase/v2/prices/${currencyPair}/buy`)
+      this.buy = response.status === 200 ? await response.json() : { status: response.status }
 
-      response = await fetch(`api/coinbase/v2/prices/${currency_pair}/spot`)
-      this.spot = response.status === 200 ? await response.json() : {status: response.status}
+      response = await fetch(`api/coinbase/v2/prices/${currencyPair}/spot`)
+      this.spot = response.status === 200 ? await response.json() : { status: response.status }
 
-      response = await fetch(`api/coinbase/v2/prices/${currency_pair}/sell`)
-      this.sell = response.status === 200 ? await response.json() : {status: response.status}
+      response = await fetch(`api/coinbase/v2/prices/${currencyPair}/sell`)
+      this.sell = response.status === 200 ? await response.json() : { status: response.status }
 
       this.loading = false
     },
     async getAccountsData () {
       this.loading = true
       const response = await fetch('/api/coinbase/v2/accounts')
-      this.accounts = response.status === 200 ? await response.json() : {status: response.status}
+      this.accounts = response.status === 200 ? await response.json() : { status: response.status }
       this.loading = false
     },
   },

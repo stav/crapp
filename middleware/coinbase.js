@@ -9,7 +9,7 @@ export default {
   **
   ** See nuxt.config.js for privateRuntimeConfig
   */
-  async handler(req, res, next) {
+  async handler (req, res) {
     console.log('middleware', req.url)
 
     // First create the URL
@@ -24,8 +24,8 @@ export default {
     const method = 'GET'
     const path = url.pathname + url.search
     const body = ''
-    const message = timestamp + method + path + body;
-    const signature = crypto.createHmac("sha256", process.env.COINBASE_API_SECRET).update(message).digest("hex");
+    const message = timestamp + method + path + body
+    const signature = crypto.createHmac('sha256', process.env.COINBASE_API_SECRET).update(message).digest('hex')
 
     // Third config the request
     const config = {
