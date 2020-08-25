@@ -1,6 +1,6 @@
 {
   "name": "CrApp",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "nuxt-ts",
@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@nuxt/typescript-runtime": "^1.0.0",
-    "@nuxtjs/pwa": "^3.0.0-beta.20",
-    "nuxt": "^2.14.0"
+    "@nuxtjs/axios": "^5.12.1",
+    "crypto": "^1.0.1",
+    "nuxt": "^2.14.0",
+    "vue-json-component": "^0.4.1"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.0",

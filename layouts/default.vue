@@ -103,10 +103,10 @@ export default {
           to: '/'
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        }
+          icon: 'mdi-bitcoin',
+          title: 'coinbase',
+          to: '/coinbase'
+        },
       ],
       miniVariant: false,
       right: true,

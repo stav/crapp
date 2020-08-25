@@ -6,11 +6,25 @@ export default {
   ** See https://nuxtjs.org/api/configuration-mode
   */
   mode: 'universal',
+
   /*
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
   */
-  target: 'static',
+ target: 'static',
+ 
+ /*
+ ** Runtime config
+ ** See https://nuxtjs.org/guide/runtime-config
+ ** See https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config#using-your-config-values
+ **
+ ** \/ Can't figure out how to get the Nuxt context in a middleware
+ ** ^^ context.$config.apiSecret is what we want
+ */
+  privateRuntimeConfig: {
+    apiSecret: process.env.APISECRET
+  },
+
   /*
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
@@ -27,22 +41,34 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+
   /*
   ** Global CSS
   */
   css: [
   ],
+
   /*
   ** Plugins to load before mounting the App
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
   ],
+
   /*
   ** Auto import components
   ** See https://nuxtjs.org/api/configuration-components
   */
   components: true,
+
+  /*
+  ** Server Middleware
+  ** See https://github.com/senchalabs/connect
+  */
+  serverMiddleware: [
+    { path: '/api/coinbase', handler: '~/middleware/coinbase' },
+  ],
+
   /*
   ** Nuxt.js dev-modules
   */
@@ -50,12 +76,14 @@ export default {
     '@nuxt/typescript-build',
     '@nuxtjs/vuetify'
   ],
+
   /*
   ** Nuxt.js modules
   */
   modules: [
-    '@nuxtjs/pwa'
+    '@nuxtjs/axios',
   ],
+
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
@@ -77,6 +105,7 @@ export default {
       }
     }
   },
+
   /*
   ** Build configuration
   ** See https://nuxtjs.org/api/configuration-build/
