@@ -11,10 +11,12 @@
         <v-btn title="Clear" @click="clear"> X </v-btn>
         <v-btn @click="() => fetch('system.status')" color="secondary" title="Check the system status"> Status </v-btn>
         <v-btn @click="() => fetch('time')" color="secondary" title="Query server time"> Time </v-btn>
-        <v-btn @click="() => fetch('account')" color="primary" title="Fetch account information"> Account </v-btn>
+        <v-btn @click="() => fetchAccount()" color="primary" title="Fetch account information"> Account </v-btn>
+        <v-btn @click="() => fetchCoins()" color="primary" title="Fetch information about user coins"> Coins </v-btn>
       </v-app-bar>
       <v-container>
         <v-row dense>
+          <v-col cols="12" v-text="heading" />
           <v-col cols="12">
             <json-view :data="result" />
           </v-col>
@@ -33,6 +35,28 @@
               </div>
             </v-card>
           </v-col>
+          <v-col cols="12" v-show="coins.length">
+            <v-card>
+              <v-card-title>
+                <v-spacer></v-spacer>
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table
+                :headers="headers"
+                :items="coins"
+                :search="search"
+                multi-sort
+                :sort-by="['free', 'locked']"
+                :sort-desc="[true, false]"
+              ></v-data-table>
+            </v-card>
+          </v-col>
         </v-row>
       </v-container>
     </v-card>
@@ -48,18 +72,29 @@ export default {
 
   data () {
     return {
+      coins: [],
+      search: '',
       result: {},
+      account: {},
+      heading: '',
       loading: false,
+      headers: [
+        { text: 'Coin', value: 'coin', filterable: true },
+        { text: 'Name', value: 'name', filterable: true },
+        { text: 'Free', value: 'free', filterable: false },
+        { text: 'Locked', value: 'locked', filterable: false },
+        { text: 'Networks', value: 'networks', filterable: false },
+      ],
     }
   },
 
   computed: {
     balances () {
       if (
-        this.result &&
-        this.result.balances
+        this.account &&
+        this.account.balances
       ) {
-        return this.result.balances
+        return this.account.balances
           .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
           .map(balance => Object.assign(balance, { locked: parseFloat(balance.locked) }))
       } else {
@@ -70,12 +105,36 @@ export default {
 
   methods: {
     clear () {
+      this.coins = []
       this.result = {}
+      this.account = {}
+      this.heading = ''
     },
     async fetch (resource) {
       this.loading = true
+      this.clear()
+      this.heading = resource
       const response = await fetch('/api/binance/' + resource)
       this.result = response.status === 200 ? await response.json() : { status: response.status }
+      this.loading = false
+    },
+    async fetchAccount () {
+      this.loading = true
+      this.clear()
+      this.heading = 'Account'
+      const response = await fetch('/api/binance/account')
+      this.account = response.status === 200 ? await response.json() : { status: response.status }
+      this.result = Object.assign({}, this.account, {balances: this.account.balances.length})
+      this.loading = false
+    },
+    async fetchCoins () {
+      this.loading = true
+      this.clear()
+      this.heading = 'Coins'
+      const response = await fetch('/api/binance/coins')
+      let coins = response.status === 200 ? await response.json() : { status: response.status }
+      this.coins = coins.map(coin => Object.assign({}, coin, {networks: coin.networkList.map(net => net.network)}))
+      this.result = {coins: coins.length}
       this.loading = false
     },
   },

@@ -15,7 +15,7 @@ export default {
     // Configure the request
     switch (req.url) {
       case '/account':
-        config = configAccountRequest('/api/v3/account')
+        config = configSignedRequest('/api/v3/account')
         break
 
       case '/system.status':
@@ -24,6 +24,10 @@ export default {
 
       case '/time':
         config = configRequest('/api/v3/time')
+        break
+
+      case '/coins':
+        config = configSignedRequest('/sapi/v1/capital/config/getall')
         break
 
       default:
@@ -62,11 +66,11 @@ function configRequest (path) {
 }
 
 /*
-** API request helper for account information endpoint
+** API request helper for a signed endpoint
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-function configAccountRequest (path) {
+function configSignedRequest (path) {
   // Create the URL
   const url = new URL('https://api.binance.com/')
   url.pathname = path
