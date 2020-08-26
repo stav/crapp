@@ -10,24 +10,29 @@ export default {
   ** https://binance-docs.github.io/apidocs/spot/en/#general-info
   */
   async handler (req, res) {
-    let config
+    let configs = []
 
     // Configure the request
     switch (req.url) {
       case '/account':
-        config = configSignedRequest('/api/v3/account')
+        configs.push(configSignedRequest('/api/v3/account'))
         break
 
       case '/system.status':
-        config = configRequest('/wapi/v3/systemStatus.html')
+        configs.push(configRequest('/wapi/v3/systemStatus.html'))
         break
 
       case '/time':
-        config = configRequest('/api/v3/time')
+        configs.push(configRequest('/api/v3/time'))
         break
 
       case '/coins':
-        config = configSignedRequest('/sapi/v1/capital/config/getall')
+        configs.push(configSignedRequest('/sapi/v1/capital/config/getall'))
+        break
+
+      case '/deposit.history':
+        configs.push(configSignedRequest('/wapi/v3/depositHistory.html'))
+        configs.push(configSignedRequest('/sapi/v1/capital/deposit/hisrec'))
         break
 
       default:
@@ -35,12 +40,14 @@ export default {
     }
 
     // Make the reqeuest
-    let data
-    try {
-      const response = await axios(config)
-      data = response.data
-    } catch (error) {
-      data = { error }
+    let data = []
+    for (const config of configs) {
+      try {
+        const response = await axios(config)
+        data.push(response.data)
+      } catch (error) {
+        data.push({ error })
+      }
     }
 
     // Send the response

@@ -11,11 +11,13 @@
         <v-btn title="Clear" @click="clear"> X </v-btn>
         <v-btn @click="() => fetch('system.status')" color="secondary" title="Check the system status"> Status </v-btn>
         <v-btn @click="() => fetch('time')" color="secondary" title="Query server time"> Time </v-btn>
+        <v-btn @click="() => fetch('deposit.history')" color="primary" title="Fetch user deposit history"> History </v-btn>
         <v-btn @click="() => fetchAccount()" color="primary" title="Fetch account information"> Account </v-btn>
         <v-btn @click="() => fetchCoins()" color="primary" title="Fetch information about user coins"> Coins </v-btn>
       </v-app-bar>
       <v-container>
         <v-row dense>
+          <v-col cols="12" v-show="heading" v-text="heading" />
           <v-col v-for="(balance, i) in balances" :key="i">
             <v-card>
               <div class="d-flex flex-no-wrap justify-space-between">
@@ -133,29 +135,31 @@ export default {
     detailRow (item, data) {
       this.result = item
     },
+    async getJson (url) {
+      const response = await fetch(url)
+      const result = (response.status === 200 ? await response.json() : { status: response.status })
+      const _ = Array.from(result)
+      return _.length === 0 ? result : _.length === 1 ? _[0] : _
+    },
     async fetch (resource) {
       this.loading = true
       this.clear()
       this.heading = resource
-      const response = await fetch('/api/binance/' + resource)
-      this.result = response.status === 200 ? await response.json() : { status: response.status }
+      this.result = await this.getJson('/api/binance/' + resource)
       this.loading = false
     },
     async fetchAccount () {
       this.loading = true
       this.clear()
       this.heading = 'Account'
-      const response = await fetch('/api/binance/account')
-      this.account = response.status === 200 ? await response.json() : { status: response.status }
+      this.account = await this.getJson('/api/binance/account')
       this.result = Object.assign({}, this.account, {balances: this.account.balances.length})
       this.loading = false
     },
     async fetchCoins () {
       this.loading = true
       this.clear()
-      this.heading = 'Coins'
-      const response = await fetch('/api/binance/coins')
-      let coins = response.status === 200 ? await response.json() : { status: response.status }
+      let coins = await this.getJson('/api/binance/coins')
       this.coins = coins.map(coin => Object.assign({}, coin, {networks: coin.networkList.map(net => net.network)}))
       this.result = {coins: coins.length}
       this.loading = false
