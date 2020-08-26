@@ -48,12 +48,14 @@
                 ></v-text-field>
               </v-card-title>
               <v-data-table
+                dense
                 :headers="headers"
                 :items="coins"
                 :search="search"
                 multi-sort
                 :sort-by="['free', 'locked']"
                 :sort-desc="[true, false]"
+                @click:row='detailRow'
               ></v-data-table>
             </v-card>
           </v-col>
@@ -110,6 +112,9 @@ export default {
       this.account = {}
       this.heading = ''
     },
+    detailRow (item, data) {
+      this.result = item
+    },
     async fetch (resource) {
       this.loading = true
       this.clear()
@@ -140,3 +145,9 @@ export default {
   },
 }
 </script>
+
+<style>
+.v-data-table tr {
+  cursor: pointer;
+}
+</style>
