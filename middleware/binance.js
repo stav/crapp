@@ -10,29 +10,31 @@ export default {
   ** https://binance-docs.github.io/apidocs/spot/en/#general-info
   */
   async handler (req, res) {
-    let configs = []
+    let requests = []
 
-    // Configure the request
+    // Configure the requests
     switch (req.url) {
       case '/account':
-        configs.push(configSignedRequest('/api/v3/account'))
+        requests.push({key: 'account', config: configSignedRequest('/api/v3/account')})
+        requests.push({key: 'trading', config: configSignedRequest('/wapi/v3/apiTradingStatus.html')})
+        requests.push({key: 'status', config: configSignedRequest('/wapi/v3/accountStatus.html')})
         break
 
       case '/system.status':
-        configs.push(configRequest('/wapi/v3/systemStatus.html'))
+        requests.push({key: '_', config: configRequest('/wapi/v3/systemStatus.html')})
         break
 
       case '/time':
-        configs.push(configRequest('/api/v3/time'))
+        requests.push({key: '_', config: configRequest('/api/v3/time')})
         break
 
       case '/coins':
-        configs.push(configSignedRequest('/sapi/v1/capital/config/getall'))
+        requests.push({key: '_', config: configSignedRequest('/sapi/v1/capital/config/getall')})
         break
 
       case '/deposit.history':
-        configs.push(configSignedRequest('/wapi/v3/depositHistory.html'))
-        configs.push(configSignedRequest('/sapi/v1/capital/deposit/hisrec'))
+        requests.push({key: 'deposits', config: configSignedRequest('/wapi/v3/depositHistory.html')})
+        requests.push({key: 'support', config: configSignedRequest('/sapi/v1/capital/deposit/hisrec')})
         break
 
       default:
@@ -40,14 +42,17 @@ export default {
     }
 
     // Make the reqeuest
-    let data = []
-    for (const config of configs) {
+    let data = {error: []}
+    for (const request of requests) {
       try {
-        const response = await axios(config)
-        data.push(response.data)
+        const response = await axios(request.config)
+        data[request.key] = response.data
       } catch (error) {
-        data.push({ error })
+        data.error.push( error )
       }
+    }
+    if (data.error.length === 0) {
+      delete data.error
     }
 
     // Send the response

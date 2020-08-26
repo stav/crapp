@@ -97,7 +97,6 @@ export default {
       coins: [],
       search: '',
       result: {},
-      account: {},
       heading: '',
       loading: false,
       headers: [
@@ -113,12 +112,11 @@ export default {
   computed: {
     balances () {
       if (
-        this.account &&
-        this.account.balances
+        this.result &&
+        this.result.account &&
+        this.result.account.balances
       ) {
-        return this.account.balances
-          .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
-          .map(balance => Object.assign(balance, { locked: parseFloat(balance.locked) }))
+        return this.result.account.balances
       } else {
         return []
       }
@@ -129,7 +127,6 @@ export default {
     clear () {
       this.coins = []
       this.result = {}
-      this.account = {}
       this.heading = ''
     },
     detailRow (item, data) {
@@ -139,7 +136,8 @@ export default {
       const response = await fetch(url)
       const result = (response.status === 200 ? await response.json() : { status: response.status })
       const _ = Array.from(result)
-      return _.length === 0 ? result : _.length === 1 ? _[0] : _
+      const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
+      return __['_'] || __
     },
     async fetch (resource) {
       this.loading = true
@@ -152,8 +150,11 @@ export default {
       this.loading = true
       this.clear()
       this.heading = 'Account'
-      this.account = await this.getJson('/api/binance/account')
-      this.result = Object.assign({}, this.account, {balances: this.account.balances.length})
+      const result = await this.getJson('/api/binance/account')
+      result.account.balances = result.account.balances
+        .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
+        .map(balance => Object.assign(balance, { free: parseFloat(balance.free), locked: parseFloat(balance.locked) }))
+      this.result = result
       this.loading = false
     },
     async fetchCoins () {
