@@ -16,10 +16,6 @@
       </v-app-bar>
       <v-container>
         <v-row dense>
-          <v-col cols="12" v-text="heading" />
-          <v-col cols="12">
-            <json-view :data="result" />
-          </v-col>
           <v-col v-for="(balance, i) in balances" :key="i">
             <v-card>
               <div class="d-flex flex-no-wrap justify-space-between">
@@ -36,28 +32,50 @@
             </v-card>
           </v-col>
           <v-col cols="12" v-show="coins.length">
-            <v-card>
-              <v-card-title>
-                <v-spacer></v-spacer>
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                ></v-text-field>
-              </v-card-title>
               <v-data-table
                 dense
                 :headers="headers"
-                :items="coins"
                 :search="search"
+                :items="coins"
+                item-key="coin"
                 multi-sort
                 :sort-by="['free', 'locked']"
                 :sort-desc="[true, false]"
                 @click:row='detailRow'
-              ></v-data-table>
-            </v-card>
+                show-expand
+              >
+                <template v-slot:top>
+                  <v-toolbar flat>
+                    <v-toolbar-title> Coins </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-text-field
+                      v-model="search"
+                      prepend-icon="mdi-magnify"
+                      append-icon="mdi-close"
+                      @click:append="search=''"
+                      label="Search"
+                      single-line
+                      hide-details
+                    />
+                  </v-toolbar>
+                </template>
+                <template v-slot:expanded-item="{ headers, item }">
+                  <td :colspan="headers.length">
+                    <ul>
+                      <li v-for="(network, i) in item.networkList" :key="i">
+                        {{ network.network }}
+                        {{ network.name }}
+                        (withdraw:{{ network.withdrawEnable }}, fee:{{ parseFloat(network.withdrawFee) }})
+                        {{ network.depositDesc }}
+                        {{ network.specialTips }}
+                      </li>
+                    </ul>
+                  </td>
+                </template>
+              </v-data-table>
+          </v-col>
+          <v-col cols="12">
+            <json-view :data="result" />
           </v-col>
         </v-row>
       </v-container>
