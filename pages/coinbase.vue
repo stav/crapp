@@ -111,7 +111,6 @@ export default {
 
   computed: {
     wallets () {
-      console.log(this.accounts)
       if (
         this.accounts &&
         this.accounts.data
@@ -132,7 +131,6 @@ export default {
       this.accounts = {}
     },
     async getAccountData (resourcePath, coinCurrency, nativeCurrency) {
-      console.log('resource path', resourcePath)
       this.loading = true
 
       let response = await fetch('/api/coinbase' + resourcePath)

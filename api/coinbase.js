@@ -8,8 +8,6 @@ import axios from 'axios'
 ** https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
 */
 export default async function (req, res) {
-  console.log('coinbase api', req.url)
-
   // First create the URL
   const url = new URL('https://api.coinbase.com/')
   // url.pathname = '/v2/accounts'

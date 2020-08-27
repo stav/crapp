@@ -8,45 +8,45 @@ import axios from 'axios'
 ** https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
 */
 export default async function (req, res) {
-  let requests = []
+  const requests = []
 
   // Configure the requests
   switch (req.url) {
     case '/account':
-      requests.push({key: 'account', config: configSignedRequest('/api/v3/account')})
-      requests.push({key: 'trading', config: configSignedRequest('/wapi/v3/apiTradingStatus.html')})
-      requests.push({key: 'status', config: configSignedRequest('/wapi/v3/accountStatus.html')})
+      requests.push({ key: 'account', config: configSignedRequest('/api/v3/account') })
+      requests.push({ key: 'trading', config: configSignedRequest('/wapi/v3/apiTradingStatus.html') })
+      requests.push({ key: 'status', config: configSignedRequest('/wapi/v3/accountStatus.html') })
       break
 
     case '/system.status':
-      requests.push({key: '_', config: configRequest('/wapi/v3/systemStatus.html')})
+      requests.push({ key: '_', config: configRequest('/wapi/v3/systemStatus.html') })
       break
 
     case '/time':
-      requests.push({key: '_', config: configRequest('/api/v3/time')})
+      requests.push({ key: '_', config: configRequest('/api/v3/time') })
       break
 
     case '/coins':
-      requests.push({key: '_', config: configSignedRequest('/sapi/v1/capital/config/getall')})
+      requests.push({ key: '_', config: configSignedRequest('/sapi/v1/capital/config/getall') })
       break
 
     case '/deposit.history':
-      requests.push({key: 'deposits', config: configSignedRequest('/wapi/v3/depositHistory.html')})
-      requests.push({key: 'support', config: configSignedRequest('/sapi/v1/capital/deposit/hisrec')})
+      requests.push({ key: 'deposits', config: configSignedRequest('/wapi/v3/depositHistory.html') })
+      requests.push({ key: 'support', config: configSignedRequest('/sapi/v1/capital/deposit/hisrec') })
       break
 
     default:
-      console.log(req.url, )
+      console.log(req.url)
   }
 
   // Make the reqeuest
-  let data = {error: []}
+  const data = { error: [] }
   for (const request of requests) {
     try {
       const response = await axios(request.config)
       data[request.key] = response.data
     } catch (error) {
-      data.error.push( error )
+      data.error.push(error)
     }
   }
   if (data.error.length === 0) {
