@@ -29,6 +29,7 @@
                     v-if="balance.locked"
                     v-text="`${balance.locked} locked`"
                   />
+                  <v-card-subtitle class="ma-0 pa-0" v-text="currency(balance)" />
                 </v-btn>
               </div>
             </v-card>
@@ -77,7 +78,7 @@
               </v-data-table>
           </v-col>
           <v-col cols="12">
-            <json-view :data="result" />
+            <json-view :data="result" rootKey="result" v-show="result" />
           </v-col>
         </v-row>
       </v-container>
@@ -88,6 +89,14 @@
 <script>
 import { JSONView } from 'vue-json-component'
 
+async function getJson (resource) {
+  const response = await fetch('/api/binance/' + resource)
+  const result = (response.status === 200 ? await response.json() : { status: response.status })
+  const _ = Array.from(result)
+  const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
+  return __['_'] || __
+}
+
 export default {
 
   components: { 'json-view': JSONView },
@@ -95,10 +104,11 @@ export default {
   data () {
     return {
       coins: [],
+      result: null,
       search: '',
-      result: {},
       heading: '',
       loading: false,
+      symbolMapPrice: {},
       headers: [
         { text: 'Coin', value: 'coin', filterable: true },
         { text: 'Name', value: 'name', filterable: true },
@@ -108,6 +118,15 @@ export default {
       ],
     }
   },
+
+  async fetch() {
+    const { prices } = await getJson('prices')
+    for (const _ of prices) {
+      this.symbolMapPrice[_.symbol] = parseFloat(_.price)
+    }
+    this.$store.commit('setPricesMap', this.symbolMapPrice)
+  },
+  fetchOnServer: true,
 
   computed: {
     balances () {
@@ -120,37 +139,35 @@ export default {
       } else {
         return []
       }
-    }
+    },
   },
 
   methods: {
     clear () {
       this.coins = []
-      this.result = {}
+      this.result = null
       this.heading = ''
     },
     detailRow (item, data) {
       this.result = item
     },
-    async getJson (url) {
-      const response = await fetch(url)
-      const result = (response.status === 200 ? await response.json() : { status: response.status })
-      const _ = Array.from(result)
-      const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
-      return __['_'] || __
+    currency (balance) {
+      const symbol = balance.asset + 'USDT'
+      const amount = this.symbolMapPrice[symbol] * (balance.free + balance.locked)
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
     },
     async fetch (resource) {
       this.loading = true
       this.clear()
       this.heading = resource
-      this.result = await this.getJson('/api/binance/' + resource)
+      this.result = await getJson(resource)
       this.loading = false
     },
     async fetchAccount () {
       this.loading = true
       this.clear()
       this.heading = 'Account'
-      const result = await this.getJson('/api/binance/account')
+      const result = await getJson('account')
       result.account.balances = result.account.balances
         .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
         .map(balance => Object.assign(balance, { free: parseFloat(balance.free), locked: parseFloat(balance.locked) }))
@@ -160,7 +177,7 @@ export default {
     async fetchCoins () {
       this.loading = true
       this.clear()
-      let coins = await this.getJson('/api/binance/coins')
+      let coins = await getJson('coins')
       this.coins = coins.map(coin => Object.assign({}, coin, {networks: coin.networkList.map(net => net.network)}))
       this.result = {coins: coins.length}
       this.loading = false

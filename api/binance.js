@@ -9,34 +9,46 @@ import axios from 'axios'
 */
 export default async function (req, res) {
   const requests = []
+  const urlParts = req.url.split('/')
+  console.log(req.url, urlParts)
 
   // Configure the requests
-  switch (req.url) {
-    case '/account':
+  switch (urlParts[1]) {
+    case 'account':
       requests.push({ key: 'account', config: configSignedRequest('/api/v3/account') })
       requests.push({ key: 'trading', config: configSignedRequest('/wapi/v3/apiTradingStatus.html') })
       requests.push({ key: 'status', config: configSignedRequest('/wapi/v3/accountStatus.html') })
       break
 
-    case '/system.status':
+    case 'system.status':
       requests.push({ key: '_', config: configRequest('/wapi/v3/systemStatus.html') })
       break
 
-    case '/time':
+    case 'time':
       requests.push({ key: '_', config: configRequest('/api/v3/time') })
       break
 
-    case '/coins':
+    case 'coins':
       requests.push({ key: '_', config: configSignedRequest('/sapi/v1/capital/config/getall') })
       break
 
-    case '/deposit.history':
+    case 'deposit.history':
       requests.push({ key: 'deposits', config: configSignedRequest('/wapi/v3/depositHistory.html') })
       requests.push({ key: 'support', config: configSignedRequest('/sapi/v1/capital/deposit/hisrec') })
       break
 
+    case 'prices':
+      requests.push({ key: 'prices', config: configRequest('/api/v3/ticker/price') })
+      break
+
+    case 'price':
+      const asset = urlParts[2]
+      const symbol = asset + 'USDT'
+      requests.push({ key: 'data', config: configRequest('/api/v3/ticker/price', { symbol }) })
+      break
+
     default:
-      console.log(req.url)
+      console.error(req.url)
   }
 
   // Make the reqeuest
@@ -62,7 +74,7 @@ export default async function (req, res) {
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-function configRequest (path) {
+function configRequest (path, params = {}) {
   // Send back the request configuration
   return {
     baseURL: 'https://api.binance.com',
@@ -71,6 +83,7 @@ function configRequest (path) {
     headers: {
       'X-MBX-APIKEY': process.env.BINANCE_API_KEY,
     },
+    params,
   }
 }
 
