@@ -6,25 +6,25 @@ export const state = () => ({
 })
 
 export const getters = {
-  binanceSymbolMapPrice(state) {
+  binanceSymbolMapPrice (state) {
     return state.binance.symbolMapPrice
   },
 }
 
-export const actions = {
-  async setPrices({ commit }) {
-    commit('prices')
-  },
-}
+// export const actions = {
+//   async setPrices({ commit }) {
+//     commit('prices')
+//   },
+// }
 
 export const mutations = {
-  increment(state) {
+  increment (state) {
     state.counter++
   },
-  setPricesMap(state, _) {
+  setPricesMap (state, _) {
     state.binance.symbolMapPrice = _
   },
-  setPrice(state, { symbol, price }) {
+  setPrice (state, { symbol, price }) {
     state.binance.symbolMapPrice[symbol] = price
   },
 }

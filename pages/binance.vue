@@ -35,50 +35,50 @@
             </v-card>
           </v-col>
           <v-col cols="12" v-show="coins.length">
-              <v-data-table
-                dense
-                :headers="headers"
-                :search="search"
-                :items="coins"
-                item-key="coin"
-                multi-sort
-                :sort-by="['free', 'locked']"
-                :sort-desc="[true, false]"
-                @click:row='detailRow'
-                show-expand
-              >
-                <template v-slot:top>
-                  <v-toolbar flat>
-                    <v-toolbar-title> Coins </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                      v-model="search"
-                      prepend-icon="mdi-magnify"
-                      append-icon="mdi-close"
-                      @click:append="search=''"
-                      label="Search"
-                      single-line
-                      hide-details
-                    />
-                  </v-toolbar>
-                </template>
-                <template v-slot:expanded-item="{ headers, item }">
-                  <td :colspan="headers.length">
-                    <ul>
-                      <li v-for="(network, i) in item.networkList" :key="i">
-                        {{ network.network }}
-                        {{ network.name }}
-                        (withdraw:{{ network.withdrawEnable }}, fee:{{ parseFloat(network.withdrawFee) }})
-                        {{ network.depositDesc }}
-                        {{ network.specialTips }}
-                      </li>
-                    </ul>
-                  </td>
-                </template>
-              </v-data-table>
+            <v-data-table
+              dense
+              :headers="headers"
+              :search="search"
+              :items="coins"
+              item-key="coin"
+              multi-sort
+              :sort-by="['free', 'locked']"
+              :sort-desc="[true, false]"
+              @click:row="detailRow"
+              show-expand
+            >
+              <template v-slot:top>
+                <v-toolbar flat>
+                  <v-toolbar-title> Coins </v-toolbar-title>
+                  <v-spacer />
+                  <v-text-field
+                    v-model="search"
+                    prepend-icon="mdi-magnify"
+                    append-icon="mdi-close"
+                    @click:append="search=''"
+                    label="Search"
+                    single-line
+                    hide-details
+                  />
+                </v-toolbar>
+              </template>
+              <template v-slot:expanded-item="{ item }">
+                <td :colspan="headers.length">
+                  <ul>
+                    <li v-for="(network, i) in item.networkList" :key="i">
+                      {{ network.network }}
+                      {{ network.name }}
+                      (withdraw:{{ network.withdrawEnable }}, fee:{{ parseFloat(network.withdrawFee) }})
+                      {{ network.depositDesc }}
+                      {{ network.specialTips }}
+                    </li>
+                  </ul>
+                </td>
+              </template>
+            </v-data-table>
           </v-col>
           <v-col cols="12">
-            <json-view :data="result" rootKey="result" v-show="result" />
+            <json-view :data="result" root-key="result" v-show="result" />
           </v-col>
         </v-row>
       </v-container>
@@ -94,12 +94,21 @@ async function getJson (resource) {
   const result = (response.status === 200 ? await response.json() : { status: response.status })
   const _ = Array.from(result)
   const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
-  return __['_'] || __
+  return __._ || __
 }
 
 export default {
 
   components: { 'json-view': JSONView },
+  fetchOnServer: true,
+
+  async fetch () {
+    const { prices } = await getJson('prices')
+    for (const _ of prices) {
+      this.symbolMapPrice[_.symbol] = parseFloat(_.price)
+    }
+    this.$store.commit('setPricesMap', this.symbolMapPrice)
+  },
 
   data () {
     return {
@@ -118,15 +127,6 @@ export default {
       ],
     }
   },
-
-  async fetch() {
-    const { prices } = await getJson('prices')
-    for (const _ of prices) {
-      this.symbolMapPrice[_.symbol] = parseFloat(_.price)
-    }
-    this.$store.commit('setPricesMap', this.symbolMapPrice)
-  },
-  fetchOnServer: true,
 
   computed: {
     balances () {
@@ -148,7 +148,7 @@ export default {
       this.result = null
       this.heading = ''
     },
-    detailRow (item, data) {
+    detailRow (item) {
       this.result = item
     },
     currency (balance) {
@@ -177,9 +177,9 @@ export default {
     async fetchCoins () {
       this.loading = true
       this.clear()
-      let coins = await getJson('coins')
-      this.coins = coins.map(coin => Object.assign({}, coin, {networks: coin.networkList.map(net => net.network)}))
-      this.result = {coins: coins.length}
+      const coins = await getJson('coins')
+      this.coins = coins.map(coin => Object.assign({}, coin, { networks: coin.networkList.map(net => net.network) }))
+      this.result = { coins: coins.length }
       this.loading = false
     },
   },

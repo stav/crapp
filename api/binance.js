@@ -10,7 +10,12 @@ import axios from 'axios'
 export default async function (req, res) {
   const requests = []
   const urlParts = req.url.split('/')
+  let symbol
   console.log(req.url, urlParts)
+  if (urlParts.length > 2) {
+    const asset = urlParts[2]
+    symbol = asset + 'USDT'
+  }
 
   // Configure the requests
   switch (urlParts[1]) {
@@ -42,8 +47,6 @@ export default async function (req, res) {
       break
 
     case 'price':
-      const asset = urlParts[2]
-      const symbol = asset + 'USDT'
       requests.push({ key: 'data', config: configRequest('/api/v3/ticker/price', { symbol }) })
       break
 
