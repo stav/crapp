@@ -11,17 +11,21 @@
         <v-btn title="Clear" @click="clear"> X </v-btn>
         <v-btn @click="() => fetch('system.status')" color="secondary" title="Check the system status"> Status </v-btn>
         <v-btn @click="() => fetch('time')" color="secondary" title="Query server time"> Time </v-btn>
-        <v-btn @click="() => fetch('deposit.history')" color="primary" title="Fetch user deposit history"> History </v-btn>
+        <v-btn @click="() => fetch('deposit.history')" color="secondary" title="Fetch user deposit history"> History </v-btn>
         <v-btn @click="() => fetchAccount()" color="primary" title="Fetch account information"> Account </v-btn>
         <v-btn @click="() => fetchCoins()" color="primary" title="Fetch information about user coins"> Coins </v-btn>
       </v-app-bar>
       <v-container>
         <v-row dense>
           <v-col cols="12" v-show="heading" v-text="heading" />
-          <v-col v-for="(balance, i) in balances" :key="i">
+          <v-col v-for="balance in balances" :key="balance.asset">
             <v-card>
               <div class="d-flex flex-no-wrap justify-space-between">
-                <v-btn x-large block>
+                <v-btn
+                  x-large block
+                  :title="'Press to fetch the current price for ' + balance.asset"
+                  @click="() => fetchPrice(balance)"
+                >
                   <v-card-subtitle class="mx-0 px-0" v-text="balance.free" />
                   <v-card-title class="headline mx-0 pl-1" v-text="balance.asset" />
                   <v-card-subtitle
@@ -29,7 +33,7 @@
                     v-if="balance.locked"
                     v-text="`${balance.locked} locked`"
                   />
-                  <v-card-subtitle class="ma-0 pa-0" v-text="currency(balance)" />
+                  <v-card-subtitle class="ma-0 pa-0" v-text="balance.currency" />
                 </v-btn>
               </div>
             </v-card>
@@ -77,8 +81,13 @@
               </template>
             </v-data-table>
           </v-col>
-          <v-col cols="12">
+        </v-row>
+        <v-row>
+          <v-col>
             <json-view :data="result" root-key="result" v-show="result" />
+          </v-col>
+          <v-col>
+            <json-view :data="balances" root-key="balances" v-show="balances" />
           </v-col>
         </v-row>
       </v-container>
@@ -114,6 +123,7 @@ export default {
     return {
       coins: [],
       result: null,
+      balances: null,
       search: '',
       heading: '',
       loading: false,
@@ -129,32 +139,38 @@ export default {
   },
 
   computed: {
-    balances () {
-      if (
-        this.result &&
-        this.result.account &&
-        this.result.account.balances
-      ) {
-        return this.result.account.balances
-      } else {
-        return []
-      }
-    },
   },
 
   methods: {
     clear () {
       this.coins = []
       this.result = null
+      this.balances = null
       this.heading = ''
     },
     detailRow (item) {
       this.result = item
     },
-    currency (balance) {
-      const symbol = balance.asset + 'USDT'
-      const amount = this.symbolMapPrice[symbol] * (balance.free + balance.locked)
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+    currency (value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
+    },
+    async fetchPrice (balance) {
+      this.loading = true
+      this.result = await getJson('price/' + balance.asset)
+      const _ = this.result.data
+      const price = parseFloat(_.price)
+      // Update local data
+      this.symbolMapPrice[_.symbol] = price
+      // Update store
+      this.$store.commit('setPrice', _.symbol, price)
+      // Update display balances
+      const amount = price * (balance.free + balance.locked)
+      const _balance = this.balances[balance.asset]
+      _balance.currency = this.currency(amount)
+      _balance.amount = amount
+      _balance.price = price
+      this.balances = Object.assign({}, this.balances) // Make reactive
+      this.loading = false
     },
     async fetch (resource) {
       this.loading = true
@@ -167,11 +183,23 @@ export default {
       this.loading = true
       this.clear()
       this.heading = 'Account'
-      const result = await getJson('account')
-      result.account.balances = result.account.balances
-        .filter(balance => parseFloat(balance.free) || parseFloat(balance.locked))
-        .map(balance => Object.assign(balance, { free: parseFloat(balance.free), locked: parseFloat(balance.locked) }))
-      this.result = result
+      this.result = await getJson('account')
+      this.balances = {}
+      for (const balance of this.result.account.balances) {
+
+        const free = parseFloat(balance.free)
+        const locked = parseFloat(balance.locked)
+
+        if ( free || locked) {
+          balance.free = free
+          balance.locked = locked
+          const symbol = balance.asset + 'USDT'
+          const amount = this.symbolMapPrice[symbol] * (free + locked)
+          balance.currency = this.currency(amount)
+          this.balances[balance.asset] = balance
+        }
+      }
+      this.result.account.balances = this.result.account.balances.length // too much data
       this.loading = false
     },
     async fetchCoins () {

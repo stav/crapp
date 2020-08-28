@@ -54,7 +54,7 @@ export default async function (req, res) {
       console.error(req.url)
   }
 
-  // Make the reqeuest
+  // Make the reqeuest to the host
   const data = { error: [] }
   for (const request of requests) {
     try {
@@ -68,7 +68,7 @@ export default async function (req, res) {
     delete data.error
   }
 
-  // Send the response
+  // Send the response to the client
   res.end(JSON.stringify(data))
 }
 
