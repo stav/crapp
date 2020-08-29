@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Ledger",
+    "coins": [{"symbol": "BTC", "quantity": 1}]
+  },
+  {
+    "name": "Coinbase"
+  },
+  {
+    "name": "Binance"
+  },
+  {
+    "name": "BlockFi"
+  },
+  {
+    "name": "Crypto Wallet"
+  },
+  {
+    "name": "Crypto Earn"
+  },
+  {
+    "name": "Crypto Fiat"
+  },
+  {
+    "name": "Crypto Visa"
+  }
+]

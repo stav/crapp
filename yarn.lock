@@ -2103,6 +2103,13 @@
     lodash "^4.17.15"
     pretty "^2.0.0"
 
+"@vuex-orm/core@^0.36.3":
+  version "0.36.3"
+  resolved "https://registry.yarnpkg.com/@vuex-orm/core/-/core-0.36.3.tgz#0ce056238224eae3c5fbcc6c0c0bde40920e4548"
+  integrity sha512-YlYtNTH4JECVDgF9iCwRyoDtnCqTBkiIYtfMbw2YVIfGP0/c+T9jYXhEzNYGey3Uiiq8WbIdlKBbZpu4llIwZg==
+  dependencies:
+    normalizr "^3.6.0"
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"
@@ -7657,6 +7664,11 @@ normalize-url@^3.0.0, normalize-url@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-3.3.0.tgz#b2e1c4dc4f7c6d57743df733a4f5978d18650559"
   integrity sha512-U+JJi7duF1o+u2pynbp2zXDW2/PADgC30f0GsHZtRh+HOcXHnw137TrNlyxxRvWW5fjKd3bcLHPxofWuCjaeZg==
+
+normalizr@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/normalizr/-/normalizr-3.6.0.tgz#b8bbc4546ffe43c1c2200503041642915fcd3e1c"
+  integrity sha512-25cd8DiDu+pL46KIaxtVVvvEPjGacJgv0yUg950evr62dQ/ks2JO1kf7+Vi5/rMFjaSTSTls7aCnmRlUSljtiA==
 
 npm-run-path@^2.0.0:
   version "2.0.2"
