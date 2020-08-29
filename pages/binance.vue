@@ -186,11 +186,10 @@ export default {
       this.result = await getJson('account')
       this.balances = {}
       for (const balance of this.result.account.balances) {
-
         const free = parseFloat(balance.free)
         const locked = parseFloat(balance.locked)
 
-        if ( free || locked) {
+        if (free || locked) {
           balance.free = free
           balance.locked = locked
           const symbol = balance.asset + 'USDT'

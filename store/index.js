@@ -6,28 +6,18 @@ export const plugins = [
 ]
 
 export const state = () => ({
-  counter: 0,
   binance: {
     symbolMapPrice: {},
   },
 })
 
-export const getters = {
-  binanceSymbolMapPrice (state) {
-    return state.binance.symbolMapPrice
-  },
-}
-
-// export const actions = {
-//   async setPrices({ commit }) {
-//     commit('prices')
+// export const getters = {
+//   binanceSymbolMapPrice (state) {
+//     return state.binance.symbolMapPrice
 //   },
 // }
 
 export const mutations = {
-  increment (state) {
-    state.counter++
-  },
   setPricesMap (state, _) {
     state.binance.symbolMapPrice = _
   },

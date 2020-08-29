@@ -7,7 +7,7 @@
   >
     <template v-slot:top>
       <v-toolbar>
-        <v-toolbar-title>My CRUD</v-toolbar-title>
+        <v-toolbar-title> Repositories </v-toolbar-title>
         <v-divider class="mx-4" inset vertical />
       </v-toolbar>
     </template>
@@ -23,37 +23,36 @@
 </template>
 
 <script>
-  import Coin from '@/models/Coin'
-  import Repository from '@/models/Repository'
-  import repositorys from '@/data/repositorys'
+import Repository from '@/models/Repository'
+import repositorys from '@/data/repositorys'
 
-  export default {
+export default {
 
-    async fetch () {
-      if (process.server) {
-        for (const repository of await repositorys()) {
-          const coins = repository.coins || []
-          repository.coins = coins.map(coin => Object.assign(coin, { name: coin.symbol }))
-          Repository.insert({ data: repository })
-        }
+  async fetch () {
+    if (process.server) {
+      for (const repository of await repositorys()) {
+        const coins = repository.coins || []
+        repository.coins = coins.map(coin => Object.assign(coin, { name: coin.symbol }))
+        Repository.insert({ data: repository })
       }
+    }
+  },
+
+  data: () => ({
+    headers: [
+      { text: 'Id'     , value: 'id'     }, // eslint-disable-line no-multi-spaces, comma-spacing
+      { text: 'Name'   , value: 'name'   }, // eslint-disable-line no-multi-spaces, comma-spacing
+      { text: 'Active' , value: 'active' }, // eslint-disable-line no-multi-spaces, comma-spacing
+      { text: 'Coins'  , value: 'coins'  }, // eslint-disable-line no-multi-spaces, comma-spacing
+      { text: 'Actions', value: 'actions', sortable: false },
+    ],
+  }),
+
+  computed: {
+    repositorys () {
+      return this.$store.$db().model('repositorys').query().with('coins').get()
     },
+  },
 
-    data: () => ({
-      headers: [
-        { text: 'Id'     , value: 'id'     },
-        { text: 'Name'   , value: 'name'   },
-        { text: 'Active' , value: 'active' },
-        { text: 'Coins'  , value: 'coins'  },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
-    }),
-
-    computed: {
-      repositorys () {
-        return this.$store.$db().model('repositorys').query().with('coins').get()
-      },
-    },
-
-  }
+}
 </script>
