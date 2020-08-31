@@ -11,4 +11,9 @@ export default class Coin extends Model {
       name: this.string(''),
     }
   }
+
+  static beforeCreate (model) {
+    // console.log('Coin create', model)
+    model.name = model.name || model.symbol
+  }
 }

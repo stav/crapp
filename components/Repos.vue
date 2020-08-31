@@ -2,7 +2,6 @@
   <v-data-table
     :headers="headers"
     :items="repositorys"
-    sort-by="transDate"
     class="elevation-1"
   >
     <template v-slot:top>
@@ -30,11 +29,8 @@ export default {
 
   async fetch () {
     if (process.server) {
-      for (const repository of await repositorys()) {
-        const coins = repository.coins || []
-        repository.coins = coins.map(coin => Object.assign(coin, { name: coin.symbol }))
-        Repository.insert({ data: repository })
-      }
+      // Repository.create({ data: repos, insert: ['coins'] })
+      Repository.create({ data: await repositorys() })
     }
   },
 

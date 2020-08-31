@@ -12,4 +12,13 @@ export default class Repository extends Model {
       coins: this.hasMany(Coin, 'repoId'),
     }
   }
+
+  // static beforeUpdate (model) {
+  //   for (const coin of model.coins) {
+  //     coin.name = coin.symbol
+  //     const field = coin.symbol.toLowerCase() + 'Coin'
+  //     repository[field] = coin.quantity
+  //     console.log('model update', model)
+  //   }
+  // }
 }
