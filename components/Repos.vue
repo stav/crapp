@@ -14,7 +14,22 @@
     <template v-slot:item.coins="{ item, header, value }">
       {{ value.map(coin => coin.name).join(',') }}
     </template>
-
+    <!--
+    <template v-if="repositorys.length" v-slot:body.append>
+      <tr>
+        <td v-for="header of headers" :key="header.value">
+          <span v-if="header.value==='coins'" v-text="header" />
+        </td>
+      </tr>
+      <tr>
+        <td :colspan="headers.length">
+          {{ coins }}
+          <ul> <li v-for="(coin, i) in coins" :key="i" v-text="coin" /> </ul>
+          <ul> <li v-for="(coin, i) in coins" :key="i" v-text="coin.symbol" /> </ul>
+        </td>
+      </tr>
+    </template>
+    -->
     <template v-slot:no-data>
       <v-btn color="primary" @click="initialize"> Reset </v-btn>
     </template>
@@ -34,19 +49,33 @@ export default {
     }
   },
 
-  data: () => ({
-    headers: [
-      { text: 'Id'     , value: 'id'     }, // eslint-disable-line no-multi-spaces, comma-spacing
-      { text: 'Name'   , value: 'name'   }, // eslint-disable-line no-multi-spaces, comma-spacing
-      { text: 'Active' , value: 'active' }, // eslint-disable-line no-multi-spaces, comma-spacing
-      { text: 'Coins'  , value: 'coins'  }, // eslint-disable-line no-multi-spaces, comma-spacing
-      { text: 'Actions', value: 'actions', sortable: false },
-    ],
-  }),
-
   computed: {
     repositorys () {
-      return this.$store.$db().model('repositorys').query().with('coins').get()
+      const _ = this.$store.$db().model('repositorys').query().with('coins').get()
+      return _.map((repo) => {
+        const coins = {}
+        for (const coin of repo.coins) {
+          coins[coin.symbol] = coin.quantity
+        }
+        return Object.assign(repo, coins)
+      })
+    },
+    headers () {
+      const _ = [
+        { text: 'Id'     , value: 'id'     }, // eslint-disable-line no-multi-spaces, comma-spacing
+        { text: 'Name'   , value: 'name'   }, // eslint-disable-line no-multi-spaces, comma-spacing
+        { text: 'Actions', value: 'actions', sortable: false },
+      ]
+      for (const coin of this.coins) {
+        _.push({ text: coin, value: coin })
+      }
+      return _
+    },
+    coins () {
+      const coins = this.$store.$db().model('coins').all()
+      const uniqueCoins = new Set(coins.map(coin => coin.symbol))
+      const sortedUniqueCoins = Array.from(uniqueCoins).sort()
+      return sortedUniqueCoins
     },
   },
 

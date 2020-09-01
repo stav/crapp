@@ -11,7 +11,6 @@ export default async function (req, res) {
   const requests = []
   const urlParts = req.url.split('/')
   let symbol
-  console.log(req.url, urlParts)
   if (urlParts.length > 2) {
     const asset = urlParts[2]
     symbol = asset + 'USDT'

@@ -5,15 +5,15 @@ export default class Coin extends Model {
 
   static fields () {
     return {
-      id: this.attr(null),
+      id: this.uid(),
       repoId: this.attr(null),
       symbol: this.string(''),
       name: this.string(''),
+      quantity: this.number(0.0),
     }
   }
 
   static beforeCreate (model) {
-    // console.log('Coin create', model)
     model.name = model.name || model.symbol
   }
 }
