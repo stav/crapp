@@ -8,14 +8,14 @@ import axios from 'axios'
 ** https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
 */
 export default async function (req, res) {
-  // First create the URL
+  // First: Create the URL
   const url = new URL('https://api.coinbase.com/')
   // url.pathname = '/v2/accounts'
   // url.pathname = '/v2/accounts/ab2ae1c9-1092-5905-a05a-2eaf92c66432/transactions'
   url.pathname = req.url
   url.searchParams.append('limit', 100)
 
-  // Second create the signature from the URL
+  // Second: Create the signature from the URL
   const timestamp = Math.floor(Date.now() / 1000)
   const method = 'GET'
   const path = url.pathname + url.search
@@ -23,7 +23,7 @@ export default async function (req, res) {
   const message = timestamp + method + path + body
   const signature = crypto.createHmac('sha256', process.env.COINBASE_API_SECRET).update(message).digest('hex')
 
-  // Third config the request
+  // Third: Config the request
   const config = {
     // `baseURL` will be prepended to `url` unless `url` is absolute.
     // It can be convenient to set `baseURL` for an instance of axios to pass relative URLs
@@ -46,9 +46,9 @@ export default async function (req, res) {
     },
   }
 
-  // Fourth Make the reqeuest
+  // Fourth: Make the reqeuest
   const response = await axios(config)
 
-  // Send the response
+  // Fifth: Send the response
   res.end(JSON.stringify(response.data))
 }
