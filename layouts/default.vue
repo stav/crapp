@@ -112,6 +112,11 @@ export default {
           title: 'binance',
           to: '/binance'
         },
+        {
+          icon: 'mdi-bitcoin',
+          title: 'repos',
+          to: '/repos'
+        },
       ],
       miniVariant: false,
       right: true,
