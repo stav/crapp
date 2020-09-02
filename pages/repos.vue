@@ -1,53 +1,43 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="repositorys"
-    class="elevation-1"
-  >
-    <template v-slot:top>
-      <v-toolbar>
-        <v-toolbar-title> Repositories </v-toolbar-title>
-        <v-divider class="mx-4" inset vertical />
-      </v-toolbar>
-    </template>
+  <v-card class="mx-auto" :loading="loading">
+    <v-toolbar color="indigo">
+      <v-card-title color="indigo darken-2"> Repositories </v-card-title>
+    </v-toolbar>
 
-    <template v-slot:item.coins="{ item, header, value }">
-      {{ value.map(coin => coin.name).join(',') }}
-    </template>
-    <!--
-    <template v-if="repositorys.length" v-slot:body.append>
-      <tr>
-        <td v-for="header of headers" :key="header.value">
-          <span v-if="header.value==='coins'" v-text="header" />
-        </td>
-      </tr>
-      <tr>
-        <td :colspan="headers.length">
-          {{ coins }}
-          <ul> <li v-for="(coin, i) in coins" :key="i" v-text="coin" /> </ul>
-          <ul> <li v-for="(coin, i) in coins" :key="i" v-text="coin.symbol" /> </ul>
-        </td>
-      </tr>
-    </template>
-    -->
-    <template v-slot:no-data>
-      <v-btn color="primary" @click="initialize"> Reset </v-btn>
-    </template>
-  </v-data-table>
+    <v-data-table :headers="headers" :items="repositorys">
+      <template v-slot:no-data> No data </template>
+    </v-data-table>
+
+    <v-snackbar v-model="snackbarModel">
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn dark text v-bind="attrs" @click="snackbarModel = false"> Close </v-btn>
+      </template>
+    </v-snackbar>
+
+    <v-card-actions>
+      <v-btn @click="getCoinbaseAccountsData" v-if="coinbase"> Coinbase </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
-import Repository from '@/models/Repository'
-import repositorys from '@/data/repositorys'
+import Coin from '~/models/Coin'
+import Repository from '~/models/Repository'
+import repositorys from '~/data/repositorys'
 
 export default {
 
   async fetch () {
-    if (process.server) {
-      // Repository.create({ data: repos, insert: ['coins'] })
-      Repository.create({ data: await repositorys() })
-    }
+    Repository.create({ data: await repositorys() })
   },
+
+  data: () => ({
+    // timeout: null,
+    loading: false,
+    snackbarModel: false,
+    snackbarText: '',
+  }),
 
   computed: {
     repositorys () {
@@ -55,19 +45,18 @@ export default {
       return _.map((repo) => {
         const coins = {}
         for (const coin of repo.coins) {
-          coins[coin.symbol] = coin.quantity
+          coins[coin.symbol.toLowerCase()] = this.currency(coin.quantity)
         }
         return Object.assign(repo, coins)
       })
     },
     headers () {
       const _ = [
-        { text: 'Id'     , value: 'id'     }, // eslint-disable-line no-multi-spaces, comma-spacing
-        { text: 'Name'   , value: 'name'   }, // eslint-disable-line no-multi-spaces, comma-spacing
-        { text: 'Actions', value: 'actions', sortable: false },
+        { text: '', value: 'actions', sortable: false },
+        { text: '', value: 'name' },
       ]
       for (const coin of this.coins) {
-        _.push({ text: coin, value: coin })
+        _.push({ text: coin, value: coin.toLowerCase() })
       }
       return _
     },
@@ -77,7 +66,58 @@ export default {
       const sortedUniqueCoins = Array.from(uniqueCoins).sort()
       return sortedUniqueCoins
     },
+    coinbase () {
+      const _ = this.$store.$db().model('repositorys').query().get()
+      return !!_.length
+    }
   },
+
+  mounted () {
+    this.snackbarText = 'Mounted'
+    this.snackbarModel = true
+    // this.timeout = setInterval(this.getCoinbaseAccountsData, 10000)
+  },
+
+  methods: {
+    async getCoinbaseAccountsData () {
+      this.loading = 'yellow'
+      const response = await fetch('/api/coinbase/v2/accounts')
+      let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
+      accounts = accounts.filter(account => parseFloat(account.balance.amount))
+      this.snackbarText = `${accounts.length} accounts retrieved`
+      this.snackbarModel = true
+      this.loadCoinbaseAccounts(accounts)
+      this.loading = false
+    },
+    loadCoinbaseAccounts (accounts) {
+      // TODO: Maybe insertOrUpdate since we may have new coins
+      // TODO: Error handling
+      for (const account of accounts) {
+        const coinbase = Repository.query().where('name', 'Coinbase')
+        const record = coinbase.with('coins', (query) => {
+          query.where('symbol', account.balance.currency)
+        }).first()
+        if (record && record.coins.length) {
+          const coin = record.coins[0]
+          Coin.update({
+            where: coin.id,
+            data: {
+              quantity: parseFloat(account.balance.amount),
+            }
+          })
+        }
+      }
+    },
+    currency (value) {
+      return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
+    },
+  },
+
+  // beforeRouteLeave (to, from, next) {
+  //   console.log('LEAVE', this.timeout)
+  //   clearTimeout(this.timeout)
+  //   next()
+  // },
 
 }
 </script>
