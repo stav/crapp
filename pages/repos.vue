@@ -5,18 +5,18 @@
     </v-toolbar>
 
     <v-data-table :headers="headers" :items="repositorys">
-      <template v-slot:no-data> No data </template>
+      <template v-slot:no-data><v-btn @click="$fetch"> Reset </v-btn></template>
     </v-data-table>
 
-    <v-snackbar v-model="snackbarModel">
+    <v-snackbar v-model="snackbarModel" timeout="9000">
       {{ snackbarText }}
       <template v-slot:action="{ attrs }">
         <v-btn dark text v-bind="attrs" @click="snackbarModel = false"> Close </v-btn>
       </template>
     </v-snackbar>
 
-    <v-card-actions>
-      <v-btn @click="getCoinbaseAccountsData" v-if="coinbase"> Coinbase </v-btn>
+    <v-card-actions v-if="repositorys.length">
+      <v-btn @click="getCoinbaseAccountsData"> Coinbase </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -29,6 +29,7 @@ import repositorys from '~/data/repositorys'
 export default {
 
   async fetch () {
+    // TODO: only create if empty?
     Repository.create({ data: await repositorys() })
   },
 
@@ -40,8 +41,11 @@ export default {
   }),
 
   computed: {
+    Repositorys () {
+      return this.$store.$db().model('repositorys')
+    },
     repositorys () {
-      const _ = this.$store.$db().model('repositorys').query().with('coins').get()
+      const _ = this.Repositorys.query().with('coins').get()
       return _.map((repo) => {
         const coins = {}
         for (const coin of repo.coins) {
@@ -66,10 +70,6 @@ export default {
       const sortedUniqueCoins = Array.from(uniqueCoins).sort()
       return sortedUniqueCoins
     },
-    coinbase () {
-      const _ = this.$store.$db().model('repositorys').query().get()
-      return !!_.length
-    }
   },
 
   mounted () {
@@ -84,7 +84,7 @@ export default {
       const response = await fetch('/api/coinbase/v2/accounts')
       let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
       accounts = accounts.filter(account => parseFloat(account.balance.amount))
-      this.snackbarText = `${accounts.length} accounts retrieved`
+      this.snackbarText = `${accounts.length} accounts retrieved and loading into Coinbase`
       this.snackbarModel = true
       this.loadCoinbaseAccounts(accounts)
       this.loading = false
@@ -92,20 +92,19 @@ export default {
     loadCoinbaseAccounts (accounts) {
       // TODO: Maybe insertOrUpdate since we may have new coins
       // TODO: Error handling
+      const accounts_map = {}
       for (const account of accounts) {
-        const coinbase = Repository.query().where('name', 'Coinbase')
-        const record = coinbase.with('coins', (query) => {
-          query.where('symbol', account.balance.currency)
-        }).first()
-        if (record && record.coins.length) {
-          const coin = record.coins[0]
-          Coin.update({
-            where: coin.id,
-            data: {
-              quantity: parseFloat(account.balance.amount),
-            }
-          })
-        }
+        accounts_map[account.currency] = account
+      }
+      const repos = this.Repositorys.query().with('coins')
+      const coinbase = repos.where('name', 'Coinbase').first()
+
+      for (const coin of coinbase.coins) {
+        const account = accounts_map[coin.symbol]
+        Coin.update({
+          where: coin.id,
+          data: { quantity: account ? parseFloat(account.balance.amount) : 0 }
+        })
       }
     },
     currency (value) {
