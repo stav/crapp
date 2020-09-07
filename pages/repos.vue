@@ -17,6 +17,7 @@
 
     <v-card-actions v-if="repositorys.length">
       <v-btn @click="getCoinbaseAccountsData"> Coinbase </v-btn>
+      <v-btn @click="getBinanceAccountsData"> Binance </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -104,6 +105,31 @@ export default {
         Coin.update({
           where: coin.id,
           data: { quantity: account ? parseFloat(account.balance.amount) : 0 }
+        })
+      }
+    },
+    async getBinanceAccountsData () {
+      this.loading = 'green'
+      const response = await fetch('/api/binance/balances')
+      let { balances } = response.status === 200 ? await response.json() : { status: response.status }
+      this.snackbarText = `${balances.length} balances retrieved and loading into Binance`
+      this.snackbarModel = true
+      this.loadBinanceBalances(balances)
+      this.loading = false
+    },
+    loadBinanceBalances (balances) {
+      const balances_map = {}
+      for (const balance of balances) {
+        balances_map[balance.asset] = balance
+      }
+      const repos = this.Repositorys.query().with('coins')
+      const binance = repos.where('name', 'Binance').first()
+
+      for (const coin of binance.coins) {
+        const balance = balances_map[coin.symbol]
+        Coin.update({
+          where: coin.id,
+          data: { quantity: balance ? balance.free + balance.locked : 0 }
         })
       }
     },
