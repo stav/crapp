@@ -50,12 +50,11 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-icon>mdi-bitcoin</v-icon>
       <v-btn
         icon
         @click.stop="rightDrawer = !rightDrawer"
       >
-        <v-icon>mdi-menu</v-icon>
+        <v-icon>mdi-bitcoin</v-icon>
       </v-btn>
     </v-app-bar>
     <v-main>
@@ -93,7 +92,7 @@
 export default {
   data () {
     return {
-      clipped: false,
+      clipped: true,
       drawer: false,
       fixed: false,
       items: [
