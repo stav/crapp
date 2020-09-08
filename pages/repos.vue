@@ -5,6 +5,13 @@
     </v-toolbar>
 
     <v-data-table :headers="headers" :items="repositorys">
+      <template v-slot:body.append v-if="repositorys.length">
+        <tr>
+          <td v-for="header of headers" :key="header.value">
+            <span v-if="header.coin" v-text="coinSum(header.value)"></span>
+          </td>
+        </tr>
+      </template>
       <template v-slot:no-data><v-btn @click="$fetch"> Reset </v-btn></template>
     </v-data-table>
 
@@ -42,6 +49,9 @@ export default {
   }),
 
   computed: {
+    Coins () {
+      return this.$store.$db().model('coins')
+    },
     Repositorys () {
       return this.$store.$db().model('repositorys')
     },
@@ -50,7 +60,7 @@ export default {
       return _.map((repo) => {
         const coins = {}
         for (const coin of repo.coins) {
-          coins[coin.symbol.toLowerCase()] = this.currency(coin.quantity)
+          coins[coin.symbol.toLowerCase()] = this.formatAmount(coin.quantity)
         }
         return Object.assign(repo, coins)
       })
@@ -61,12 +71,12 @@ export default {
         { text: '', value: 'name' },
       ]
       for (const coin of this.coins) {
-        _.push({ text: coin, value: coin.toLowerCase() })
+        _.push({ text: coin, value: coin.toLowerCase(), coin: true })
       }
       return _
     },
     coins () {
-      const coins = this.$store.$db().model('coins').all()
+      const coins = this.Coins.all()
       const uniqueCoins = new Set(coins.map(coin => coin.symbol))
       const sortedUniqueCoins = Array.from(uniqueCoins).sort()
       return sortedUniqueCoins
@@ -80,6 +90,16 @@ export default {
   },
 
   methods: {
+    coinSum (symbol) {
+      let sum = 0
+      for (const repo of this.repositorys) {
+        if (symbol in repo) {
+          const coin = repo.coins.find((coin) => coin.symbol.toLowerCase() === symbol)
+          sum += coin.quantity || 0
+        }
+      }
+      return this.formatAmount(sum)
+    },
     async getCoinbaseAccountsData () {
       this.loading = 'yellow'
       const response = await fetch('/api/coinbase/v2/accounts')
@@ -138,12 +158,12 @@ export default {
       //     balance.locked = locked
       //     const symbol = balance.asset + 'USDT'
       //     const amount = this.symbolMapPrice[symbol] * (free + locked)
-      //     balance.currency = this.currency(amount)
+      //     balance.currency = this.formatAmount(amount)
       //     this.balances[balance.asset] = balance
       //   }
       // }
     },
-    currency (value) {
+    formatAmount (value) {
       return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
     },
   },
