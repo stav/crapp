@@ -132,6 +132,16 @@ export default {
           data: { quantity: balance ? balance.free + balance.locked : 0 }
         })
       }
+      // for (const balance of data.balances) {
+      //   if (free || locked) {
+      //     balance.free = free
+      //     balance.locked = locked
+      //     const symbol = balance.asset + 'USDT'
+      //     const amount = this.symbolMapPrice[symbol] * (free + locked)
+      //     balance.currency = this.currency(amount)
+      //     this.balances[balance.asset] = balance
+      //   }
+      // }
     },
     currency (value) {
       return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)

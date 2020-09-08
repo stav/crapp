@@ -13,7 +13,7 @@ export default async function (req, res) {
 
   // Make the reqeuest to the host(s)
   let data = await resolveRequests(requests)
-  
+
   // Process the data
   data = postProcess(data)
 
@@ -25,33 +25,20 @@ export default async function (req, res) {
 ** API request helper to massage the data
 */
 function postProcess (data) {
-  if (data.balances && data.balances.balances && data.balances.balances.length) {
-    // let { balances: { balances }} = data
-    const balances = data.balances.balances
-      .map((balance) => ({
-        asset: balance.asset,
-        free: parseFloat(balance.free),
-        locked: parseFloat(balance.locked),
-      }))
-      .filter((balance) => balance.free || balance.locked)
-    return { balances }
-    // for (let i = 0; i < data.balances.length; i++) {
-    //   const balance = data.balances[i];
-    //   balance.free = parseFloat(balance.free)
-    //   balance.locked = parseFloat(balance.locked)
-    //   balance.asdf = 'q wer'
-    // }
-    // for (const balance of data.balances) {
-    //   if (free || locked) {
-    //     balance.free = free
-    //     balance.locked = locked
-    //     const symbol = balance.asset + 'USDT'
-    //     const amount = this.symbolMapPrice[symbol] * (free + locked)
-    //     balance.currency = this.currency(amount)
-    //     this.balances[balance.asset] = balance
-    //   }
-    // }
+  // If we are processing a balances request then just pull out the balances
+  if ('balances' in data) {
+    return { balances:
+      (data?.balances?.balances || []) // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html
+        .map((balance) => ({
+          asset: balance.asset,
+          free: parseFloat(balance.free),
+          locked: parseFloat(balance.locked),
+        }))
+        .filter((balance) => balance.free || balance.locked)
+    }
   }
+  // Otherwise just return the data untouched
+  return data
 }
 
 /*
