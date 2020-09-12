@@ -4,18 +4,35 @@
       <v-card-title color="indigo darken-2"> Repositories </v-card-title>
     </v-toolbar>
 
-    <v-data-table :headers="headers" :items="repositorys">
+    <v-data-table :headers="headers" :items="repositorys" hide-default-footer>
       <template v-slot:body.append v-if="repositorys.length">
-        <tr>
+        <tr class="primary">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.coin" v-text="coinSum(header.value)"></span>
+            <span v-if="header.value === 'name'">Total</span>
+            <span
+              v-if="header.coin"
+              v-text="formatAmount(coinTotalAmounts[header.value])"
+              :title="coinTotalAmounts[header.value]"
+            />
+          </td>
+        </tr>
+        <tr class="accent">
+          <td v-for="header of headers" :key="header.value">
+            <span v-if="header.value === 'name'">Price</span>
+            <span v-if="header.coin && coinPrice[header.value]" v-text="`$${coinPrice[header.value]}`" />
+          </td>
+        </tr>
+        <tr class="secondary">
+          <td v-for="header of headers" :key="header.value">
+            <span v-if="header.value === 'name'">USDC</span>
+            <span v-if="header.coin" v-text="coinTotalCurrency[header.value]"></span>
           </td>
         </tr>
       </template>
       <template v-slot:no-data><v-btn @click="$fetch"> Reset </v-btn></template>
     </v-data-table>
 
-    <v-snackbar v-model="snackbarModel" timeout="9000">
+    <v-snackbar v-model="snackbarModel" timeout="3000">
       {{ snackbarText }}
       <template v-slot:action="{ attrs }">
         <v-btn dark text v-bind="attrs" @click="snackbarModel = false"> Close </v-btn>
@@ -34,16 +51,39 @@ import Coin from '~/models/Coin'
 import Repository from '~/models/Repository'
 import repositorys from '~/data/repositorys'
 
+async function getJson (resource) {
+  const response = await fetch('/api/binance/' + resource)
+  const result = (response.status === 200 ? await response.json() : { status: response.status })
+  const _ = Array.from(result)
+  const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
+  return __._ || __
+}
+
 export default {
 
+  fetchOnServer: true,
+
   async fetch () {
+    // Create Repository database
     // TODO: only create if empty?
     Repository.create({ data: await repositorys() })
+
+    // Fetch & Store coin prices
+    const { prices } = await getJson('prices')
+    for (const _ of prices) {
+      this.$store.commit('setPrice', _) // _ is tightly coupled to api response { symbol, price }
+    }
+
+    // Now we can load the data
+    this.load()
   },
 
   data: () => ({
     // timeout: null,
     loading: false,
+    coinTotalCurrency: {},
+    coinTotalAmounts: {},
+    coinPrice: {},
     snackbarModel: false,
     snackbarText: '',
   }),
@@ -90,16 +130,6 @@ export default {
   },
 
   methods: {
-    coinSum (symbol) {
-      let sum = 0
-      for (const repo of this.repositorys) {
-        if (symbol in repo) {
-          const coin = repo.coins.find((coin) => coin.symbol.toLowerCase() === symbol)
-          sum += coin.quantity || 0
-        }
-      }
-      return this.formatAmount(sum)
-    },
     async getCoinbaseAccountsData () {
       this.loading = 'yellow'
       const response = await fetch('/api/coinbase/v2/accounts')
@@ -152,19 +182,39 @@ export default {
           data: { quantity: balance ? balance.free + balance.locked : 0 }
         })
       }
-      // for (const balance of data.balances) {
-      //   if (free || locked) {
-      //     balance.free = free
-      //     balance.locked = locked
-      //     const symbol = balance.asset + 'USDT'
-      //     const amount = this.symbolMapPrice[symbol] * (free + locked)
-      //     balance.currency = this.formatAmount(amount)
-      //     this.balances[balance.asset] = balance
-      //   }
-      // }
     },
     formatAmount (value) {
       return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
+    },
+    formatCurrency (value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
+    },
+    load () {
+      const self = this
+
+      function coinSum (symbol) {
+        let sum = 0
+        for (const repo of self.repositorys) {
+          if (symbol in repo) {
+            const coin = repo.coins.find((coin) => coin.symbol.toLowerCase() === symbol)
+            sum += coin.quantity || 0
+          }
+        }
+        return sum
+      }
+
+      function coinVal (asset) {
+        const amount = self.coinTotalAmounts[asset]
+        const price = self.$store.getters.coinPrice(asset)
+        return price ? self.formatCurrency(amount * price) : ''
+      }
+
+      for (const coin of this.coins) {
+        const asset = coin.toLowerCase()
+        this.coinTotalAmounts[asset] = coinSum(asset)
+        this.coinTotalCurrency[asset] = coinVal(asset)
+        this.coinPrice[asset] = this.$store.getters.coinPrice(asset)
+      }
     },
   },
 
