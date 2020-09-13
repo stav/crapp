@@ -8,24 +8,28 @@
       <template v-slot:body.append v-if="repositorys.length">
         <tr class="primary">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'">Total</span>
+            <span v-if="header.value === 'name'"> Total </span>
             <span
               v-if="header.coin"
-              v-text="formatAmount(coinTotalAmounts[header.value])"
-              :title="coinTotalAmounts[header.value]"
+              v-text="formatAmount(coinSum(header.value))"
+              :title="coinSum(header.value)"
             />
           </td>
         </tr>
         <tr class="accent">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'">Price</span>
-            <span v-if="header.coin && coinPrice[header.value]" v-text="`$${coinPrice[header.value]}`" />
+            <span v-if="header.value === 'name'"> Price </span>
+            <span
+              v-if="header.coin"
+              v-text="`$${formatAmount(coinPriceNew(header.value))}`"
+              :title="coinPriceNew(header.value)"
+            />
           </td>
         </tr>
         <tr class="secondary">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'">USDC</span>
-            <span v-if="header.coin" v-text="coinTotalCurrency[header.value]"></span>
+            <span v-if="header.value === 'name'"> Value </span>
+            <span v-if="header.coin" v-text="coinTotalUSD(header.value)"></span>
           </td>
         </tr>
       </template>
@@ -51,14 +55,6 @@ import Coin from '~/models/Coin'
 import Repository from '~/models/Repository'
 import repositorys from '~/data/repositorys'
 
-async function getJson (resource) {
-  const response = await fetch('/api/binance/' + resource)
-  const result = (response.status === 200 ? await response.json() : { status: response.status })
-  const _ = Array.from(result)
-  const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
-  return __._ || __
-}
-
 export default {
 
   fetchOnServer: true,
@@ -68,24 +64,20 @@ export default {
     // TODO: only create if empty?
     Repository.create({ data: await repositorys() })
 
-    // Fetch & Store coin prices
-    const { prices } = await getJson('prices')
-    for (const _ of prices) {
-      this.$store.commit('setPrice', _) // _ is tightly coupled to api response { symbol, price }
+    // Fetch & Store coin prices from Coin Market Cap
+    const response = await fetch('/api/coinmarketcap/quotes?symbol=' + this.coins.join(','))
+    const result = (response.status === 200 ? await response.json() : { status: response.status })
+    const { quotes: { data } } = result
+    for (const coin of Object.values(data)) {
+      this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
     }
-
-    // Now we can load the data
-    this.load()
   },
 
   data: () => ({
     // timeout: null,
     loading: false,
-    coinTotalCurrency: {},
-    coinTotalAmounts: {},
-    coinPrice: {},
-    snackbarModel: false,
     snackbarText: '',
+    snackbarModel: false,
   }),
 
   computed: {
@@ -100,7 +92,7 @@ export default {
       return _.map((repo) => {
         const coins = {}
         for (const coin of repo.coins) {
-          coins[coin.symbol.toLowerCase()] = this.formatAmount(coin.quantity)
+          coins[coin.symbol] = this.formatAmount(coin.quantity)
         }
         return Object.assign(repo, coins)
       })
@@ -111,7 +103,7 @@ export default {
         { text: '', value: 'name' },
       ]
       for (const coin of this.coins) {
-        _.push({ text: coin, value: coin.toLowerCase(), coin: true })
+        _.push({ text: coin, value: coin, coin: true })
       }
       return _
     },
@@ -189,32 +181,22 @@ export default {
     formatCurrency (value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
     },
-    load () {
-      const self = this
-
-      function coinSum (symbol) {
-        let sum = 0
-        for (const repo of self.repositorys) {
-          if (symbol in repo) {
-            const coin = repo.coins.find((coin) => coin.symbol.toLowerCase() === symbol)
-            sum += coin.quantity || 0
-          }
-        }
-        return sum
-      }
-
-      function coinVal (asset) {
-        const amount = self.coinTotalAmounts[asset]
-        const price = self.$store.getters.coinPrice(asset)
-        return price ? self.formatCurrency(amount * price) : ''
-      }
-
-      for (const coin of this.coins) {
-        const asset = coin.toLowerCase()
-        this.coinTotalAmounts[asset] = coinSum(asset)
-        this.coinTotalCurrency[asset] = coinVal(asset)
-        this.coinPrice[asset] = this.$store.getters.coinPrice(asset)
-      }
+    coinSum (symbol) {
+      const coins = this.Coins.query().where('symbol',
+        (value) => value === symbol
+      ).get()
+      return coins.reduce(
+        (total, coin) => total + coin.quantity,
+        0
+      )
+    },
+    coinPriceNew (symbol) {
+      return this.$store.getters.coinPriceUSD(symbol)
+    },
+    coinTotalUSD (symbol) {
+      const amount = this.coinSum(symbol)
+      const price = this.coinPriceNew(symbol)
+      return price ? this.formatCurrency(amount * price) : ''
     },
   },
 

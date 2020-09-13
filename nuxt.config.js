@@ -67,6 +67,7 @@ export default {
   ** See https://github.com/senchalabs/connect
   */
   serverMiddleware: [
+    { path: '/api/coinmarketcap', handler: '~/api/coinmarketcap' },
     { path: '/api/coinbase', handler: '~/api/coinbase' },
     { path: '/api/binance', handler: '~/api/binance' },
   ],

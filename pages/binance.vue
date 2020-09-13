@@ -114,7 +114,7 @@ export default {
     for (const _ of prices) {
       this.symbolMapPrice[_.symbol] = parseFloat(_.price)
     }
-    this.$store.commit('setPricesMap', this.symbolMapPrice)
+    // this.$store.commit('setPricesMap', this.symbolMapPrice)
   },
 
   data () {
@@ -159,8 +159,8 @@ export default {
       const price = parseFloat(_.price)
       // Update local data
       this.symbolMapPrice[_.symbol] = price
-      // Update store
-      this.$store.commit('setPrice', _.symbol, price)
+      // // Update store
+      // this.$store.commit('setPrice', _.symbol, price)
       // Update display balances
       const amount = price * (balance.free + balance.locked)
       const _balance = this.balances[balance.asset]

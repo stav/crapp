@@ -6,22 +6,15 @@ export const plugins = [
 ]
 
 export const state = () => ({
-  symbolMapPrice: {},
+  symbolMapPrice: { usd: {} },
 })
 
 export const getters = {
-  coinPrice: (state) => (asset) => {
-    const symbol = asset.toUpperCase() + 'USDC'
-    const price = state.symbolMapPrice[symbol]
-    return price
-  },
+  coinPriceUSD: (state) => (symbol) => state.symbolMapPrice.usd[symbol],
 }
 
 export const mutations = {
-  setPricesMap (state, _) {
-    state.symbolMapPrice = _
-  },
-  setPrice (state, { symbol, price }) {
-    state.symbolMapPrice[symbol] = parseFloat(price)
+  setPriceUSD (state, { symbol, price }) {
+    state.symbolMapPrice.usd[symbol] = parseFloat(price)
   },
 }
