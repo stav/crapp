@@ -8,7 +8,7 @@
       <template v-slot:body.append v-if="repositorys.length">
         <tr class="primary">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'"> Total </span>
+            <span v-if="header.value === 'name'"> Total (coins) </span>
             <span
               v-if="header.coin"
               v-text="formatAmount(coinSum(header.value))"
@@ -18,18 +18,22 @@
         </tr>
         <tr class="accent">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'"> Price </span>
+            <v-btn small class="accent"
+              v-if="header.value === 'name'"
+              @click="fetchPrices"
+              title="Press to fetch latest prices"
+            > Price (each) </v-btn>
             <span
               v-if="header.coin"
-              v-text="`$${formatAmount(coinPriceNew(header.value))}`"
-              :title="coinPriceNew(header.value)"
+              v-text="`$${formatAmount(coinPrice(header.value))}`"
+              :title="coinPrice(header.value)"
             />
           </td>
         </tr>
         <tr class="secondary">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'"> Value </span>
-            <span v-if="header.coin" v-text="coinTotalUSD(header.value)"></span>
+            <span v-if="header.value === 'name'" v-text="formatCurrency(portfolioTotalUSD())" />
+            <span v-if="header.coin" v-text="formatCurrency(coinTotalUSD(header.value))" />
           </td>
         </tr>
       </template>
@@ -60,17 +64,8 @@ export default {
   fetchOnServer: true,
 
   async fetch () {
-    // Create Repository database
-    // TODO: only create if empty?
-    Repository.create({ data: await repositorys() })
-
-    // Fetch & Store coin prices from Coin Market Cap
-    const response = await fetch('/api/coinmarketcap/quotes?symbol=' + this.coins.join(','))
-    const result = (response.status === 200 ? await response.json() : { status: response.status })
-    const { quotes: { data } } = result
-    for (const coin of Object.values(data)) {
-      this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
-    }
+    Repository.create({ data: await repositorys() }) // TODO: only create if empty?
+    await this.fetchPrices()
   },
 
   data: () => ({
@@ -142,7 +137,7 @@ export default {
       const repos = this.Repositorys.query().with('coins')
       const coinbase = repos.where('name', 'Coinbase').first()
 
-      for (const coin of coinbase.coins) {
+      for (const coin of coinbase?.coins || []) {
         const account = accounts_map[coin.symbol]
         Coin.update({
           where: coin.id,
@@ -167,7 +162,7 @@ export default {
       const repos = this.Repositorys.query().with('coins')
       const binance = repos.where('name', 'Binance').first()
 
-      for (const coin of binance.coins) {
+      for (const coin of binance?.coins || []) {
         const balance = balances_map[coin.symbol]
         Coin.update({
           where: coin.id,
@@ -190,13 +185,35 @@ export default {
         0
       )
     },
-    coinPriceNew (symbol) {
+    coinPrice (symbol) {
       return this.$store.getters.coinPriceUSD(symbol)
     },
     coinTotalUSD (symbol) {
       const amount = this.coinSum(symbol)
-      const price = this.coinPriceNew(symbol)
-      return price ? this.formatCurrency(amount * price) : ''
+      const price = this.coinPrice(symbol)
+      return price ? (amount * price) : ''
+    },
+    async fetchPrices () {
+      // Fetch & Store coin prices from Coin Market Cap
+      this.loading = 'white'
+      const response = await fetch('/api/coinmarketcap/quotes?symbol=' + this.coins.join(','))
+      const result = (response.status === 200 ? await response.json() : { status: response.status })
+      const { quotes: { data } } = result
+      for (const coin of Object.values(data)) {
+        this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
+      }
+      this.snackbarText = 'Loaded prices'
+      this.snackbarModel = true
+      this.loading = false
+    },
+    portfolioTotalUSD () {
+      return (this.coins.reduce(
+        (total, symbol) => {
+          const value = this.coinTotalUSD(symbol)
+          return total + value
+        },
+        0
+      ))
     },
   },
 
@@ -208,3 +225,4 @@ export default {
 
 }
 </script>
+
