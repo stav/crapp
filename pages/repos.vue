@@ -51,8 +51,9 @@
     </v-snackbar>
 
     <v-card-actions v-if="repositorys.length">
-      <v-btn @click="getCoinbaseAccountsData"> Coinbase </v-btn>
       <v-btn @click="getBinanceAccountsData"> Binance </v-btn>
+      <v-btn @click="getCoinbaseAccountsData"> Coinbase </v-btn>
+      <v-btn @click="getCoinbaseProAccountsData"> Coinbase Pro </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -120,6 +121,34 @@ export default {
   },
 
   methods: {
+    async getCoinbaseProAccountsData () {
+      this.loading = 'blue'
+      const response = await fetch('/api/coinbasepro/accounts')
+      let accounts = response.status === 200 ? await response.json() : { status: response.status }
+      accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
+      console.log('getCoinbasePro', accounts)
+      this.snackbarText = `${accounts.length} accounts retrieved and loading into Coinbase Pro`
+      this.snackbarModel = true
+      this.loadCoinbaseProAccounts(accounts)
+      this.loading = false
+    },
+    loadCoinbaseProAccounts (accounts) {
+      const accountsMap = {}
+      for (const account of accounts) {
+        accountsMap[account.currency] = account
+      }
+      const repos = this.Repositorys.query().with('coins')
+      const coinbasepro = repos.where('name', 'Coinbase Pro').first()
+
+      // TODO: This should loop thru accounts and do insertOrUpdate
+      for (const coin of coinbasepro?.coins || []) {
+        const account = accountsMap[coin.symbol]
+        Coin.update({
+          where: coin.id,
+          data: { quantity: account ? parseFloat(account.balance) : 0 }
+        })
+      }
+    },
     async getCoinbaseAccountsData () {
       this.loading = 'yellow'
       const response = await fetch('/api/coinbase/v2/accounts')

@@ -68,6 +68,7 @@ export default {
   */
   serverMiddleware: [
     { path: '/api/coinmarketcap', handler: '~/api/coinmarketcap' },
+    { path: '/api/coinbasepro', handler: '~/api/coinbasepro' },
     { path: '/api/coinbase', handler: '~/api/coinbase' },
     { path: '/api/binance', handler: '~/api/binance' },
   ],
