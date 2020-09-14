@@ -1,8 +1,9 @@
 <template>
   <v-card class="mx-auto" :loading="loading">
-    <v-toolbar color="indigo">
-      <v-card-title color="indigo darken-2"> Repositories </v-card-title>
-    </v-toolbar>
+    <v-app-bar color="indigo">
+      <v-icon class="mr-2">mdi-bitcoin</v-icon>
+      Repositories
+    </v-app-bar>
 
     <v-data-table :headers="headers" :items="repositorys" hide-default-footer>
       <template v-slot:body.append v-if="repositorys.length">
@@ -126,7 +127,6 @@ export default {
       const response = await fetch('/api/coinbasepro/accounts')
       let accounts = response.status === 200 ? await response.json() : { status: response.status }
       accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
-      console.log('getCoinbasePro', accounts)
       this.snackbarText = `${accounts.length} accounts retrieved and loading into Coinbase Pro`
       this.snackbarModel = true
       this.loadCoinbaseProAccounts(accounts)

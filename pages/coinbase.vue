@@ -2,10 +2,7 @@
   <v-card :loading="loading" class="mx-auto">
     <!-- Top bar with green button -->
     <v-app-bar>
-      <v-img
-        :src="require('@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png')"
-        max-width="27px"
-      />
+      <v-img class="image-icon" :src="coinbaseImageIcon" />
       <v-toolbar-title class="mx-2"> Coinbase </v-toolbar-title>
       <v-spacer />
       <v-btn title="Clear" @click="clear"> X </v-btn>
@@ -90,6 +87,7 @@
 
 <script>
 import { JSONView } from 'vue-json-component'
+import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
 
 export default {
 
@@ -103,6 +101,7 @@ export default {
       currentAccount: {},
       accounts: {},
       loading: false,
+      coinbaseImageIcon,
     }
   },
 
@@ -143,3 +142,10 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.image-icon {
+  max-width: 27px;
+  max-height: 27px;
+}
+</style>

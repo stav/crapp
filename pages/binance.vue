@@ -1,10 +1,7 @@
 <template>
   <v-card :loading="loading" class="mx-auto">
     <v-app-bar>
-      <v-img
-        :src="require('@/assets/logos-download.com/Binance_logo_coin.png')"
-        max-width="27px"
-      />
+      <v-img class="image-icon" :src="binanceImageIcon" />
       <v-toolbar-title class="mx-2"> Binance </v-toolbar-title>
       <v-spacer />
       <v-btn title="Clear" @click="clear"> X </v-btn>
@@ -44,6 +41,7 @@
             :search="search"
             :items="coins"
             item-key="coin"
+            item-class="classes"
             multi-sort
             :sort-by="['free', 'locked']"
             :sort-desc="[true, false]"
@@ -95,6 +93,7 @@
 
 <script>
 import { JSONView } from 'vue-json-component'
+import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
 
 async function getJson (resource) {
   const response = await fetch('/api/binance/' + resource)
@@ -126,6 +125,7 @@ export default {
       heading: '',
       loading: false,
       symbolMapPrice: {},
+      binanceImageIcon,
       headers: [
         { text: 'Coin', value: 'coin', filterable: true },
         { text: 'Name', value: 'name', filterable: true },
@@ -203,7 +203,14 @@ export default {
       this.loading = true
       this.clear()
       const coins = await getJson('coins')
-      this.coins = coins.map(coin => Object.assign({}, coin, { networks: coin.networkList.map(net => net.network) }))
+      this.coins = coins.map(coin =>
+        Object.assign(
+          {},
+          coin,
+          { classes: 'clickable-row' },
+          { networks: coin.networkList.map(net => net.network) }
+        )
+      )
       this.result = { coins: coins.length }
       this.loading = false
     },
@@ -211,8 +218,15 @@ export default {
 }
 </script>
 
-<style>
-.v-data-table tr {
+<style lang="scss">
+.clickable-row {
   cursor: pointer;
+}
+</style>
+
+<style lang="scss" scoped>
+.image-icon {
+  max-width: 27px;
+  max-height: 27px;
 }
 </style>

@@ -16,7 +16,15 @@
           exact
         >
           <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon 
+              v-if="item.icon"
+              v-text="item.icon"
+            />
+            <v-img
+              v-if="item.image"
+              :src="item.image"
+              class="image-icon-layout"
+            />
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="item.title" />
@@ -89,6 +97,9 @@
 </template>
 
 <script>
+import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
+import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
+
 export default {
   data () {
     return {
@@ -97,23 +108,23 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
           title: 'Welcome',
+          icon: 'mdi-apps',
           to: '/'
         },
         {
-          icon: 'mdi-bitcoin',
-          title: 'coinbase',
+          title: 'Coinbase',
+          image: coinbaseImageIcon,
           to: '/coinbase'
         },
         {
-          icon: 'mdi-bitcoin',
-          title: 'binance',
+          title: 'Binance',
+          image: binanceImageIcon,
           to: '/binance'
         },
         {
+          title: 'Repos',
           icon: 'mdi-bitcoin',
-          title: 'repos',
           to: '/repos'
         },
       ],
@@ -125,3 +136,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.image-icon-layout {
+  filter: grayscale(100%);
+  max-width: 27px;
+  max-height: 27px;
+}
+</style>
