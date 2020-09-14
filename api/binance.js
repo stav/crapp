@@ -27,14 +27,15 @@ export default async function (req, res) {
 function postProcess (data) {
   // If we are processing a balances request then just pull out the balances
   if ('balances' in data) {
-    return { balances:
-      (data?.balances?.balances || []) // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html
-        .map((balance) => ({
-          asset: balance.asset,
-          free: parseFloat(balance.free),
-          locked: parseFloat(balance.locked),
-        }))
-        .filter((balance) => balance.free || balance.locked)
+    return {
+      balances:
+        (data?.balances?.balances || []) // Optional Chaining https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html
+          .map(balance => ({
+            asset: balance.asset,
+            free: parseFloat(balance.free),
+            locked: parseFloat(balance.locked),
+          }))
+          .filter(balance => balance.free || balance.locked)
     }
   }
   // Otherwise just return the data untouched

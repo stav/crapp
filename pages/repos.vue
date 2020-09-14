@@ -18,11 +18,14 @@
         </tr>
         <tr class="accent">
           <td v-for="header of headers" :key="header.value">
-            <v-btn small class="accent"
+            <v-btn
               v-if="header.value === 'name'"
               @click="fetchPrices"
               title="Press to fetch latest prices"
-            > Price (each) </v-btn>
+              small class="accent"
+            >
+              Price (each)
+            </v-btn>
             <span
               v-if="header.coin"
               v-text="`$${formatAmount(coinPrice(header.value))}`"
@@ -130,15 +133,15 @@ export default {
     loadCoinbaseAccounts (accounts) {
       // TODO: Maybe insertOrUpdate since we may have new coins
       // TODO: Error handling
-      const accounts_map = {}
+      const accountsMap = {}
       for (const account of accounts) {
-        accounts_map[account.currency] = account
+        accountsMap[account.currency] = account
       }
       const repos = this.Repositorys.query().with('coins')
       const coinbase = repos.where('name', 'Coinbase').first()
 
       for (const coin of coinbase?.coins || []) {
-        const account = accounts_map[coin.symbol]
+        const account = accountsMap[coin.symbol]
         Coin.update({
           where: coin.id,
           data: { quantity: account ? parseFloat(account.balance.amount) : 0 }
@@ -148,22 +151,22 @@ export default {
     async getBinanceAccountsData () {
       this.loading = 'green'
       const response = await fetch('/api/binance/balances')
-      let { balances } = response.status === 200 ? await response.json() : { status: response.status }
+      const { balances } = response.status === 200 ? await response.json() : { status: response.status }
       this.snackbarText = `${balances.length} balances retrieved and loading into Binance`
       this.snackbarModel = true
       this.loadBinanceBalances(balances)
       this.loading = false
     },
     loadBinanceBalances (balances) {
-      const balances_map = {}
+      const balancesMap = {}
       for (const balance of balances) {
-        balances_map[balance.asset] = balance
+        balancesMap[balance.asset] = balance
       }
       const repos = this.Repositorys.query().with('coins')
       const binance = repos.where('name', 'Binance').first()
 
       for (const coin of binance?.coins || []) {
-        const balance = balances_map[coin.symbol]
+        const balance = balancesMap[coin.symbol]
         Coin.update({
           where: coin.id,
           data: { quantity: balance ? balance.free + balance.locked : 0 }
@@ -178,7 +181,7 @@ export default {
     },
     coinSum (symbol) {
       const coins = this.Coins.query().where('symbol',
-        (value) => value === symbol
+        value => value === symbol
       ).get()
       return coins.reduce(
         (total, coin) => total + coin.quantity,
@@ -225,4 +228,3 @@ export default {
 
 }
 </script>
-

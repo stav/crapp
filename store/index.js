@@ -10,7 +10,7 @@ export const state = () => ({
 })
 
 export const getters = {
-  coinPriceUSD: (state) => (symbol) => state.symbolMapPrice.usd[symbol],
+  coinPriceUSD: state => symbol => state.symbolMapPrice.usd[symbol],
 }
 
 export const mutations = {

@@ -1,5 +1,4 @@
 import axios from 'axios'
-import url from 'url'
 
 /*
 ** Coin Market Cap API Server Middleware
@@ -30,10 +29,8 @@ function postProcess (data) {
 /*
 ** API request helper to configure requests based on the URL
 */
-function configRequests (request_url) {
-  const _url = new URL('http://example.com' + request_url)
-  // const _url =
-  url.parse('http://example.com' + request_url)
+function configRequests (url) {
+  const _url = new URL('http://example.com' + url)
   const requests = []
 
   // Configure the requests
@@ -48,8 +45,8 @@ function configRequests (request_url) {
       })
       break
 
-      default:
-        console.error(request.url)
+    default:
+      console.error(url)
   }
   return requests
 }
@@ -67,19 +64,19 @@ async function resolveRequests (requests) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        data.error.push(error.response.status);
-        data.error.push(error.response.data);
-        data.error.push(error.response.headers);
-        data.error.push(error);
+        data.error.push(error.response.status)
+        data.error.push(error.response.data)
+        data.error.push(error.response.headers)
+        data.error.push(error)
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        data.error.push(error.request);
+        data.error.push(error.request)
       } else {
         // Something happened in setting up the request that triggered an Error
-        data.error.push(error.response.message);
-        data.error.push(error);
+        data.error.push(error.response.message)
+        data.error.push(error)
       }
     }
   }
