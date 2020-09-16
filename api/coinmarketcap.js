@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 /*
-** Coin Market Cap API Server Middleware
+** CoinMarketCap API Server Middleware
 **
 ** https://coinmarketcap.com/api/documentation/v1/
 */
@@ -16,6 +16,7 @@ export default async function (req, res) {
   data = postProcess(data)
 
   // Send the response to the client
+  res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(data))
 }
 
@@ -55,33 +56,22 @@ function configRequests (url) {
 ** API request helper to make the configured requests
 */
 async function resolveRequests (requests) {
-  const data = { error: [] }
+  const data = {}
   for (const request of requests) {
     try {
       const response = await axios(request.config)
       data[request.key] = response.data
     } catch (error) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        data.error.push(error.response.status)
-        data.error.push(error.response.data)
-        data.error.push(error.response.headers)
-        data.error.push(error)
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        data.error.push(error.request)
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        data.error.push(error.response.message)
-        data.error.push(error)
-      }
+      data.error = {}
+      // data.error.stack = error.stack
+      data.error.config = error.config
+      data.error.datetime = error.response?.data.status.timestamp
+      data.error.headers = error.response?.headers
+      data.error.message = error.message
+      data.error.status = error.response?.status
+      data.error.statusText = error.response?.statusText
+      data.error.text = error.response?.data.status.error_message
     }
-  }
-  if (data.error.length === 0) {
-    delete data.error
   }
   return data
 }

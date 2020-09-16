@@ -16,7 +16,7 @@
           exact
         >
           <v-list-item-action>
-            <v-icon 
+            <v-icon
               v-if="item.icon"
               v-text="item.icon"
             />

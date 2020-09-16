@@ -64,6 +64,8 @@ import Coin from '~/models/Coin'
 import Repository from '~/models/Repository'
 import repositorys from '~/data/repositorys'
 
+const coinMarketCapUnlisted = ['CGLD']
+
 export default {
 
   fetchOnServer: true,
@@ -113,6 +115,10 @@ export default {
       const sortedUniqueCoins = Array.from(uniqueCoins).sort()
       return sortedUniqueCoins
     },
+    priceFetcherUrl () {
+      const coinsList = this.coins.filter(coin => !coinMarketCapUnlisted.includes(coin)).join(',')
+      return '/api/coinmarketcap/quotes?symbol=' + coinsList
+    },
   },
 
   mounted () {
@@ -133,19 +139,19 @@ export default {
       this.loading = false
     },
     loadCoinbaseProAccounts (accounts) {
-      const accountsMap = {}
-      for (const account of accounts) {
-        accountsMap[account.currency] = account
-      }
       const repos = this.Repositorys.query().with('coins')
       const coinbasepro = repos.where('name', 'Coinbase Pro').first()
 
-      // TODO: This should loop thru accounts and do insertOrUpdate
-      for (const coin of coinbasepro?.coins || []) {
-        const account = accountsMap[coin.symbol]
-        Coin.update({
-          where: coin.id,
-          data: { quantity: account ? parseFloat(account.balance) : 0 }
+      for (const account of accounts) {
+        const coin = coinbasepro.coins.find(coin => coin.symbol === account.currency)
+        Coin.insertOrUpdate({
+          data: {
+            id: coin?.id,
+            name: coin?.name || account.currency,
+            symbol: account.currency,
+            quantity: account ? parseFloat(account.balance) : 0,
+            repoId: coinbasepro.id,
+          }
         })
       }
     },
@@ -160,20 +166,20 @@ export default {
       this.loading = false
     },
     loadCoinbaseAccounts (accounts) {
-      // TODO: Maybe insertOrUpdate since we may have new coins
       // TODO: Error handling
-      const accountsMap = {}
-      for (const account of accounts) {
-        accountsMap[account.currency] = account
-      }
       const repos = this.Repositorys.query().with('coins')
       const coinbase = repos.where('name', 'Coinbase').first()
 
-      for (const coin of coinbase?.coins || []) {
-        const account = accountsMap[coin.symbol]
-        Coin.update({
-          where: coin.id,
-          data: { quantity: account ? parseFloat(account.balance.amount) : 0 }
+      for (const account of accounts) {
+        const coin = coinbase.coins.find(coin => coin.symbol === account.currency)
+        Coin.insertOrUpdate({
+          data: {
+            id: coin?.id,
+            name: coin?.name || account.currency,
+            symbol: account.currency,
+            quantity: account ? parseFloat(account.balance.amount) : 0,
+            repoId: coinbase.id,
+          }
         })
       }
     },
@@ -228,20 +234,27 @@ export default {
     async fetchPrices () {
       // Fetch & Store coin prices from Coin Market Cap
       this.loading = 'white'
-      const response = await fetch('/api/coinmarketcap/quotes?symbol=' + this.coins.join(','))
-      const result = (response.status === 200 ? await response.json() : { status: response.status })
-      const { quotes: { data } } = result
-      for (const coin of Object.values(data)) {
-        this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
+      const response = await fetch(this.priceFetcherUrl)
+      const result = await response.json()
+      if (result.error) {
+        const e = result.error
+        this.snackbarText = `Error: ${e.message}, ${e.text}`
+      } else {
+        const { quotes: { data } } = result
+        for (const coin of Object.values(data)) {
+          this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
+        }
+        const notThese = coinMarketCapUnlisted.filter(coin => this.coins.includes(coin))
+        const exceptions = notThese.length ? `(except ${notThese})` : ''
+        this.snackbarText = `Loaded prices ${exceptions}`
       }
-      this.snackbarText = 'Loaded prices'
       this.snackbarModel = true
       this.loading = false
     },
     portfolioTotalUSD () {
       return (this.coins.reduce(
         (total, symbol) => {
-          const value = this.coinTotalUSD(symbol)
+          const value = this.coinTotalUSD(symbol) || 0
           return total + value
         },
         0

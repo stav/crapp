@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import axios from 'axios'
 
 /*
-** Coinbase API Middleware
+** Coinbase Pro API Middleware
 **
 ** See nuxt.config.js for privateRuntimeConfig
 ** https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
@@ -66,7 +66,6 @@ export default async function (req, res) {
       console.log(error.request)
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.log(error.response.message)
       console.log(error)
     }
   }
