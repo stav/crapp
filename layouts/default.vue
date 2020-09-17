@@ -1,11 +1,10 @@
 <template>
   <v-app dark>
     <v-navigation-drawer
-      v-model="drawer"
+      v-model="navDrawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
-      fixed
-      app
+      fixed app
     >
       <v-list>
         <v-list-item
@@ -32,80 +31,72 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+
+    <v-app-bar fixed app :clipped-left="clipped">
+      <v-app-bar-nav-icon
+        @click.stop="navDrawer = !navDrawer"
+        title="Toggle navigation drawer"
+      />
       <v-btn
         icon
         @click.stop="miniVariant = !miniVariant"
+        title="Toggle navigation size"
       >
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-btn
         icon
         @click.stop="clipped = !clipped"
+        title="Toggle navigation clipping"
       >
         <v-icon>mdi-application</v-icon>
       </v-btn>
       <v-btn
         icon
-        @click.stop="fixed = !fixed"
+        @click.stop="absolute = !absolute"
+        title="Toggle footer absolute"
       >
         <v-icon>mdi-minus</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
+      navDrawer: {{ navDrawer }}
+      <v-spacer />
+      flyoutDrawer: {{ flyoutDrawer }}
+      <v-spacer />
+      <v-btn icon @click.stop="flyoutDrawer = !flyoutDrawer">
         <v-icon>mdi-bitcoin</v-icon>
       </v-btn>
     </v-app-bar>
+
     <v-main>
       <v-container fluid>
         <nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+
+    <flyout />
+
+    <c-footer :absolute="absolute" />
   </v-app>
 </template>
 
 <script>
 import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
 import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
+import flyoutDrawer from '@/components/Flyout.vue'
+import cFooter from '@/components/Footer.vue'
 
 export default {
+  components: {
+    flyout: flyoutDrawer,
+    'c-footer': cFooter,
+  },
   data () {
     return {
       clipped: true,
-      drawer: false,
-      fixed: false,
+      navDrawer: false,
+      absolute: false,
       items: [
         {
           title: 'Welcome',
@@ -129,11 +120,19 @@ export default {
         },
       ],
       miniVariant: false,
-      right: true,
-      rightDrawer: false,
       title: 'CrApp'
     }
-  }
+  },
+  computed: {
+    flyoutDrawer: {
+      get () {
+        return this.$store.state.flyoutDrawer
+      },
+      set (value) {
+        this.$store.commit('setFlyoutDrawer', value)
+      }
+    },
+  },
 }
 </script>
 

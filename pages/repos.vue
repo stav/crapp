@@ -23,12 +23,14 @@
               v-if="header.value === 'name'"
               @click="fetchPrices"
               title="Press to fetch latest prices"
-              small class="accent"
+              small class="accent px-1"
             >
               Price (each)
             </v-btn>
-            <span
+            <v-btn
               v-if="header.coin"
+              @click="openDrawer"
+              small class="accent px-1"
               v-text="`$${formatAmount(coinPrice(header.value))}`"
               :title="coinPrice(header.value)"
             />
@@ -102,7 +104,7 @@ export default {
     headers () {
       const _ = [
         { text: '', value: 'actions', sortable: false },
-        { text: '', value: 'name' },
+        { text: '', value: 'name', sortable: false },
       ]
       for (const coin of this.coins) {
         _.push({ text: coin, value: coin, coin: true })
@@ -259,6 +261,9 @@ export default {
         },
         0
       ))
+    },
+    openDrawer () {
+      this.$store.commit('setFlyoutDrawer', true)
     },
   },
 
