@@ -6,6 +6,7 @@ export const plugins = [
 ]
 
 export const state = () => ({
+  coinMarketCapUnlisted: ['CGLD'],
   symbolMapPrice: { usd: {} },
   flyoutDrawer: false,
   flyoutCoin: null,
@@ -13,6 +14,7 @@ export const state = () => ({
 
 export const getters = {
   coinPriceUSD: state => symbol => state.symbolMapPrice.usd[symbol],
+  coinsUnListed: state => () => state.coinMarketCapUnlisted,
 }
 
 export const mutations = {

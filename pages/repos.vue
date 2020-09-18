@@ -66,8 +66,6 @@ import Coin from '~/models/Coin'
 import Repository from '~/models/Repository'
 import repositorys from '~/data/repositorys'
 
-const coinMarketCapUnlisted = ['CGLD']
-
 export default {
 
   fetchOnServer: true,
@@ -101,6 +99,19 @@ export default {
         return Object.assign(repo, coins)
       })
     },
+    coins () {
+      const coins = this.Coins.all()
+      const uniqueCoins = new Set(coins.map(coin => coin.symbol))
+      const sortedUniqueCoins = Array.from(uniqueCoins).sort()
+      return sortedUniqueCoins
+    },
+    coinsListed () {
+      const coinsUnListed = this.$store.getters.coinsUnListed()
+      return this.coins.filter(coin => !coinsUnListed.includes(coin))
+    },
+    priceFetcherUrl () {
+      return '/api/coinmarketcap/quotes?symbol=' + this.coinsListed.join(',')
+    },
     headers () {
       const _ = [
         { text: '', value: 'actions', sortable: false },
@@ -110,16 +121,6 @@ export default {
         _.push({ text: coin, value: coin, coin: true })
       }
       return _
-    },
-    coins () {
-      const coins = this.Coins.all()
-      const uniqueCoins = new Set(coins.map(coin => coin.symbol))
-      const sortedUniqueCoins = Array.from(uniqueCoins).sort()
-      return sortedUniqueCoins
-    },
-    priceFetcherUrl () {
-      const coinsList = this.coins.filter(coin => !coinMarketCapUnlisted.includes(coin)).join(',')
-      return '/api/coinmarketcap/quotes?symbol=' + coinsList
     },
   },
 
@@ -246,8 +247,9 @@ export default {
         for (const coin of Object.values(data)) {
           this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
         }
-        const notThese = coinMarketCapUnlisted.filter(coin => this.coins.includes(coin))
-        const exceptions = notThese.length ? `(except ${notThese})` : ''
+        const unlisted = this.$store.getters.coinsUnListed()
+        const coinsUnListed = this.coins.filter(coin => unlisted.includes(coin))
+        const exceptions = coinsUnListed.length ? `(except ${coinsUnListed})` : ''
         this.snackbarText = `Loaded prices ${exceptions}`
       }
       this.snackbarModel = true
