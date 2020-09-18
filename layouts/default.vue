@@ -88,10 +88,12 @@ import flyoutDrawer from '@/components/Flyout.vue'
 import cFooter from '@/components/Footer.vue'
 
 export default {
+
   components: {
     flyout: flyoutDrawer,
     'c-footer': cFooter,
   },
+
   data () {
     return {
       clipped: true,
@@ -123,13 +125,14 @@ export default {
       title: 'CrApp'
     }
   },
+
   computed: {
     flyoutDrawer: {
       get () {
         return this.$store.state.flyoutDrawer
       },
       set (value) {
-        this.$store.commit('setFlyoutDrawer', value)
+        this.$store.commit('setFlyoutDrawer', { fly: value })
       }
     },
   },

@@ -8,6 +8,7 @@ export const plugins = [
 export const state = () => ({
   symbolMapPrice: { usd: {} },
   flyoutDrawer: false,
+  flyoutCoin: null,
 })
 
 export const getters = {
@@ -18,7 +19,10 @@ export const mutations = {
   setPriceUSD (state, { symbol, price }) {
     state.symbolMapPrice.usd[symbol] = parseFloat(price)
   },
-  setFlyoutDrawer (state, value) {
-    state.flyoutDrawer = value
+  setFlyoutDrawer (state, { fly, symbol }) {
+    state.flyoutDrawer = fly
+    if (symbol) {
+      state.flyoutCoin = symbol
+    }
   },
 }

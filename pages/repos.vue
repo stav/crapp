@@ -29,7 +29,7 @@
             </v-btn>
             <v-btn
               v-if="header.coin"
-              @click="openDrawer"
+              @click="() => flyCoin(header)"
               small class="accent px-1"
               v-text="`$${formatAmount(coinPrice(header.value))}`"
               :title="coinPrice(header.value)"
@@ -262,8 +262,8 @@ export default {
         0
       ))
     },
-    openDrawer () {
-      this.$store.commit('setFlyoutDrawer', true)
+    flyCoin (header) {
+      this.$store.commit('setFlyoutDrawer', { fly: true, symbol: header.value })
     },
   },
 

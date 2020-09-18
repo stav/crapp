@@ -13,23 +13,35 @@
         </v-list-item-action>
         <v-list-item-title>Switch drawer (click me)</v-list-item-title>
       </v-list-item>
+      <v-list-item>
+        {{ coin }}
+        {{ price }}
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
 export default {
+
   data: () => ({
     right: true,
   }),
+
   computed: {
     flyoutDrawer: {
       get () {
         return this.$store.state.flyoutDrawer
       },
       set (value) {
-        this.$store.commit('setFlyoutDrawer', value)
+        this.$store.commit('setFlyoutDrawer', { fly: value })
       }
+    },
+    coin () {
+      return this.$store.state.flyoutCoin
+    },
+    price () {
+      return this.$store.getters.coinPriceUSD(this.coin)
     },
   },
 }
