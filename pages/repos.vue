@@ -38,7 +38,9 @@
         </tr>
         <tr class="secondary">
           <td v-for="header of headers" :key="header.value">
-            <span v-if="header.value === 'name'" v-text="formatCurrency(portfolioTotalUSD())" />
+            <div v-if="header.value === 'name'" class="text-h6 text-no-wrap">
+              <code> {{ formatCurrency(portfolioTotalUSD()) }} </code>
+            </div>
             <span v-if="header.coin" v-text="formatCurrency(coinTotalUSD(header.value))" />
           </td>
         </tr>
@@ -257,11 +259,8 @@ export default {
     },
     portfolioTotalUSD () {
       return (this.coins.reduce(
-        (total, symbol) => {
-          const value = this.coinTotalUSD(symbol) || 0
-          return total + value
-        },
-        0
+        (total, symbol) => total + (this.coinTotalUSD(symbol) || 0),
+        0 // starting value
       ))
     },
     flyCoin (header) {
