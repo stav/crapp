@@ -1,5 +1,6 @@
 import VuexORM from '@vuex-orm/core'
 import database from '@/database'
+import Coin from '~/models/Coin'
 
 export const plugins = [
   VuexORM.install(database)
@@ -15,6 +16,16 @@ export const state = () => ({
 export const getters = {
   coinPriceUSD: state => symbol => state.symbolMapPrice.usd[symbol],
   coinsUnListed: state => () => state.coinMarketCapUnlisted,
+  coinSum: state => symbol => {
+    console.log('store getters', Coin)
+    const coins = Coin.query().where('symbol',
+      value => value === symbol
+    ).get()
+    return coins.reduce(
+      (total, coin) => total + coin.quantity,
+      0
+    )
+  },
 }
 
 export const mutations = {

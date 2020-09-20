@@ -75,7 +75,7 @@ export default {
     },
 
     coinSumAmount () {
-      return this.coinSum(this.coin)
+      return this.$store.getters.coinSum(this.coin)
     },
     coinSumFormat () {
       return this.formatAmount(this.coinSumAmount)
@@ -97,15 +97,6 @@ export default {
   },
 
   methods: {
-    coinSum (symbol) {
-      const coins = this.Coins.query().where('symbol',
-        value => value === symbol
-      ).get()
-      return coins.reduce(
-        (total, coin) => total + coin.quantity,
-        0
-      )
-    },
     formatAmount (value) {
       return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
     },

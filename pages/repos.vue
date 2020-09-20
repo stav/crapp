@@ -220,13 +220,7 @@ export default {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
     },
     coinSum (symbol) {
-      const coins = this.Coins.query().where('symbol',
-        value => value === symbol
-      ).get()
-      return coins.reduce(
-        (total, coin) => total + coin.quantity,
-        0
-      )
+      return this.$store.getters.coinSum(symbol)
     },
     coinPrice (symbol) {
       return this.$store.getters.coinPriceUSD(symbol)
