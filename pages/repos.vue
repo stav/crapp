@@ -5,7 +5,12 @@
       Repositories
     </v-app-bar>
 
-    <v-data-table :headers="headers" :items="repositorys" hide-default-footer>
+    <v-data-table
+      :headers="headers"
+      :items="repositorys"
+      hide-default-footer
+      @click:row="flyRepository"
+    >
       <template v-slot:body.append v-if="repositorys.length">
         <tr class="primary">
           <td v-for="header of headers" :key="header.value">
@@ -258,7 +263,11 @@ export default {
       ))
     },
     flyCoin (header) {
-      this.$store.commit('setFlyoutDrawer', { fly: true, symbol: header.value })
+      this.$store.commit('setFlyoutCoinDrawer', { fly: true, symbol: header.value })
+    },
+    flyRepository (repo, data) {
+      console.log('roe', repo, data)
+      this.$store.commit('setFlyoutRepoDrawer', { fly: true, repo })
     },
   },
 

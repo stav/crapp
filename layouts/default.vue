@@ -64,7 +64,11 @@
       <v-spacer />
       flyoutDrawer: {{ flyoutDrawer }}
       <v-spacer />
-      <v-btn icon @click.stop="flyoutDrawer = !flyoutDrawer">
+      flyoutCoinDrawer: {{ flyoutCoinDrawer }}
+      <v-spacer />
+      flyoutRepoDrawer: {{ flyoutRepoDrawer }}
+      <v-spacer />
+      <v-btn icon @click.stop="flyDrawerOut">
         <v-icon>mdi-bitcoin</v-icon>
       </v-btn>
     </v-app-bar>
@@ -75,7 +79,8 @@
       </v-container>
     </v-main>
 
-    <flyout />
+    <coin-flyout v-show="flyoutCoinDrawer" />
+    <repo-flyout v-show="flyoutRepoDrawer" />
 
     <c-footer :absolute="absolute" />
   </v-app>
@@ -84,13 +89,15 @@
 <script>
 import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
 import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
-import flyoutDrawer from '@/components/Flyout.vue'
+import flyoutCoin from '@/components/FlyoutCoin.vue'
+import flyoutRepo from '@/components/FlyoutRepo.vue'
 import cFooter from '@/components/Footer.vue'
 
 export default {
 
   components: {
-    flyout: flyoutDrawer,
+    'coin-flyout': flyoutCoin,
+    'repo-flyout': flyoutRepo,
     'c-footer': cFooter,
   },
 
@@ -127,14 +134,23 @@ export default {
   },
 
   computed: {
-    flyoutDrawer: {
-      get () {
-        return this.$store.state.flyoutDrawer
-      },
-      set (value) {
-        this.$store.commit('setFlyoutDrawer', { fly: value })
-      }
+    flyoutDrawer () {
+      return this.$store.state.flyoutDrawer
     },
+    flyoutCoinDrawer () {
+      return this.$store.state.flyoutCoinDrawer
+    },
+    flyoutRepoDrawer () {
+      return this.$store.state.flyoutRepoDrawer
+    },
+  },
+
+  methods: {
+    flyDrawerOut () {
+      if (this.flyoutDrawer) {
+        this.$store.commit(this.flyoutDrawer, {fly: true})
+      }
+    }
   },
 }
 </script>
