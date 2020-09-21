@@ -15,21 +15,9 @@
       </v-list-item>
       <v-list-item>
         <v-container fluid class="pa-0">
-          <v-expansion-panels>
-            <v-expansion-panel>
-              <v-expansion-panel-header v-text="repository.name" class="text-h6" />
-              <v-expansion-panel-content>
-                <v-list>
-                  <v-list-item v-for="coin of coins" :key="coin.id" class="accent">
-                    <v-list-item-content>
-                      <v-list-item-subtitle v-text="coin.name" class="text--disabled" />
-                      <v-list-item-title v-text="coin.symbol" class="text-h4" />
-                      <v-list-item-title v-text="coin.quantity" :title="`${repository.name} has ${coin.quantity} ${coin.symbol}`" class="text--secondary text-h5" />
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
+          <v-expansion-panels multiple>
+            <flyout-panel-main :coins="coins" :name="repository.name" />
+            <flyout-panel-store :coins="coins" :name="repository.name" />
           </v-expansion-panels>
         </v-container>
       </v-list-item>
@@ -38,7 +26,15 @@
 </template>
 
 <script>
+import flyoutPanelMain from './FlyoutPanelMain.vue'
+import flyoutPanelStore from './FlyoutPanelStore.vue'
+
 export default {
+
+  components: {
+    'flyout-panel-main': flyoutPanelMain,
+    'flyout-panel-store': flyoutPanelStore,
+  },
 
   data: () => ({
     right: true,
