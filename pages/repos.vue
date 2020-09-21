@@ -195,28 +195,14 @@ export default {
     },
     async getBinanceAccountsData () {
       this.loading = 'green'
-      const response = await fetch('/api/binance/balances')
-      const { balances } = response.status === 200 ? await response.json() : { status: response.status }
-      this.snackbarText = `${balances.length} balances retrieved and loading into Binance`
-      this.snackbarModel = true
-      this.loadBinanceBalances(balances)
-      this.loading = false
+      this.$store.dispatch( 'loadBinanceBalances', this.done )
     },
-    loadBinanceBalances (balances) {
-      const balancesMap = {}
-      for (const balance of balances) {
-        balancesMap[balance.asset] = balance
+    done (message) {
+      if (message) {
+        this.snackbarText = message
+        this.snackbarModel = true
       }
-      const repos = this.Repositorys.query().with('coins')
-      const binance = repos.where('name', 'Binance').first()
-
-      for (const coin of binance?.coins || []) {
-        const balance = balancesMap[coin.symbol]
-        Coin.update({
-          where: coin.id,
-          data: { quantity: balance ? balance.free + balance.locked : 0 }
-        })
-      }
+      this.loading = false;
     },
     formatAmount (value) {
       return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
