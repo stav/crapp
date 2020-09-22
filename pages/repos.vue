@@ -193,16 +193,16 @@ export default {
         })
       }
     },
-    async getBinanceAccountsData () {
+    getBinanceAccountsData () {
       this.loading = 'green'
-      this.$store.dispatch( 'loadBinanceBalances', this.done )
+      this.$store.dispatch('loadBinanceBalances', this.done)
     },
     done (message) {
       if (message) {
         this.snackbarText = message
         this.snackbarModel = true
       }
-      this.loading = false;
+      this.loading = false
     },
     formatAmount (value) {
       return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
@@ -234,6 +234,9 @@ export default {
         for (const coin of Object.values(data)) {
           this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
         }
+        if (this.coins.includes('USD')) {
+          this.$store.commit('setPriceUSD', { symbol: 'USD', price: 1 })
+        }
         const unlisted = this.$store.getters.coinsUnListed()
         const coinsUnListed = this.coins.filter(coin => unlisted.includes(coin))
         const exceptions = coinsUnListed.length ? `(except ${coinsUnListed})` : ''
@@ -251,8 +254,7 @@ export default {
     flyCoin (header) {
       this.$store.commit('setFlyoutCoinDrawer', { fly: true, symbol: header.value })
     },
-    flyRepository (repo, data) {
-      console.log('roe', repo, data)
+    flyRepository (repo) {
       this.$store.commit('setFlyoutRepoDrawer', { fly: true, repo })
     },
   },

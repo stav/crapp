@@ -148,7 +148,7 @@ export default {
   methods: {
     flyDrawerOut () {
       if (this.flyoutDrawer) {
-        this.$store.commit(this.flyoutDrawer, {fly: true})
+        this.$store.commit(this.flyoutDrawer, { fly: true })
       }
     }
   },

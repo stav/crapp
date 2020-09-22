@@ -8,7 +8,7 @@ export const plugins = [
 ]
 
 export const state = () => ({
-  coinMarketCapUnlisted: ['CGLD'],
+  coinMarketCapUnlisted: ['CGLD', 'USD'],
   symbolMapPrice: { usd: {} },
   flyoutDrawer: null,
   flyoutCoinDrawer: false,
@@ -38,28 +38,31 @@ export const actions = {
   async loadBinanceBalances ({ commit }, done) {
     const response = await fetch('/api/binance/balances')
     const { balances } = response.status === 200 ? await response.json() : { status: response.status }
-    commit('loadBinanceBalances', balances );
+    commit('loadBinanceBalances', balances)
     const message = `${balances.length} balances retrieved and loading into Binance`
-    done(message)
+    if (done) {
+      done(message)
+    }
   },
 }
 
 export const mutations = {
   loadBinanceBalances (state, balances) {
-    const balancesMap = {}
+    const repos = Repository.query().with('coins')
+    const binance = repos.where('name', 'Binance').first()
+
     for (const balance of balances) {
-        balancesMap[balance.asset] = balance
-      }
-      const repos = Repository.query().with('coins')
-      const binance = repos.where('name', 'Binance').first()
-      
-      for (const coin of binance?.coins || []) {
-          const balance = balancesMap[coin.symbol]
-          Coin.update({
-              where: coin.id,
-              data: { quantity: balance ? balance.free + balance.locked : 0 }
-            })
-          }
+      const coin = binance.coins.find(coin => coin.symbol === balance.asset)
+      Coin.insertOrUpdate({
+        data: {
+          id: coin?.id,
+          name: coin?.name || balance.asset,
+          symbol: balance.asset,
+          quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
+          repoId: binance.id,
+        }
+      })
+    }
   },
   setPriceUSD (state, { symbol, price }) {
     state.symbolMapPrice.usd[symbol] = parseFloat(price)
