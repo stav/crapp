@@ -35,10 +35,6 @@
 export default {
 
   computed: {
-    Coins () {
-      return this.$store.$db().model('coins')
-    },
-
     coin () {
       return this.$store.state.flyoutCoin
     },

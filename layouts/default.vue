@@ -37,8 +37,8 @@
       
       <v-spacer /> navDrawer: {{ navDrawer }}
       <v-spacer /> flyoutDrawer: {{ flyoutDrawer }}
-      <v-spacer /> flyoutCoinDrawer: {{ flyoutCoinDrawer }}
-      <v-spacer /> flyoutRepoDrawer: {{ flyoutRepoDrawer }}
+      <v-spacer /> flyoutCoin: {{ flyoutCoin }}
+      <v-spacer /> flyoutRepoId: {{ flyoutRepoId }}
       <v-spacer />
       
       <v-btn icon @click.stop="flyDrawerOut">
@@ -104,11 +104,11 @@ export default {
     flyoutDrawer () {
       return this.$store.state.flyoutDrawer
     },
-    flyoutCoinDrawer () {
-      return this.$store.state.flyoutCoinDrawer
+    flyoutCoin () {
+      return this.$store.state.flyoutCoin
     },
-    flyoutRepoDrawer () {
-      return this.$store.state.flyoutRepoDrawer
+    flyoutRepoId () {
+      return this.$store.state.flyoutRepoId
     },
   },
 

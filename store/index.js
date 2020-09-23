@@ -11,10 +11,8 @@ export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'USD'],
   symbolMapPrice: { usd: {} },
   flyoutDrawer: null,
-  flyoutCoinDrawer: false,
-  flyoutRepoDrawer: false,
   flyoutCoin: null,
-  flyoutRepo: null,
+  flyoutRepoId: null,
 })
 
 export const getters = {
@@ -79,8 +77,6 @@ export const mutations = {
     }
   },
   setFlyoutRepo (state, repo) {
-    if (repo) {
-      state.flyoutRepo = repo
-    }
+    state.flyoutRepoId = repo.id
   },
 }
