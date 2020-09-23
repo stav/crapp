@@ -252,7 +252,7 @@ export default {
       ))
     },
     flyCoin (header) {
-      this.$store.commit('setFlyoutCoinDrawer', { symbol: header.value })
+      this.$store.commit('setFlyoutCoin', { symbol: header.value })
     },
     flyRepository (repo) {
       this.$store.commit('setFlyoutRepo', repo)

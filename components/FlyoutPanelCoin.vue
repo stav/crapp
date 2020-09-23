@@ -38,10 +38,6 @@ export default {
     coin () {
       return this.$store.state.flyoutCoin
     },
-    price () {
-      return this.$store.getters.coinPriceUSD(this.coin)
-    },
-
     coinSumAmount () {
       return this.$store.getters.coinSum(this.coin)
     },

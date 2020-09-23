@@ -1,7 +1,8 @@
 import VuexORM from '@vuex-orm/core'
 import database from '@/database'
-import Coin from '~/models/Coin'
 import Repository from '~/models/Repository'
+import Price from '~/models/Price'
+import Coin from '~/models/Coin'
 
 export const plugins = [
   VuexORM.install(database)
@@ -9,15 +10,16 @@ export const plugins = [
 
 export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'USD'],
-  symbolMapPrice: { usd: {} },
   flyoutDrawer: null,
   flyoutCoin: null,
   flyoutRepoId: null,
 })
 
 export const getters = {
-  coinPriceUSD: state => symbol => state.symbolMapPrice.usd[symbol],
-  coinsUnListed: state => () => state.coinMarketCapUnlisted,
+  coinPriceUSD: () => (symbol) => {
+    const price = Price.query().where('symbol', symbol).first()
+    return price?.price
+  },
   coinSum: () => (symbol) => {
     const coins = Coin.query().where('symbol',
       value => value === symbol
@@ -27,6 +29,7 @@ export const getters = {
       0
     )
   },
+  coinsUnListed: state => () => state.coinMarketCapUnlisted,
 }
 
 export const actions = {
@@ -51,6 +54,7 @@ export const mutations = {
 
     for (const balance of balances) {
       const coin = binance.coins.find(coin => coin.symbol === balance.asset)
+      const price = Price.query().where('symbol', coin?.symbol).first()
       Coin.insertOrUpdate({
         data: {
           id: coin?.id,
@@ -58,12 +62,19 @@ export const mutations = {
           symbol: balance.asset,
           quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
           repoId: binance.id,
+          priceId: price?.id,
         }
       })
     }
   },
   setPriceUSD (state, { symbol, price }) {
-    state.symbolMapPrice.usd[symbol] = parseFloat(price)
+    Price.insertOrUpdate({
+      data: {
+        id: Price.query().where('symbol', symbol).first()?.id,
+        symbol,
+        price,
+      }
+    })
   },
   setFlyoutDrawer (state, fly) {
     state.flyoutDrawer = fly
@@ -71,10 +82,8 @@ export const mutations = {
   toggleFlyout (state) {
     state.flyoutDrawer = !state.flyoutDrawer
   },
-  setFlyoutCoinDrawer (state, { symbol }) {
-    if (symbol) {
-      state.flyoutCoin = symbol
-    }
+  setFlyoutCoin (state, { symbol }) {
+    state.flyoutCoin = symbol
   },
   setFlyoutRepo (state, repo) {
     state.flyoutRepoId = repo.id
