@@ -67,23 +67,18 @@ export const mutations = {
   setPriceUSD (state, { symbol, price }) {
     state.symbolMapPrice.usd[symbol] = parseFloat(price)
   },
-  setFlyoutDrawer (state, drawer) {
-    state.flyoutDrawer = drawer
+  setFlyoutDrawer (state, fly) {
+    state.flyoutDrawer = fly
   },
-  setFlyoutCoinDrawer (state, { fly, symbol }) {
-    state.flyoutCoinDrawer = fly
-    if (fly) {
-      state.flyoutDrawer = 'setFlyoutCoinDrawer'
-    }
+  toggleFlyout (state) {
+    state.flyoutDrawer = !state.flyoutDrawer
+  },
+  setFlyoutCoinDrawer (state, { symbol }) {
     if (symbol) {
       state.flyoutCoin = symbol
     }
   },
-  setFlyoutRepoDrawer (state, { fly, repo }) {
-    state.flyoutRepoDrawer = fly
-    if (fly) {
-      state.flyoutDrawer = 'setFlyoutRepoDrawer'
-    }
+  setFlyoutRepo (state, repo) {
     if (repo) {
       state.flyoutRepo = repo
     }

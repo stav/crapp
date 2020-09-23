@@ -1,14 +1,9 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="text-h6">
-      {{ name }}
+      {{ repository.name }}
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <v-progress-linear
-        absolute top color="deep-purple accent-4"
-        :active="loading"
-        :indeterminate="true"
-      />
       <v-list>
         <v-list-item v-for="coin of coins" :key="coin.id" class="accent">
           <v-list-item-content>
@@ -25,25 +20,13 @@
 <script>
 export default {
 
-  props: {
-    coins: {
-      type: Array,
-      default: () => [],
-    },
-    name: {
-      type: String,
-      default: '[Repox]',
-    },
-  },
-
-  data: () => ({
-    loading: false,
-  }),
-
   computed: {
-  },
-
-  methods: {
+    repository () {
+      return this.$store.state.flyoutRepo || {}
+    },
+    coins () {
+      return this.$store.state.flyoutRepo?.coins || []
+    },
   },
 
 }
