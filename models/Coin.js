@@ -1,5 +1,4 @@
 import { Model } from '@vuex-orm/core'
-import Price from './Price'
 
 export default class Coin extends Model {
   static entity = 'coins'

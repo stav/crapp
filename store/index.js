@@ -4,6 +4,26 @@ import Repository from '~/models/Repository'
 import Price from '~/models/Price'
 import Coin from '~/models/Coin'
 
+function loadBinanceBalances (balances) {
+  const repos = Repository.query().with('coins')
+  const binance = repos.where('name', 'Binance').first()
+
+  for (const balance of balances) {
+    const coin = binance.coins.find(coin => coin.symbol === balance.asset)
+    const price = Price.query().where('symbol', coin?.symbol).first()
+    Coin.insertOrUpdate({
+      data: {
+        id: coin?.id,
+        name: coin?.name || balance.asset,
+        symbol: balance.asset,
+        quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
+        repoId: binance.id,
+        priceId: price?.id,
+      }
+    })
+  }
+}
+
 export const plugins = [
   VuexORM.install(database)
 ]
@@ -33,41 +53,16 @@ export const getters = {
 }
 
 export const actions = {
-  increment (context) {
-    context.commit('increment')
-  },
-  async loadBinanceBalances ({ commit }, done) {
+  async loadBinanceBalances (context, done) {
     const response = await fetch('/api/binance/balances')
     const { balances } = response.status === 200 ? await response.json() : { status: response.status }
-    commit('loadBinanceBalances', balances)
+    loadBinanceBalances(balances)
     const message = `${balances.length} balances retrieved and loading into Binance`
     if (done) {
       done(message)
     }
   },
-}
-
-export const mutations = {
-  loadBinanceBalances (state, balances) {
-    const repos = Repository.query().with('coins')
-    const binance = repos.where('name', 'Binance').first()
-
-    for (const balance of balances) {
-      const coin = binance.coins.find(coin => coin.symbol === balance.asset)
-      const price = Price.query().where('symbol', coin?.symbol).first()
-      Coin.insertOrUpdate({
-        data: {
-          id: coin?.id,
-          name: coin?.name || balance.asset,
-          symbol: balance.asset,
-          quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
-          repoId: binance.id,
-          priceId: price?.id,
-        }
-      })
-    }
-  },
-  setPriceUSD (state, { symbol, price }) {
+  setPriceUSD (context, { symbol, price }) {
     Price.insertOrUpdate({
       data: {
         id: Price.query().where('symbol', symbol).first()?.id,
@@ -76,6 +71,9 @@ export const mutations = {
       }
     })
   },
+}
+
+export const mutations = {
   setFlyoutDrawer (state, fly) {
     state.flyoutDrawer = fly
   },

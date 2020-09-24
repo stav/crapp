@@ -24,23 +24,23 @@
 
     <v-app-bar fixed app :clipped-left="true" :clipped-right="true">
       <v-app-bar-nav-icon title="Toggle navigation drawer" @click.stop="navDrawer=!navDrawer" />
-      
+
       <v-btn icon title="Toggle navigation size" @click.stop="miniVariant = !miniVariant">
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      
+
       <v-btn icon title="Toggle footer absolute" @click.stop="absolute = !absolute">
         <v-icon>mdi-minus</v-icon>
       </v-btn>
-      
+
       <v-toolbar-title v-text="title" />
-      
+
       <v-spacer /> navDrawer: {{ navDrawer }}
       <v-spacer /> flyoutDrawer: {{ flyoutDrawer }}
       <v-spacer /> flyoutCoin: {{ flyoutCoin }}
       <v-spacer /> flyoutRepoId: {{ flyoutRepoId }}
       <v-spacer />
-      
+
       <v-btn icon @click.stop="flyDrawerOut">
         <v-icon>mdi-bitcoin</v-icon>
       </v-btn>

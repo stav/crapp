@@ -232,10 +232,10 @@ export default {
       } else {
         const { quotes: { data } } = result
         for (const coin of Object.values(data)) {
-          this.$store.commit('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
+          this.$store.dispatch('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
         }
         if (this.coins.includes('USD')) {
-          this.$store.commit('setPriceUSD', { symbol: 'USD', price: 1 })
+          this.$store.dispatch('setPriceUSD', { symbol: 'USD', price: 1 })
         }
         const unlisted = this.$store.getters.coinsUnListed()
         const coinsUnListed = this.coins.filter(coin => unlisted.includes(coin))
