@@ -7,8 +7,8 @@
       <v-list>
         <v-list-item v-for="coin of repository.coins" :key="coin.id" class="accent">
           <v-list-item-content>
-            <v-list-item-subtitle v-text="coin.name" class="text--disabled" />
-            <v-list-item-title v-text="coin.symbol" class="text-h4" />
+            <v-list-item-subtitle v-text="coin.coin.name" class="text--disabled" />
+            <v-list-item-title v-text="coin.coin.symbol" class="text-h4" />
             <v-list-item-title v-text="coin.quantity" class="text--secondary text-h5" />
           </v-list-item-content>
         </v-list-item>
@@ -22,7 +22,7 @@ export default {
   computed: {
     repository () {
       const model = this.$store.$db().model('repositorys')
-      const repos = model.query().with('coins')
+      const repos = model.query().with('coins').with('coins.coin')
       const repoId = this.$store.state.flyoutRepoId
       const repo = repos.where('id', repoId).first()
       return repo || {}

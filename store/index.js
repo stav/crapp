@@ -1,28 +1,7 @@
 import VuexORM from '@vuex-orm/core'
-import database from '@/database'
-import Repository from '~/models/Repository'
-import Price from '~/models/Price'
+import database, { loadBinanceBalances, loadCoinbaseAccounts, loadCoinbaseProAccounts } from '@/database'
+import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
-
-function loadBinanceBalances (balances) {
-  const repos = Repository.query().with('coins')
-  const binance = repos.where('name', 'Binance').first()
-
-  for (const balance of balances) {
-    const coin = binance.coins.find(coin => coin.symbol === balance.asset)
-    const price = Price.query().where('symbol', coin?.symbol).first()
-    Coin.insertOrUpdate({
-      data: {
-        id: coin?.id,
-        name: coin?.name || balance.asset,
-        symbol: balance.asset,
-        quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
-        repoId: binance.id,
-        priceId: price?.id,
-      }
-    })
-  }
-}
 
 export const plugins = [
   VuexORM.install(database)
@@ -37,17 +16,18 @@ export const state = () => ({
 
 export const getters = {
   coinPriceUSD: () => (symbol) => {
-    const price = Price.query().where('symbol', symbol).first()
-    return price?.price
+    return Coin.query().where('symbol', symbol).first()?.price
   },
   coinSum: () => (symbol) => {
-    const coins = Coin.query().where('symbol',
-      value => value === symbol
-    ).get()
-    return coins.reduce(
-      (total, coin) => total + coin.quantity,
-      0
-    )
+    return RepoCoin
+      .query()
+      .with('coin') // Somehow this doesn't work...
+      .where((repocoin) => {
+        const coin = Coin.find(repocoin.coinId) // ...so we need to do this
+        return coin.symbol === symbol
+      })
+      .get()
+      .reduce((total, coin) => total + coin.quantity, 0)
   },
   coinsUnListed: state => () => state.coinMarketCapUnlisted,
 }
@@ -57,15 +37,32 @@ export const actions = {
     const response = await fetch('/api/binance/balances')
     const { balances } = response.status === 200 ? await response.json() : { status: response.status }
     loadBinanceBalances(balances)
-    const message = `${balances.length} balances retrieved and loading into Binance`
     if (done) {
-      done(message)
+      done(`${balances.length} balances retrieved and loading into Binance`)
+    }
+  },
+  async loadCoinbaseAccounts (context, done) {
+    const response = await fetch('/api/coinbase/v2/accounts')
+    let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
+    accounts = accounts.filter(account => parseFloat(account.balance.amount))
+    loadCoinbaseAccounts(accounts)
+    if (done) {
+      done(`${accounts.length} accounts retrieved and loading into Coinbase`)
+    }
+  },
+  async loadCoinbaseProAccounts (context, done) {
+    const response = await fetch('/api/coinbasepro/accounts')
+    let accounts = response.status === 200 ? await response.json() : { status: response.status }
+    accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
+    loadCoinbaseProAccounts(accounts)
+    if (done) {
+      done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
     }
   },
   setPriceUSD (context, { symbol, price }) {
-    Price.insertOrUpdate({
+    Coin.insertOrUpdate({
       data: {
-        id: Price.query().where('symbol', symbol).first()?.id,
+        id: Coin.query().where('symbol', symbol).first()?.id,
         symbol,
         price,
       }

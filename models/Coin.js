@@ -6,11 +6,9 @@ export default class Coin extends Model {
   static fields () {
     return {
       id: this.uid(),
-      repoId: this.attr(null),
-      symbol: this.string(''),
       name: this.string(''),
-      quantity: this.number(0.0),
-      priceId: this.attr(null),
+      price: this.number(0.0),
+      symbol: this.string(''),
     }
   }
 

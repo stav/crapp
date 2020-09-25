@@ -1,5 +1,5 @@
 import { Model } from '@vuex-orm/core'
-import Coin from './Coin'
+import RepoCoin from './RepoCoin'
 
 export default class Repository extends Model {
   static entity = 'repositorys'
@@ -9,7 +9,7 @@ export default class Repository extends Model {
       id: this.uid(),
       name: this.string('[no-name]'),
       active: this.boolean(true),
-      coins: this.hasMany(Coin, 'repoId'),
+      coins: this.hasMany(RepoCoin, 'repoId'),
     }
   }
 }

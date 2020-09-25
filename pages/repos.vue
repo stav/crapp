@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import Coin from '~/models/Coin'
+import { loadRepositorys } from '@/database'
 import Repository from '~/models/Repository'
 import repositorys from '~/data/repositorys'
 
@@ -78,7 +78,8 @@ export default {
   fetchOnServer: true,
 
   async fetch () {
-    Repository.create({ data: await repositorys() }) // TODO: only create if empty?
+    loadRepositorys(await repositorys())
+    console.log('fetch', Repository.query().with(['coins', 'coins.coin']).all())
     await this.fetchPrices()
   },
 
@@ -97,14 +98,18 @@ export default {
       return this.$store.$db().model('repositorys')
     },
     repositorys () {
-      const _ = this.Repositorys.query().with('coins').get()
-      return _.map((repo) => {
-        const coins = {}
-        for (const coin of repo.coins) {
-          coins[coin.symbol] = this.formatAmount(coin.quantity)
-        }
-        return Object.assign(repo, coins)
-      })
+      return this.Repositorys
+        .query()
+        .with('coins')
+        .with('coins.coin')
+        .get()
+        .map((repo) => {
+          const coins = {}
+          for (const coin of repo.coins) {
+            coins[coin.coin.symbol] = this.formatAmount(coin.quantity)
+          }
+          return Object.assign(repo, coins)
+        })
     },
     coins () {
       const coins = this.Coins.all()
@@ -138,60 +143,13 @@ export default {
   },
 
   methods: {
-    async getCoinbaseProAccountsData () {
+    getCoinbaseProAccountsData () {
       this.loading = 'blue'
-      const response = await fetch('/api/coinbasepro/accounts')
-      let accounts = response.status === 200 ? await response.json() : { status: response.status }
-      accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
-      this.snackbarText = `${accounts.length} accounts retrieved and loading into Coinbase Pro`
-      this.snackbarModel = true
-      this.loadCoinbaseProAccounts(accounts)
-      this.loading = false
+      this.$store.dispatch('loadCoinbaseProAccounts', this.done)
     },
-    loadCoinbaseProAccounts (accounts) {
-      const repos = this.Repositorys.query().with('coins')
-      const coinbasepro = repos.where('name', 'Coinbase Pro').first()
-
-      for (const account of accounts) {
-        const coin = coinbasepro.coins.find(coin => coin.symbol === account.currency)
-        Coin.insertOrUpdate({
-          data: {
-            id: coin?.id,
-            name: coin?.name || account.currency,
-            symbol: account.currency,
-            quantity: account ? parseFloat(account.balance) : 0,
-            repoId: coinbasepro.id,
-          }
-        })
-      }
-    },
-    async getCoinbaseAccountsData () {
+    getCoinbaseAccountsData () {
       this.loading = 'yellow'
-      const response = await fetch('/api/coinbase/v2/accounts')
-      let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
-      accounts = accounts.filter(account => parseFloat(account.balance.amount))
-      this.snackbarText = `${accounts.length} accounts retrieved and loading into Coinbase`
-      this.snackbarModel = true
-      this.loadCoinbaseAccounts(accounts)
-      this.loading = false
-    },
-    loadCoinbaseAccounts (accounts) {
-      // TODO: Error handling
-      const repos = this.Repositorys.query().with('coins')
-      const coinbase = repos.where('name', 'Coinbase').first()
-
-      for (const account of accounts) {
-        const coin = coinbase.coins.find(coin => coin.symbol === account.currency)
-        Coin.insertOrUpdate({
-          data: {
-            id: coin?.id,
-            name: coin?.name || account.currency,
-            symbol: account.currency,
-            quantity: account ? parseFloat(account.balance.amount) : 0,
-            repoId: coinbase.id,
-          }
-        })
-      }
+      this.$store.dispatch('loadCoinbaseAccounts', this.done)
     },
     getBinanceAccountsData () {
       this.loading = 'green'
@@ -222,7 +180,7 @@ export default {
       return price ? (amount * price) : ''
     },
     async fetchPrices () {
-      // Fetch & Store coin prices from Coin Market Cap
+      // Fetch & Store coin prices from CoinMarketCap
       this.loading = 'white'
       const response = await fetch(this.priceFetcherUrl)
       const result = await response.json()
