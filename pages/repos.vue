@@ -9,6 +9,11 @@
       :headers="headers"
       :items="repositorys"
       hide-default-footer
+      disable-pagination
+      multi-sort
+      sort-desc
+      sort-by="valuation"
+      dense
       @click:row="flyRepository"
     >
       <template v-slot:body.append v-if="repositorys.length">
@@ -96,17 +101,27 @@ export default {
     Repositorys () {
       return this.$store.$db().model('repositorys')
     },
+    /*
+    ** Data-table data
+    **
+    ** Return an array of row objects
+    **
+    ** [{id:'$uid1', name:'Ledger', BTC:1, coins:[quantity:1, coin:{symbol:'BTC', price:9000}]},...]
+    */
     repositorys () {
       return this.Repositorys
         .query()
         .with(['coins', 'coins.coin'])
         .get()
+        // Mapping to create the top-level fields, one for each coin, e.g.: {BTC:1, ETH:10...}
         .map((repo) => {
           const coins = {}
+          let valuation = 0
           for (const coin of repo.coins) {
             coins[coin.coin.symbol] = this.formatAmount(coin.quantity)
+            valuation += coin.quantity * this.coinPrice(coin.coin.symbol)
           }
-          return Object.assign(repo, coins)
+          return Object.assign(repo, coins, {valuation: this.formatCurrency(valuation)})
         })
     },
     coins () {
@@ -122,13 +137,44 @@ export default {
     priceFetcherUrl () {
       return '/api/coinmarketcap/quotes?symbol=' + this.coinsListed.join(',')
     },
-    headers () {
+    /*
+    ** Data-table options
+    **
+    ** Return an array of column settings objects
+    **
+    ** [ {"text": "", "value": "actions"},
+    **   {"text": "", "value": "name"},
+    **   {"text": "Valuation", "value": "valuation"},
+    **   {"text": "BTC", "value": "BTC", "coin": true },
+    **   {"text": "ETH", "value": "ETH", "coin": true },... ]
+    */
+   headers () {
+      /*
+      ** Column sorting function
+      **
+      ** Unfortunately the simple component from Vuetiify doesn't support rendering
+      ** so we have to set the "value" pre-rendered and then un-render :) to sort
+      */
+      function sort (a, b) {
+        a = parseFloat((a||'0').replaceAll(',', '').replaceAll('$', ''))
+        b = parseFloat((b||'0').replaceAll(',', '').replaceAll('$', ''))
+        if (a < b) return 1
+        if (a > b) return -1
+        return 0
+      }
       const _ = [
         { text: '', value: 'actions', sortable: false },
         { text: '', value: 'name', sortable: false },
+        { text: 'Valuation', value: 'valuation', sortable: true, sort },
       ]
       for (const coin of this.coins) {
-        _.push({ text: coin, value: coin, coin: true })
+        _.push({
+          text: coin,
+          value: coin,
+          sortable: true,
+          coin: true,
+          sort,
+        })
       }
       return _
     },
