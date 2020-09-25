@@ -3,7 +3,7 @@ import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
 
 export function loadCoinbaseProAccounts (accounts) {
-  const repos = Repository.query().with('coins').with('coins.coin')
+  const repos = Repository.query().with(['coins', 'coins.coin'])
   const coinbasepro = repos.where('name', 'Coinbase Pro').first()
 
   for (const account of accounts) {
@@ -26,7 +26,7 @@ export function loadCoinbaseProAccounts (accounts) {
 }
 
 export function loadCoinbaseAccounts (accounts) {
-  const repos = Repository.query().with('coins').with('coins.coin')
+  const repos = Repository.query().with(['coins', 'coins.coin'])
   const coinbase = repos.where('name', 'Coinbase').first()
 
   for (const account of accounts) {
@@ -49,7 +49,7 @@ export function loadCoinbaseAccounts (accounts) {
 }
 
 export function loadBinanceBalances (balances) {
-  const repos = Repository.query().with('coins').with('coins.coin')
+  const repos = Repository.query().with(['coins', 'coins.coin'])
   const binance = repos.where('name', 'Binance').first()
 
   for (const balance of balances) {

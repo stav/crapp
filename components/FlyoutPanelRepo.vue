@@ -22,7 +22,7 @@ export default {
   computed: {
     repository () {
       const model = this.$store.$db().model('repositorys')
-      const repos = model.query().with('coins').with('coins.coin')
+      const repos = model.query().with(['coins', 'coins.coin'])
       const repoId = this.$store.state.flyoutRepoId
       const repo = repos.where('id', repoId).first()
       return repo || {}

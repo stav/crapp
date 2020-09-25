@@ -70,7 +70,6 @@
 
 <script>
 import { loadRepositorys } from '@/database'
-import Repository from '~/models/Repository'
 import repositorys from '~/data/repositorys'
 
 export default {
@@ -79,7 +78,7 @@ export default {
 
   async fetch () {
     loadRepositorys(await repositorys())
-    console.log('fetch', Repository.query().with(['coins', 'coins.coin']).all())
+    console.log('fetch', this.Repositorys.query().with(['coins', 'coins.coin']).all())
     await this.fetchPrices()
   },
 
@@ -100,8 +99,7 @@ export default {
     repositorys () {
       return this.Repositorys
         .query()
-        .with('coins')
-        .with('coins.coin')
+        .with(['coins', 'coins.coin'])
         .get()
         .map((repo) => {
           const coins = {}
