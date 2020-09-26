@@ -33,7 +33,7 @@ export const getters = {
 }
 
 export const actions = {
-  async loadBinanceBalances (context, done) {
+  async loadBinanceBalances (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
     const response = await fetch('/api/binance/balances')
     const { balances } = response.status === 200 ? await response.json() : { status: response.status }
     loadBinanceBalances(balances)
@@ -41,7 +41,7 @@ export const actions = {
       done(`${balances.length} balances retrieved and loading into Binance`)
     }
   },
-  async loadCoinbaseAccounts (context, done) {
+  async loadCoinbaseAccounts (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
     const response = await fetch('/api/coinbase/v2/accounts')
     let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
     accounts = accounts.filter(account => parseFloat(account.balance.amount))
@@ -50,7 +50,7 @@ export const actions = {
       done(`${accounts.length} accounts retrieved and loading into Coinbase`)
     }
   },
-  async loadCoinbaseProAccounts (context, done) {
+  async loadCoinbaseProAccounts (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
     const response = await fetch('/api/coinbasepro/accounts')
     let accounts = response.status === 200 ? await response.json() : { status: response.status }
     accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
@@ -59,7 +59,7 @@ export const actions = {
       done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
     }
   },
-  setPriceUSD (context, { symbol, price }) {
+  setPriceUSD (context, { symbol, price }) { // eslint-disable-line @typescript-eslint/no-unused-vars
     Coin.insertOrUpdate({
       data: {
         id: Coin.query().where('symbol', symbol).first()?.id,

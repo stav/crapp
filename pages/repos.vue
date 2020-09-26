@@ -121,7 +121,7 @@ export default {
             coins[coin.coin.symbol] = this.formatAmount(coin.quantity)
             valuation += coin.quantity * this.coinPrice(coin.coin.symbol)
           }
-          return Object.assign(repo, coins, {valuation: this.formatCurrency(valuation)})
+          return Object.assign(repo, coins, { valuation: this.formatCurrency(valuation) })
         })
     },
     coins () {
@@ -148,7 +148,7 @@ export default {
     **   {"text": "BTC", "value": "BTC", "coin": true },
     **   {"text": "ETH", "value": "ETH", "coin": true },... ]
     */
-   headers () {
+    headers () {
       /*
       ** Column sorting function
       **
@@ -156,10 +156,11 @@ export default {
       ** so we have to set the "value" pre-rendered and then un-render :) to sort
       */
       function sort (a, b) {
-        a = parseFloat((a||'0').replaceAll(',', '').replaceAll('$', ''))
-        b = parseFloat((b||'0').replaceAll(',', '').replaceAll('$', ''))
-        if (a < b) return 1
-        if (a > b) return -1
+        const _ = _ => (_ || '0').replaceAll(',', '').replaceAll('$', '')
+        a = parseFloat(_(a))
+        b = parseFloat(_(b))
+        if (a < b) { return 1 }
+        if (a > b) { return -1 }
         return 0
       }
       const _ = [
