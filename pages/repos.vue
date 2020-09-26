@@ -3,6 +3,15 @@
     <v-app-bar color="indigo">
       <v-icon class="mr-2">mdi-bitcoin</v-icon>
       Repositories
+      <v-spacer />
+      <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
+      <v-switch
+        v-model="coinValue"
+        class="ml-3 mr-2"
+        hide-details
+        title="Display amount of coins held or the USD valuation"
+      />
+      <span @click="coinValue=true" class="clickable text--secondary"> value </span>
     </v-app-bar>
 
     <v-data-table
@@ -17,8 +26,27 @@
       @click:row="flyRepository"
     >
       <template v-slot:body.append v-if="repositorys.length">
+        <tr>
+          <td v-for="header of headers" :key="header.value" class="text-end">
+            <v-btn
+              v-if="header.value === 'name'"
+              @click="fetchPrices"
+              title="Press to fetch latest prices"
+              small class="accent px-1"
+            >
+              Load Coin Data
+            </v-btn>
+            <v-btn
+              v-if="header.coin"
+              @click="() => flyCoin(header)"
+              small class="accent px-1"
+              v-text="header.value"
+              :title="coinPrice(header.value)"
+            />
+          </td>
+        </tr>
         <tr class="primary">
-          <td v-for="header of headers" :key="header.value">
+          <td v-for="header of headers" :key="header.value" class="text-end">
             <span v-if="header.value === 'name'"> Total (coins) </span>
             <span
               v-if="header.coin"
@@ -28,26 +56,17 @@
           </td>
         </tr>
         <tr class="accent">
-          <td v-for="header of headers" :key="header.value">
-            <v-btn
-              v-if="header.value === 'name'"
-              @click="fetchPrices"
-              title="Press to fetch latest prices"
-              small class="accent px-1"
-            >
-              Price (each)
-            </v-btn>
-            <v-btn
+          <td v-for="header of headers" :key="header.value" class="text-end">
+            <span v-if="header.value === 'name'"> Price (each) </span>
+            <span
               v-if="header.coin"
-              @click="() => flyCoin(header)"
-              small class="accent px-1"
               v-text="`$${formatAmount(coinPrice(header.value))}`"
               :title="coinPrice(header.value)"
             />
           </td>
         </tr>
         <tr class="secondary">
-          <td v-for="header of headers" :key="header.value">
+          <td v-for="header of headers" :key="header.value" class="text-end">
             <div v-if="header.value === 'name'" class="text-h6 text-no-wrap">
               <code> {{ formatCurrency(portfolioTotalUSD()) }} </code>
             </div>
@@ -92,6 +111,7 @@ export default {
     loading: false,
     snackbarText: '',
     snackbarModel: false,
+    coinValue: true,
   }),
 
   computed: {
@@ -116,10 +136,22 @@ export default {
         // Mapping to create the top-level fields, one for each coin, e.g.: {BTC:1, ETH:10...}
         .map((repo) => {
           const coins = {}
+          // Add coin values/quantities using only numeric data
           let valuation = 0
           for (const coin of repo.coins) {
-            coins[coin.coin.symbol] = this.formatAmount(coin.quantity)
-            valuation += coin.quantity * this.coinPrice(coin.coin.symbol)
+            const symbol = coin.coin.symbol
+            const value = coin.quantity * this.coinPrice(symbol)
+            valuation += value
+            symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
+            coins[symbol] += this.coinValue ? value : coin.quantity
+          }
+          // Format coins as final result
+          for (const symbol in coins) {
+            const amount = this.formatAmount(coins[symbol])
+            coins[symbol] = 
+              this.coinValue
+                ? this.formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
+                : coins[symbol] = amount
           }
           return Object.assign(repo, coins, { valuation: this.formatCurrency(valuation) })
         })
@@ -166,12 +198,13 @@ export default {
       const _ = [
         { text: '', value: 'actions', sortable: false },
         { text: '', value: 'name', sortable: false },
-        { text: 'Valuation', value: 'valuation', sortable: true, sort },
+        { text: 'Valuation', value: 'valuation', align: 'end', sortable: true, sort },
       ]
       for (const coin of this.coins) {
         _.push({
           text: coin,
           value: coin,
+          align: 'end',
           sortable: true,
           coin: true,
           sort,
@@ -270,3 +303,15 @@ export default {
 
 }
 </script>
+
+<style lang="scss">
+.text-end {
+  text-align: right !important;
+}
+</style>
+
+<style lang="scss" scoped>
+.clickable {
+  cursor: pointer;
+}
+</style>

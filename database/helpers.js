@@ -88,7 +88,7 @@ export function loadRepositorys (repos) {
       }
     }
   }
-  // Empty Repository table
+  // Empty Repository tables
   Repository.deleteAll()
   RepoCoin.deleteAll()
   // Insert all the repos
