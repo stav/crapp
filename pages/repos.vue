@@ -19,8 +19,6 @@
       :items="repositorys"
       hide-default-footer
       disable-pagination
-      multi-sort
-      sort-desc
       sort-by="valuation"
       dense
       @click:row="flyRepository"

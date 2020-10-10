@@ -26,6 +26,23 @@
             <v-list-item-subtitle v-text="coinValueAmount" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-input>
+              <v-text-field
+                v-model="convert"
+                :label="`Convert ${coin}`"
+                :rules="[rules.numeric]"
+                placeholder="1.5"
+                hide-details
+                clearable
+                outlined
+                dense
+              />
+            </v-input>
+            {{ convertedUSD }}
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -33,6 +50,15 @@
 
 <script>
 export default {
+
+  data () {
+    return {
+      convert: null,
+      rules: {
+        numeric: n => !isNaN(parseFloat(n)) && isFinite(n),
+      },
+    }
+  },
 
   computed: {
     coin () {
@@ -58,6 +84,9 @@ export default {
     coinValueCurrency () {
       return this.formatCurrency(this.coinValueAmount)
     },
+    convertedUSD () {
+      return this.formatCurrency(this.convert * this.coinPriceAmount)
+    }
   },
 
   methods: {
