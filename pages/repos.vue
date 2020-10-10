@@ -4,6 +4,8 @@
       <v-icon class="mr-2">mdi-bitcoin</v-icon>
       Repositories
       <v-spacer />
+      {{ coins.length }} coins in {{ repositorys.length }} repos
+      <v-spacer />
       <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
       <v-switch
         v-model="coinValue"
@@ -16,7 +18,7 @@
 
     <v-data-table
       :headers="headers"
-      :items="repositorys"
+      :items="valuedRepositorys"
       hide-default-footer
       disable-pagination
       sort-by="valuation"
@@ -92,14 +94,14 @@
 
 <script>
 import { loadRepositorys } from '@/database'
-import repositorys from '~/data/repositorys'
+import { formatAmount, formatCurrency } from '@/utils'
 
 export default {
 
   fetchOnServer: true,
 
   async fetch () {
-    loadRepositorys(await repositorys())
+    await loadRepositorys()
     console.log('fetch', this.Repositorys.query().with(['coins', 'coins.coin']).all())
     await this.fetchPrices()
   },
@@ -120,39 +122,32 @@ export default {
       return this.$store.$db().model('repositorys')
     },
     /*
-    ** Data-table data
+    ** Database data
     **
-    ** Return an array of row objects
-    **
-    ** [{id:'$uid1', name:'Ledger', BTC:1, coins:[quantity:1, coin:{symbol:'BTC', price:9000}]},...]
+    ** Return an array of unvalued repositories
     */
     repositorys () {
       return this.Repositorys
         .query()
         .with(['coins', 'coins.coin'])
         .get()
-        // Mapping to create the top-level fields, one for each coin, e.g.: {BTC:1, ETH:10...}
-        .map((repo) => {
-          const coins = {}
-          // Add coin values/quantities using only numeric data
-          let valuation = 0
-          for (const coin of repo.coins) {
-            const symbol = coin.coin.symbol
-            const value = coin.quantity * this.coinPrice(symbol)
-            valuation += value
-            symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
-            coins[symbol] += this.coinValue ? value : coin.quantity
-          }
-          // Format coins as final result
-          for (const symbol in coins) {
-            const amount = this.formatAmount(coins[symbol])
-            coins[symbol] = 
-              this.coinValue
-                ? this.formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
-                : coins[symbol] = amount
-          }
-          return Object.assign(repo, coins, { valuation: this.formatCurrency(valuation) })
-        })
+    },
+    /*
+    ** Data-table data
+    **
+    ** Return an array of row objects
+    **
+    ** [{id:'$uid1', name:'Ledger', valuation:'$1,137.36',
+    **   BTC:'$1,140',
+    **   coins: [
+    **     { id: "$uid3",
+    **       coinId: "$uid2",
+    **       repoId: "$uid1",
+    **       quantity: 0.1} ]
+    **  },...]
+    */
+    valuedRepositorys () {
+      return this.repositorys.map(this.repoValuation)
     },
     coins () {
       const coins = this.Coins.all()
@@ -239,10 +234,10 @@ export default {
       this.loading = false
     },
     formatAmount (value) {
-      return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
+      return formatAmount(value)
     },
     formatCurrency (value) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
+      return formatCurrency(value)
     },
     coinSum (symbol) {
       return this.$store.getters.coinSum(symbol)
@@ -290,6 +285,36 @@ export default {
     },
     flyRepository (repo) {
       this.$store.commit('setFlyoutRepo', repo)
+    },
+    /*
+    ** Repository valuation
+    **
+    ** Return the provided repository with the coins property evaluated
+    ** with the proper coins from the database as well as a mapping to
+    ** create the top-level fields, one for each coin, e.g.:
+    **
+    **     {BTC:1, ETH:10...}
+    */
+    repoValuation (repo) {
+      const coins = {}
+      let valuation = 0
+      // First we sum the coins[symbol] values/quantities using only numeric data
+      for (const coin of repo.coins) {
+        const symbol = coin.coin.symbol
+        const value = coin.quantity * this.coinPrice(symbol)
+        valuation += value
+        symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
+        coins[symbol] += this.coinValue ? value : coin.quantity
+      }
+      // Then we format these coins[symbol] as formatted text for display
+      for (const symbol in coins) {
+        const amount = this.formatAmount(coins[symbol])
+        coins[symbol] =
+          this.coinValue
+            ? this.formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
+            : coins[symbol] = amount
+      }
+      return Object.assign(repo, coins, { valuation: this.formatCurrency(valuation) })
     },
   },
 

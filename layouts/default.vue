@@ -25,10 +25,6 @@
     <v-app-bar fixed app :clipped-left="true" :clipped-right="true">
       <v-app-bar-nav-icon title="Toggle navigation drawer" @click.stop="navDrawer=!navDrawer" />
 
-      <v-btn icon title="Toggle navigation size" @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-
       <v-btn icon title="Toggle footer absolute" @click.stop="absolute = !absolute">
         <v-icon>mdi-minus</v-icon>
       </v-btn>
@@ -41,7 +37,7 @@
       <v-spacer /> flyoutRepoId: {{ flyoutRepoId }}
       <v-spacer />
 
-      <v-btn icon @click.stop="flyDrawerOut">
+      <v-btn icon @click.stop="flyDrawerOut" title="Toggle coin/repo flyout">
         <v-icon>mdi-bitcoin</v-icon>
       </v-btn>
     </v-app-bar>

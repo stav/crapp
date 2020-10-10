@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import { formatAmount, formatCurrency } from '@/utils'
+
 export default {
 
   data () {
@@ -68,34 +70,25 @@ export default {
       return this.$store.getters.coinSum(this.coin)
     },
     coinSumFormat () {
-      return this.formatAmount(this.coinSumAmount)
+      return formatAmount(this.coinSumAmount)
     },
 
     coinPriceAmount () {
       return this.$store.getters.coinPriceUSD(this.coin)
     },
     coinPriceCurrency () {
-      return this.formatCurrency(this.coinPriceAmount)
+      return formatCurrency(this.coinPriceAmount)
     },
 
     coinValueAmount () {
       return this.coinSumAmount * this.coinPriceAmount
     },
     coinValueCurrency () {
-      return this.formatCurrency(this.coinValueAmount)
+      return formatCurrency(this.coinValueAmount)
     },
     convertedUSD () {
-      return this.formatCurrency(this.convert * this.coinPriceAmount)
+      return formatCurrency(this.convert * this.coinPriceAmount)
     }
-  },
-
-  methods: {
-    formatAmount (value) {
-      return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
-    },
-    formatCurrency (value) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
-    },
   },
 
 }

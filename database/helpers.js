@@ -1,3 +1,4 @@
+import repositorys from '~/data/repositorys'
 import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
@@ -78,8 +79,12 @@ export function loadBinanceBalances (balances) {
 //   }, new Set()
 // )
 
-export function loadRepositorys (repos) {
-  // Add all coins
+/*
+** Insert Coins
+**
+** Insert all coins found in the given repositories into the db
+*/
+function insertCoins (repos) {
   for (const repo of repos) {
     for (const coin of repo.coins) {
       const _coin = Coin.query().where('symbol', coin.symbol).first()
@@ -88,10 +93,15 @@ export function loadRepositorys (repos) {
       }
     }
   }
-  // Empty Repository tables
-  Repository.deleteAll()
-  RepoCoin.deleteAll()
-  // Insert all the repos
+}
+
+/*
+** Insert Repositories
+**
+** Insert all the given repositories into the db
+*/
+function insertRepos (repos) {
+  insertCoins(repos)
   for (const repo of repos) {
     Repository.insert({
       data: {
@@ -99,8 +109,19 @@ export function loadRepositorys (repos) {
         coins: repo.coins.map(_ => ({
           coinId: Coin.query().where('symbol', _.symbol).first().id,
           quantity: _.quantity,
-        })),
+        }))
       }
     })
   }
+}
+
+/*
+** Load Repositories
+**
+** Read the list of repository data from and input file and load up the db
+*/
+export async function loadRepositorys () {
+  Repository.deleteAll()
+  RepoCoin.deleteAll()
+  insertRepos(await repositorys())
 }
