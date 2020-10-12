@@ -59,6 +59,14 @@ export const actions = {
       done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
     }
   },
+  async loadKraken (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    const response = await fetch('/api/kraken/assets')
+    let data = response.status === 200 ? await response.json() : { status: response.status }
+    console.log('loadKraken', data)
+    if (done) {
+      done(`${typeof data} from Kraken`)
+    }
+  },
   setPriceUSD (context, { symbol, price }) { // eslint-disable-line @typescript-eslint/no-unused-vars
     Coin.insertOrUpdate({
       data: {

@@ -88,6 +88,7 @@
       <v-btn @click="getBinanceAccountsData"> Binance </v-btn>
       <v-btn @click="getCoinbaseAccountsData"> Coinbase </v-btn>
       <v-btn @click="getCoinbaseProAccountsData"> Coinbase Pro </v-btn>
+      <v-btn @click="getKrakenData"> Kraken </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -214,6 +215,10 @@ export default {
   },
 
   methods: {
+    getKrakenData () {
+      this.loading = 'red'
+      this.$store.dispatch('loadKraken', this.done)
+    },
     getCoinbaseProAccountsData () {
       this.loading = 'blue'
       this.$store.dispatch('loadCoinbaseProAccounts', this.done)
