@@ -12,6 +12,8 @@ export const state = () => ({
   flyoutDrawer: null,
   flyoutCoin: null,
   flyoutRepoId: null,
+  sparks: {},
+  sparkPair: {},
 })
 
 export const getters = {
@@ -30,6 +32,8 @@ export const getters = {
       .reduce((total, coin) => total + coin.quantity, 0)
   },
   coinsUnListed: state => () => state.coinMarketCapUnlisted,
+  sparkLines: state => () => state.sparks[state.flyoutCoin] || [],
+  sparkPair: state => () => state.sparkPair[state.flyoutCoin] || '',
 }
 
 export const actions = {
@@ -59,10 +63,43 @@ export const actions = {
       done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
     }
   },
+  /*
+  ** loadKraken
+  **
+  ** {
+  **   history: {
+  **     error: [],
+  **     result: {
+  **       XXBTZUSD: [ // Array(720)
+  **         [
+  **           1602648000,    // time
+  **           "11400.0",     // open
+  **           "11400.0",     // high
+  **           "11376.5",     // low
+  **           "11380.0",     // close
+  **           "11383.6",     // vwap
+  **           "38.52231340", // volume
+  **           82             // count
+  **         ],…
+  **       ],
+  **       last: 1602863400 // id to be used as "since" when polling for new data
+  **     }
+  **   }
+  ** }
+  */
   async loadKraken (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
-    const response = await fetch('/api/kraken/assets')
+    const response = await fetch('/api/kraken/history?symbol=' + context.state.flyoutCoin)
     const data = response.status === 200 ? await response.json() : { status: response.status }
-    console.log('loadKraken', data)
+
+    if (data.history.error.length) {
+      context.commit('setSparkPair', data.history.error.toString())
+    } else {
+      const result = data.history.result
+      const pair = Object.keys(result)[0]
+      context.commit('setSparkPair', pair)
+      context.commit('setSparks', result[pair].slice(-10).map(_ => parseFloat(_[5])))
+    }
+
     if (done) {
       done(`${typeof data} from Kraken`)
     }
@@ -90,5 +127,15 @@ export const mutations = {
   },
   setFlyoutRepo (state, repo) {
     state.flyoutRepoId = repo.id
+  },
+  setSparks (state, data) {
+    const sparks = {}
+    sparks[state.flyoutCoin] = data
+    state.sparks = Object.assign({ ...state.sparks }, sparks)
+  },
+  setSparkPair (state, pair) {
+    const sparkPair = {}
+    sparkPair[state.flyoutCoin] = pair
+    state.sparkPair = Object.assign({ ...state.sparkPair }, sparkPair)
   },
 }

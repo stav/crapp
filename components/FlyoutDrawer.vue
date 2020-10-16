@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer fixed app v-model="flyoutDrawer" :clipped="true" :right="true">
-    <v-expansion-panels multiple>
+    <v-expansion-panels multiple hover>
       <flyout-panel-coin />
       <flyout-panel-repo />
     </v-expansion-panels>

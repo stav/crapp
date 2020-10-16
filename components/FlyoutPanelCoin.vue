@@ -1,49 +1,60 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header class="text-h6">
-      {{ coin }}
-    </v-expansion-panel-header>
-    <v-expansion-panel-content>
-      <v-list>
-        <v-list-item class="primary">
-          <v-list-item-content>
-            <v-list-item-subtitle class="text--disabled"> Coins </v-list-item-subtitle>
-            <v-list-item-title v-text="coinSumFormat" class="text-h5" />
-            <v-list-item-subtitle v-text="coinSumAmount" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="accent">
-          <v-list-item-content>
-            <v-list-item-subtitle class="text--disabled"> Price </v-list-item-subtitle>
-            <v-list-item-title v-text="coinPriceCurrency" class="text-h5" />
-            <v-list-item-subtitle v-text="coinPriceAmount" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="secondary">
-          <v-list-item-content>
-            <v-list-item-subtitle class="text--disabled"> Value </v-list-item-subtitle>
-            <v-list-item-title v-text="coinValueCurrency" class="text-h5" />
-            <v-list-item-subtitle v-text="coinValueAmount" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
-            <v-input>
-              <v-text-field
-                v-model="convert"
-                :label="`Convert ${coin}`"
-                :rules="[rules.numeric]"
-                placeholder="1.5"
-                hide-details
-                clearable
-                outlined
-                dense
-              />
-            </v-input>
-            {{ convertedUSD }}
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+    <v-expansion-panel-header v-text="coin" class="text-h6" color="blue-grey darken-2" />
+    <v-expansion-panel-content color="blue-grey darken-2">
+      <v-card class="mx-auto">
+        <v-card-text class="primary">
+          <div class="sub-title font-weight-light"> Coins </div>
+          <div class="text-h5 font-weight-heavy white--text" v-text="coinSumFormat" />
+          <div class="sub-title font-weight-light" v-text="coinSumAmount" />
+        </v-card-text>
+
+        <v-card-text class="accent">
+          <div class="sub-title font-weight-light"> Price </div>
+          <div class="text-h5 font-weight-heavy white--text" v-text="coinPriceCurrency" />
+          <div class="sub-title font-weight-light" v-text="coinPriceAmount" />
+        </v-card-text>
+
+        <v-card-text class="secondary">
+          <div class="sub-title font-weight-light"> Value </div>
+          <div class="text-h5 font-weight-heavy white--text" v-text="coinValueCurrency" />
+          <div class="sub-title font-weight-light" v-text="coinValueAmount" />
+        </v-card-text>
+      </v-card>
+
+      <v-card :loading="loading" class="mx-auto mt-4">
+        <v-progress-linear :active="loading" color="primary" indeterminate />
+
+        <v-sheet class="ma-3 mt-6" v-show="pair"> {{ pair }}</v-sheet>
+
+        <v-sparkline
+          :value="sparks"
+          color="white"
+          line-width="2"
+          padding="16"
+        />
+
+        <v-card-actions>
+          <v-btn small fab @click="clearHistory" :disabled="!coin || !pair">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+          <v-btn @click="getKrakenData" :disabled="!coin"> History </v-btn>
+        </v-card-actions>
+      </v-card>
+
+      <v-input hide-details class="mt-4">
+        <v-text-field
+          v-model="convert"
+          :label="`Convert ${coin}`"
+          :rules="[rules.numeric]"
+          placeholder="1.5"
+          hide-details
+          clearable
+          outlined
+          dense
+        />
+      </v-input>
+      <div class="ml-4 mt-2" v-show="convert" v-text="convertedUSD" />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -55,9 +66,10 @@ export default {
 
   data () {
     return {
+      loading: false,
       convert: null,
       rules: {
-        numeric: n => !isNaN(parseFloat(n)) && isFinite(n),
+        numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
       },
     }
   },
@@ -87,8 +99,30 @@ export default {
       return formatCurrency(this.coinValueAmount)
     },
     convertedUSD () {
-      return formatCurrency(this.convert * this.coinPriceAmount)
-    }
+      return 'USD ' + formatCurrency(this.convert * this.coinPriceAmount)
+    },
+    sparks () {
+      return this.$store.getters.sparkLines()
+    },
+    pair () {
+      return this.$store.getters.sparkPair()
+    },
+
+  },
+
+  methods: {
+    getKrakenData () {
+      this.loading = true
+      this.$store.dispatch('loadKraken', this.done)
+    },
+    done () {
+      this.loading = false
+    },
+    clearHistory () {
+      this.loading = false
+      this.$store.commit('setSparks', [])
+      this.$store.commit('setSparkPair', '')
+    },
   },
 
 }

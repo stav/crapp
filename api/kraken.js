@@ -9,8 +9,7 @@ export default async function (req, res) {
   res.end(
     JSON.stringify(
       await resolve(
-        config(
-          req.url))))
+        config(req.url))))
 }
 
 /*
@@ -18,13 +17,23 @@ export default async function (req, res) {
 */
 function config (url) {
   const requests = []
-  const urlParts = url.split('/')
+  const _url = new URL('http://example.com' + url)
 
   // Configure the requests
-  switch (urlParts[1]) {
-    case 'assets':
+  switch (_url.pathname) {
+    case '/assets':
       requests.push({ key: 'assets', config: configRequest('/0/public/Assets') })
       break
+
+    // https://www.kraken.com/features/api#get-ohlc-data
+    case '/history': {
+      const params = {
+        pair: _url.searchParams.get('symbol') + 'USD',
+        interval: 240,
+      }
+      requests.push({ key: 'history', config: configRequest('/0/public/OHLC', params) })
+      break
+    }
 
     default:
       console.error(url)
