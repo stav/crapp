@@ -90,6 +90,11 @@ export default {
           icon: 'mdi-bitcoin',
           to: '/repos'
         },
+        {
+          title: 'Charts',
+          icon: 'mdi-chart-bubble',
+          to: '/charts'
+        },
       ],
       miniVariant: true,
       title: 'CrApp'
