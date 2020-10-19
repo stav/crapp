@@ -3,6 +3,7 @@
     <v-expansion-panels multiple hover>
       <flyout-panel-coin />
       <flyout-panel-repo />
+      <flyout-panel-util />
     </v-expansion-panels>
   </v-navigation-drawer>
 </template>
@@ -10,12 +11,14 @@
 <script>
 import flyoutPanelCoin from '@/components/FlyoutPanelCoin.vue'
 import flyoutPanelRepo from '@/components/FlyoutPanelRepo.vue'
+import flyoutPanelUtil from '@/components/FlyoutPanelUtil.vue'
 
 export default {
 
   components: {
     'flyout-panel-coin': flyoutPanelCoin,
     'flyout-panel-repo': flyoutPanelRepo,
+    'flyout-panel-util': flyoutPanelUtil,
   },
 
   computed: {

@@ -31,10 +31,6 @@
 
       <v-toolbar-title v-text="title" />
 
-      <v-spacer /> navDrawer: {{ navDrawer }}
-      <v-spacer /> flyoutDrawer: {{ flyoutDrawer }}
-      <v-spacer /> flyoutCoin: {{ flyoutCoin }}
-      <v-spacer /> flyoutRepoId: {{ flyoutRepoId }}
       <v-spacer />
 
       <v-btn icon @click.stop="flyDrawerOut" title="Toggle coin/repo flyout">
@@ -67,7 +63,6 @@ export default {
 
   data () {
     return {
-      navDrawer: false,
       absolute: false,
       items: [
         {
@@ -97,14 +92,13 @@ export default {
   },
 
   computed: {
-    flyoutDrawer () {
-      return this.$store.state.flyoutDrawer
-    },
-    flyoutCoin () {
-      return this.$store.state.flyoutCoin
-    },
-    flyoutRepoId () {
-      return this.$store.state.flyoutRepoId
+    navDrawer: {
+      get () {
+        return this.$store.state.navDrawer
+      },
+      set (value) {
+        this.$store.commit('setNavDrawer', value)
+      }
     },
   },
 

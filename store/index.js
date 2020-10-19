@@ -9,6 +9,7 @@ export const plugins = [
 
 export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'USD'],
+  navDrawer: null,
   flyoutDrawer: null,
   flyoutCoin: null,
   flyoutRepoId: null,
@@ -116,6 +117,9 @@ export const actions = {
 }
 
 export const mutations = {
+  setNavDrawer (state, fly) {
+    state.navDrawer = fly
+  },
   setFlyoutDrawer (state, fly) {
     state.flyoutDrawer = fly
   },
