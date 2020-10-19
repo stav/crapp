@@ -15,19 +15,22 @@ export const state = () => ({
   flyoutRepoId: null,
   sparks: {},
   sparkPair: {},
+  selectedRepos: [],
 })
 
 export const getters = {
   coinPriceUSD: () => (symbol) => {
     return Coin.query().where('symbol', symbol).first()?.price
   },
-  coinSum: () => (symbol) => {
+  coinSum: state => (symbol) => {
     return RepoCoin
       .query()
       .with('coin') // Somehow this doesn't work...
       .where((repocoin) => {
         const coin = Coin.find(repocoin.coinId) // ...so we need to do this
-        return coin.symbol === symbol
+        const selectedRepoIds = state.selectedRepos.map(_ => _.id)
+        const included = selectedRepoIds.includes(repocoin.repoId)
+        return included && coin.symbol === symbol
       })
       .get()
       .reduce((total, coin) => total + coin.quantity, 0)
@@ -117,6 +120,9 @@ export const actions = {
 }
 
 export const mutations = {
+  setSelectedRepos (state, repos) {
+    state.selectedRepos = repos
+  },
   setNavDrawer (state, fly) {
     state.navDrawer = fly
   },

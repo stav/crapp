@@ -19,15 +19,17 @@
     <v-data-table
       :headers="headers"
       :items="valuedRepositorys"
+      v-model="selectedRows"
+      show-select
+      sort-by="valuation"
       hide-default-footer
       disable-pagination
-      sort-by="valuation"
       dense
       @click:row="flyRepository"
     >
       <template v-slot:body.append v-if="repositorys.length">
         <tr>
-          <td v-for="header of headers" :key="header.value" class="text-end">
+          <td v-for="header of fHeaders" :key="header.value" class="text-end">
             <v-btn
               v-if="header.value === 'name'"
               @click="fetchPrices"
@@ -46,7 +48,7 @@
           </td>
         </tr>
         <tr class="primary">
-          <td v-for="header of headers" :key="header.value" class="text-end">
+          <td v-for="header of fHeaders" :key="header.value" class="text-end">
             <span v-if="header.value === 'name'"> Total (coins) </span>
             <span
               v-if="header.coin"
@@ -56,7 +58,7 @@
           </td>
         </tr>
         <tr class="accent">
-          <td v-for="header of headers" :key="header.value" class="text-end">
+          <td v-for="header of fHeaders" :key="header.value" class="text-end">
             <span v-if="header.value === 'name'"> Price (each) </span>
             <span
               v-if="header.coin"
@@ -66,7 +68,7 @@
           </td>
         </tr>
         <tr class="secondary">
-          <td v-for="header of headers" :key="header.value" class="text-end">
+          <td v-for="header of fHeaders" :key="header.value" class="text-end">
             <div v-if="header.value === 'name'" class="text-h6 text-no-wrap">
               <code> {{ formatCurrency(portfolioTotalUSD()) }} </code>
             </div>
@@ -103,7 +105,8 @@ export default {
 
   async fetch () {
     await loadRepositorys()
-    console.log('fetch', this.Repositorys.query().with(['coins', 'coins.coin']).all())
+    console.log('fetch', this.repositorys)
+    this.selectedRows = this.repositorys
     await this.fetchPrices()
   },
 
@@ -131,7 +134,7 @@ export default {
       return this.Repositorys
         .query()
         .with(['coins', 'coins.coin'])
-        .get()
+        .all()
     },
     /*
     ** Data-table data
@@ -168,7 +171,6 @@ export default {
     **
     ** Return an array of column settings objects
     **
-    ** [ {"text": "", "value": "actions"},
     **   {"text": "", "value": "name"},
     **   {"text": "Valuation", "value": "valuation"},
     **   {"text": "BTC", "value": "BTC", "coin": true },
@@ -189,11 +191,16 @@ export default {
         if (a > b) { return -1 }
         return 0
       }
+      /*
+      ** Left-most columns (static)
+      */
       const _ = [
-        { text: '', value: 'actions', sortable: false },
         { text: '', value: 'name', sortable: true },
         { text: 'Valuation', value: 'valuation', align: 'end', sortable: true, sort },
       ]
+      /*
+      ** Right-most columns (dynamically created one for each coin)
+      */
       for (const coin of this.coins) {
         _.push({
           text: coin,
@@ -205,6 +212,17 @@ export default {
         })
       }
       return _
+    },
+    fHeaders () {
+      return [{}].concat(this.headers) // Add a blank column to beginning of headers
+    },
+    selectedRows: {
+      get () {
+        return this.$store.state.selectedRepos
+      },
+      set (value) {
+        this.$store.commit('setSelectedRepos', value)
+      }
     },
   },
 
