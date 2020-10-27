@@ -191,7 +191,7 @@ export default {
       }
       const _ = [
         { text: '', value: 'actions', sortable: false },
-        { text: '', value: 'name', sortable: false },
+        { text: '', value: 'name', sortable: true },
         { text: 'Valuation', value: 'valuation', align: 'end', sortable: true, sort },
       ]
       for (const coin of this.coins) {
