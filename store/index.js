@@ -36,12 +36,12 @@ export const getters = {
       .reduce((total, coin) => total + coin.quantity, 0)
   },
   coinsUnListed: state => () => state.coinMarketCapUnlisted,
-  sparkLines: state => () => state.sparks[state.flyoutCoin] || [],
-  sparkPair: state => () => state.sparkPair[state.flyoutCoin] || '',
+  sparkLines: state => symbol => state.sparks[symbol || state.flyoutCoin?.symbol] || [],
+  sparkPair: state => () => state.sparkPair[state.flyoutCoin?.symbol] || '',
 }
 
 export const actions = {
-  async loadBinanceBalances (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  async loadBinanceBalances (_context, done) {
     const response = await fetch('/api/binance/balances')
     const { balances } = response.status === 200 ? await response.json() : { status: response.status }
     loadBinanceBalances(balances)
@@ -49,7 +49,7 @@ export const actions = {
       done(`${balances.length} balances retrieved and loading into Binance`)
     }
   },
-  async loadCoinbaseAccounts (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  async loadCoinbaseAccounts (_context, done) {
     const response = await fetch('/api/coinbase/v2/accounts')
     let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
     accounts = accounts.filter(account => parseFloat(account.balance.amount))
@@ -58,7 +58,7 @@ export const actions = {
       done(`${accounts.length} accounts retrieved and loading into Coinbase`)
     }
   },
-  async loadCoinbaseProAccounts (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  async loadCoinbaseProAccounts (_context, done) {
     const response = await fetch('/api/coinbasepro/accounts')
     let accounts = response.status === 200 ? await response.json() : { status: response.status }
     accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
@@ -91,8 +91,8 @@ export const actions = {
   **   }
   ** }
   */
-  async loadKraken (context, done) { // eslint-disable-line @typescript-eslint/no-unused-vars
-    const response = await fetch('/api/kraken/history?symbol=' + context.state.flyoutCoin)
+  async loadKraken (context, done) {
+    const response = await fetch('/api/kraken/history?symbol=' + context.state.flyoutCoin.symbol)
     const data = response.status === 200 ? await response.json() : { status: response.status }
 
     if (data.history.error.length) {
@@ -108,12 +108,11 @@ export const actions = {
       done(`${typeof data} from Kraken`)
     }
   },
-  setPriceUSD (context, { symbol, price }) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  setCoin (_context, coin) {
     Coin.insertOrUpdate({
       data: {
-        id: Coin.query().where('symbol', symbol).first()?.id,
-        symbol,
-        price,
+        id: Coin.query().where('symbol', coin.symbol).first()?.id,
+        ...coin,
       }
     })
   },
@@ -133,19 +132,19 @@ export const mutations = {
     state.flyoutDrawer = !state.flyoutDrawer
   },
   setFlyoutCoin (state, { symbol }) {
-    state.flyoutCoin = symbol
+    state.flyoutCoin = Coin.query().where('symbol', symbol).first()
   },
   setFlyoutRepo (state, repo) {
     state.flyoutRepoId = repo.id
   },
   setSparks (state, data) {
     const sparks = {}
-    sparks[state.flyoutCoin] = data
+    sparks[state.flyoutCoin.symbol] = data
     state.sparks = Object.assign({ ...state.sparks }, sparks)
   },
   setSparkPair (state, pair) {
     const sparkPair = {}
-    sparkPair[state.flyoutCoin] = pair
+    sparkPair[state.flyoutCoin.symbol] = pair
     state.sparkPair = Object.assign({ ...state.sparkPair }, sparkPair)
   },
 }

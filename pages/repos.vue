@@ -33,7 +33,7 @@
             <v-btn
               v-if="header.value === 'name'"
               @click="fetchPrices"
-              title="Press to fetch latest prices"
+              title="Press to fetch latest current prices"
               small class="accent px-1"
             >
               Load Coin Data
@@ -283,11 +283,16 @@ export default {
         this.snackbarText = `Error: ${e.message}, ${e.text}`
       } else {
         const { quotes: { data } } = result
-        for (const coin of Object.values(data)) {
-          this.$store.dispatch('setPriceUSD', { symbol: coin.symbol, price: coin.quote.USD?.price })
+        for (const coinData of Object.values(data)) {
+          this.$store.dispatch('setCoin', {
+            symbol: coinData.symbol,
+            price: coinData.quote.USD?.price,
+            name: coinData.name,
+            slug: coinData.slug,
+          })
         }
         if (this.coins.includes('USD')) {
-          this.$store.dispatch('setPriceUSD', { symbol: 'USD', price: 1 })
+          this.$store.dispatch('setCoin', { symbol: 'USD', price: 1 })
         }
         const unlisted = this.$store.getters.coinsUnListed()
         const coinsUnListed = this.coins.filter(coin => unlisted.includes(coin))

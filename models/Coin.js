@@ -7,6 +7,7 @@ export default class Coin extends Model {
     return {
       id: this.uid(),
       name: this.string(''),
+      slug: this.string(''),
       price: this.number(0.0),
       symbol: this.string(''),
     }

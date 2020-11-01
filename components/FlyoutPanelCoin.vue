@@ -1,7 +1,8 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header v-text="coin" class="text-h6" color="blue-grey darken-2" />
+    <v-expansion-panel-header v-text="symbol" class="text-h6" color="blue-grey darken-2" />
     <v-expansion-panel-content color="blue-grey darken-2">
+      <h3 v-text="name" />
       <v-card class="mx-auto">
         <v-card-text class="primary">
           <div class="sub-title font-weight-light"> Coins </div>
@@ -35,17 +36,17 @@
         />
 
         <v-card-actions>
-          <v-btn small fab @click="clearHistory" :disabled="!coin || !pair">
+          <v-btn small fab @click="clearHistory" :disabled="!symbol || !pair">
             <v-icon> mdi-close </v-icon>
           </v-btn>
-          <v-btn @click="getKrakenData" :disabled="!coin"> History </v-btn>
+          <v-btn @click="getKrakenData" :disabled="!symbol"> History </v-btn>
         </v-card-actions>
       </v-card>
 
       <v-input hide-details class="mt-4">
         <v-text-field
           v-model="convert"
-          :label="`Convert ${coin}`"
+          :label="`Convert ${symbol}`"
           :rules="[rules.numeric]"
           placeholder="1.5"
           hide-details
@@ -78,15 +79,21 @@ export default {
     coin () {
       return this.$store.state.flyoutCoin
     },
+    name () {
+      return this.coin?.name
+    },
+    symbol () {
+      return this.coin?.symbol
+    },
     coinSumAmount () {
-      return this.$store.getters.coinSum(this.coin)
+      return this.$store.getters.coinSum(this.symbol)
     },
     coinSumFormat () {
       return formatAmount(this.coinSumAmount)
     },
 
     coinPriceAmount () {
-      return this.$store.getters.coinPriceUSD(this.coin)
+      return this.$store.getters.coinPriceUSD(this.symbol)
     },
     coinPriceCurrency () {
       return formatCurrency(this.coinPriceAmount)
