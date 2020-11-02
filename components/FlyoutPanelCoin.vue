@@ -120,15 +120,15 @@ export default {
   methods: {
     getKrakenData () {
       this.loading = true
-      this.$store.dispatch('loadKraken', this.done)
+      this.$store.dispatch('loadKrakenFly', this.done)
     },
     done () {
       this.loading = false
     },
     clearHistory () {
       this.loading = false
-      this.$store.commit('setSparks', [])
-      this.$store.commit('setSparkPair', '')
+      this.$store.commit('setSparks', { data: [] })
+      this.$store.commit('setSparkPair', { pair: '' })
     },
   },
 

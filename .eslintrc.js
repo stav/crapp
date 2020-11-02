@@ -21,5 +21,13 @@ module.exports = {
     'vue/attributes-order': 'off',
     'vue/max-attributes-per-line': 'off',
     'vue/singleline-html-element-content-newline': 'off',
-  }
+    'space-before-function-paren': [
+      'error',
+      {
+        anonymous: 'ignore',
+        named: 'ignore',
+        asyncArrow: 'always',
+      },
+    ],
+  },
 }

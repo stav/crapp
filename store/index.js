@@ -91,18 +91,15 @@ export const actions = {
   **   }
   ** }
   */
-  async loadKraken (context, done) {
-    const response = await fetch('/api/kraken/history?symbol=' + context.state.flyoutCoin.symbol)
-    const data = response.status === 200 ? await response.json() : { status: response.status }
+  async loadKraken (context, { symbol, done }) {
+    await loadKrakenSparks(context, symbol)
 
-    if (data.history.error.length) {
-      context.commit('setSparkPair', data.history.error.toString())
-    } else {
-      const result = data.history.result
-      const pair = Object.keys(result)[0]
-      context.commit('setSparkPair', pair)
-      context.commit('setSparks', result[pair].slice(-10).map(_ => parseFloat(_[5])))
+    if (done) {
+      done(`${typeof json} from Kraken`)
     }
+  },
+  async loadKrakenFly (context, done) {
+    await loadKrakenSparks(context, context.state.flyoutCoin.symbol)
 
     if (done) {
       done(`${typeof data} from Kraken`)
@@ -116,6 +113,22 @@ export const actions = {
       }
     })
   },
+}
+
+async function loadKrakenSparks (context, symbol) {
+  const response = await fetch('/api/kraken/history?symbol=' + symbol)
+  const json = response.status === 200 ? await response.json() : { status: response.status }
+
+  if (json.history.error.length) {
+    context.commit('setSparkPair', { symbol, pair: json.history.error.toString() })
+    context.commit('setSparks', { symbol, data: [] })
+  } else {
+    const result = json.history.result
+    const pair = Object.keys(result)[0]
+    const data = result[pair].slice(-10).map(_ => parseFloat(_[5]))
+    context.commit('setSparkPair', { symbol, pair })
+    context.commit('setSparks', { symbol, data })
+  }
 }
 
 export const mutations = {
@@ -137,14 +150,16 @@ export const mutations = {
   setFlyoutRepo (state, repo) {
     state.flyoutRepoId = repo.id
   },
-  setSparks (state, data) {
+  setSparks (state, { symbol, data }) {
+    symbol = symbol || state.flyoutCoin.symbol
     const sparks = {}
-    sparks[state.flyoutCoin.symbol] = data
+    sparks[symbol] = data
     state.sparks = Object.assign({ ...state.sparks }, sparks)
   },
-  setSparkPair (state, pair) {
+  setSparkPair (state, { symbol, pair }) {
+    symbol = symbol || state.flyoutCoin.symbol
     const sparkPair = {}
-    sparkPair[state.flyoutCoin.symbol] = pair
+    sparkPair[symbol] = pair
     state.sparkPair = Object.assign({ ...state.sparkPair }, sparkPair)
   },
 }

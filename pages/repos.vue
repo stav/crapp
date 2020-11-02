@@ -32,6 +32,26 @@
           <td v-for="header of fHeaders" :key="header.value" class="text-end">
             <v-btn
               v-if="header.value === 'name'"
+              @click="() => fetchAllSparks()"
+              title="Press to fetch latest history prices displayed as sparklines"
+              small class="accent px-1"
+            >
+              Load Spark Data
+            </v-btn>
+            <v-sparkline
+              v-if="header.coin"
+              :value="sparks(header.value)"
+              color="white"
+              line-width="1"
+              width="200"
+              height="50"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td v-for="header of fHeaders" :key="header.value" class="text-end">
+            <v-btn
+              v-if="header.value === 'name'"
               @click="fetchPrices"
               title="Press to fetch latest current prices"
               small class="accent px-1"
@@ -90,7 +110,6 @@
       <v-btn @click="getBinanceAccountsData"> Binance </v-btn>
       <v-btn @click="getCoinbaseAccountsData"> Coinbase </v-btn>
       <v-btn @click="getCoinbaseProAccountsData"> Coinbase Pro </v-btn>
-      <v-btn @click="getKrakenData"> Kraken </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -233,10 +252,6 @@ export default {
   },
 
   methods: {
-    getKrakenData () {
-      this.loading = 'red'
-      this.$store.dispatch('loadKraken', this.done)
-    },
     getCoinbaseProAccountsData () {
       this.loading = 'blue'
       this.$store.dispatch('loadCoinbaseProAccounts', this.done)
@@ -273,6 +288,45 @@ export default {
       const price = this.coinPrice(symbol)
       return price ? (amount * price) : ''
     },
+    fetchAllSparks () {
+      this.loading = 'red'
+      for (const symbol of this.coins) {
+        this.$store.dispatch('loadKraken', { symbol, done: this.done })
+      }
+    },
+    /*
+    ** fetchPrices
+    **
+    ** Fetch current market prices for all coins in all repositories
+    **
+    ** result = {
+    **   quotes: {
+    **     data: { BTC:{…}, ETH:{…}, … },
+    **     status: {…}
+    **   }
+    ** }
+    **
+    ** data = {
+    **   BTC: Object { id: 1, name: "Bitcoin", symbol: "BTC", … },
+    **   ETH: Object { id: 1027, name: "Ethereum", symbol: "ETH", … },
+    **   {…}
+    ** }
+    **
+    ** coinData = {
+    **   id: 1,
+    **   symbol: "BTC",
+    **   name: "Bitcoin",
+    **   slug: "bitcoin",
+    **   quote: { USD: { price: 13814.127956929022, … } },…
+    ** }
+    **
+    ** coin =
+    **   { symbol: "BTC", price: 13814.127956929022 }
+    **
+    ** unlisted = [ "CGLD", "USD" ]
+    **
+    ** coinsUnlisted = [ "USD" ]
+    */
     async fetchPrices () {
       // Fetch & Store coin prices from CoinMarketCap
       this.loading = 'white'
@@ -344,6 +398,9 @@ export default {
       }
       return Object.assign(repo, coins, { valuation: this.formatCurrency(valuation) })
     },
+    sparks (symbol) {
+      return this.$store.getters.sparkLines(symbol)
+    }
   },
 
   // beforeRouteLeave (to, from, next) {
