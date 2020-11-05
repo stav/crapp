@@ -1,9 +1,11 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header v-text="symbol" class="text-h6" color="blue-grey darken-2" />
+    <v-expansion-panel-header color="blue-grey darken-2">
+      {{ symbol }}
+    </v-expansion-panel-header>
     <v-expansion-panel-content color="blue-grey darken-2">
       <h3 v-text="name" />
-      <v-card class="mx-auto">
+      <v-card class="mt-2 mx-auto">
         <v-card-text class="primary">
           <div class="sub-title font-weight-light"> Coins </div>
           <div class="text-h5 font-weight-heavy white--text" v-text="coinSumFormat" />

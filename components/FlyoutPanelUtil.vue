@@ -4,6 +4,7 @@
     <v-expansion-panel-content color="blue-grey darken-2">
       <v-card class="mx-auto">
         <v-card-text class="accent"> navDrawer:    {{ navDrawer }}    </v-card-text>
+        <v-card-text class="accent"> flyoutPanels: {{ flyoutPanels }} </v-card-text>
         <v-card-text class="accent"> flyoutDrawer: {{ flyoutDrawer }} </v-card-text>
         <v-card-text class="accent"> flyoutCoin:   {{ flyoutCoin }}   </v-card-text>
         <v-card-text class="accent"> flyoutRepoId: {{ flyoutRepoId }} </v-card-text>
@@ -28,6 +29,9 @@ export default {
   computed: {
     navDrawer () {
       return this.$store.state.navDrawer
+    },
+    flyoutPanels () {
+      return this.$store.state.flyoutPanels
     },
     flyoutDrawer () {
       return this.$store.state.flyoutDrawer

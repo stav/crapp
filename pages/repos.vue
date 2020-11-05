@@ -363,9 +363,14 @@ export default {
       ))
     },
     flyCoin (header) {
+      this.$store.commit('setFlyoutDrawer', true)
+      this.$store.commit('openCoinFlyout')
       this.$store.commit('setFlyoutCoin', { symbol: header.value })
     },
     flyRepository (repo) {
+      this.$store.commit('setFlyoutDrawer', true)
+      this.$store.commit('closeCoinFlyout')
+      this.$store.commit('openRepoFlyout')
       this.$store.commit('setFlyoutRepo', repo)
     },
     /*

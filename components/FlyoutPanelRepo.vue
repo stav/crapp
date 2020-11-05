@@ -4,15 +4,28 @@
       {{ repository.name }}
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <v-list>
-        <v-list-item v-for="coin of repository.coins" :key="coin.id" class="accent">
-          <v-list-item-content>
-            <v-list-item-subtitle v-text="coin.coin.name" class="text--disabled" />
-            <v-list-item-title v-text="coin.coin.symbol" class="text-h4" />
-            <v-list-item-title v-text="coin.quantity" class="text--secondary text-h5" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+      <v-card class="mx-auto">
+        <v-card-text class="accent">
+          <v-list v-if="repository.coins" class="pa-0">
+            <v-list-item v-for="coin of repository.coins" :key="coin.id" class="pl-0 pb-4 accent">
+              <v-list-item-content class="pa-0">
+                <v-container class="pa-0">
+                  <v-row no-gutters style="flex-wrap: nowrap;">
+                    <v-col class="flex-grow-0 flex-shrink-1">
+                      <code v-text="coin.coin.symbol" />
+                    </v-col>
+                    <v-col class="flex-grow-1 flex-shrink-1 align-end pl-2">
+                      <v-list-item-subtitle class="text--disabled" v-text="coin.coin.name" />
+                    </v-col>
+                  </v-row>
+                </v-container>
+                <v-list-item-title v-text="coin.quantity" class="text-h5" />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <h3 v-if="!repository.coins"> Select a repository by clicking on it. </h3>
+        </v-card-text>
+      </v-card>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -21,11 +34,10 @@
 export default {
   computed: {
     repository () {
+      const repoId = this.$store.state.flyoutRepoId
       const model = this.$store.$db().model('repositorys')
       const repos = model.query().with(['coins', 'coins.coin'])
-      const repoId = this.$store.state.flyoutRepoId
-      const repo = repos.where('id', repoId).first()
-      return repo || {}
+      return repos.find(repoId) || {}
     }
   }
 }

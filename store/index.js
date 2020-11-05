@@ -3,6 +3,9 @@ import database, { loadBinanceBalances, loadCoinbaseAccounts, loadCoinbaseProAcc
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
 
+const coinPanelIndex = 0
+const repoPanelIndex = 1
+
 export const plugins = [
   VuexORM.install(database)
 ]
@@ -11,6 +14,7 @@ export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'USD'],
   navDrawer: null,
   flyoutDrawer: null,
+  flyoutPanels: [],
   flyoutCoin: null,
   flyoutRepoId: null,
   sparks: {},
@@ -143,6 +147,24 @@ export const mutations = {
   },
   toggleFlyout (state) {
     state.flyoutDrawer = !state.flyoutDrawer
+  },
+  openRepoFlyout (state) {
+    if (!state.flyoutPanels.includes(repoPanelIndex)) {
+      state.flyoutPanels.push(repoPanelIndex)
+    }
+  },
+  openCoinFlyout (state) {
+    if (!state.flyoutPanels.includes(coinPanelIndex)) {
+      state.flyoutPanels.push(coinPanelIndex)
+    }
+  },
+  closeCoinFlyout (state) {
+    if (state.flyoutPanels.includes(coinPanelIndex)) {
+      state.flyoutPanels.pop(coinPanelIndex)
+    }
+  },
+  setFlyoutPanels (state, value) {
+    state.flyoutPanels = value
   },
   setFlyoutCoin (state, { symbol }) {
     state.flyoutCoin = Coin.query().where('symbol', symbol).first()
