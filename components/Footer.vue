@@ -1,13 +1,15 @@
 <template>
-  <v-footer app :absolute="!absolute">
+  <v-footer app :absolute="footerAbsolute">
     <span>&copy; {{ new Date().getFullYear() }}</span>
   </v-footer>
 </template>
 
 <script>
 export default {
-  props: {
-    absolute: Boolean,
+  computed: {
+    footerAbsolute () {
+      return this.$store.state.footerAbsolute
+    },
   }
 }
 </script>

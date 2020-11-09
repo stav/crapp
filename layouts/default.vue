@@ -22,21 +22,7 @@
 
     <flyout-drawer />
 
-    <v-app-bar fixed app :clipped-left="true" :clipped-right="true">
-      <v-app-bar-nav-icon title="Toggle navigation drawer" @click.stop="navDrawer=!navDrawer" />
-
-      <v-btn icon title="Toggle footer absolute" @click.stop="absolute = !absolute">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-
-      <v-toolbar-title v-text="title" />
-
-      <v-spacer />
-
-      <v-btn icon @click.stop="flyDrawerOut" title="Toggle coin/repo flyout">
-        <v-icon>mdi-bitcoin</v-icon>
-      </v-btn>
-    </v-app-bar>
+    <main-bar />
 
     <v-main>
       <v-container fluid>
@@ -44,26 +30,27 @@
       </v-container>
     </v-main>
 
-    <c-footer :absolute="absolute" />
+    <c-footer />
   </v-app>
 </template>
 
 <script>
 import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
 import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
-import flyoutDrawerX from '@/components/FlyoutDrawer.vue'
+import flyoutDrawer from '@/components/FlyoutDrawer.vue'
+import mainBar from '@/components/MainBar.vue'
 import cFooter from '@/components/Footer.vue'
 
 export default {
 
   components: {
-    'flyout-drawer': flyoutDrawerX,
+    'flyout-drawer': flyoutDrawer,
     'c-footer': cFooter,
+    'main-bar': mainBar,
   },
 
   data () {
     return {
-      absolute: false,
       items: [
         {
           title: 'Welcome',
@@ -87,7 +74,6 @@ export default {
         },
       ],
       miniVariant: true,
-      title: 'CrApp'
     }
   },
 
@@ -102,11 +88,6 @@ export default {
     },
   },
 
-  methods: {
-    flyDrawerOut () {
-      this.$store.commit('toggleFlyout')
-    },
-  },
 }
 </script>
 

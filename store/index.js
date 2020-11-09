@@ -12,14 +12,15 @@ export const plugins = [
 
 export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'USD'],
-  navDrawer: null,
+  flyoutCoin: null,
   flyoutDrawer: null,
   flyoutPanels: [],
-  flyoutCoin: null,
   flyoutRepoId: null,
-  sparks: {},
-  sparkPair: {},
+  footerAbsolute: true,
+  navDrawer: null,
   selectedRepos: [],
+  sparkPair: {},
+  sparks: {},
 })
 
 export const getters = {
@@ -171,6 +172,9 @@ export const mutations = {
   },
   setFlyoutRepo (state, repo) {
     state.flyoutRepoId = repo.id
+  },
+  toggleFooterAbsolute (state) {
+    state.footerAbsolute = !state.footerAbsolute
   },
   setSparks (state, { symbol, data }) {
     symbol = symbol || state.flyoutCoin.symbol
