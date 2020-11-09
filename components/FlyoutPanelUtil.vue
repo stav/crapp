@@ -5,6 +5,7 @@
       <v-card class="mx-auto">
         <v-card-text class="accent"> navDrawer:      {{ navDrawer }}      </v-card-text>
         <v-card-text class="accent"> footerAbsolute: {{ footerAbsolute }} </v-card-text>
+        <v-card-text class="accent"> repoCoinValue:  {{ repoCoinValue }}  </v-card-text>
         <v-card-text class="accent"> flyoutPanels:   {{ flyoutPanels }}   </v-card-text>
         <v-card-text class="accent"> flyoutDrawer:   {{ flyoutDrawer }}   </v-card-text>
         <v-card-text class="accent"> flyoutCoin:     {{ flyoutCoin }}     </v-card-text>
@@ -33,6 +34,9 @@ export default {
     },
     footerAbsolute () {
       return this.$store.state.footerAbsolute
+    },
+    repoCoinValue () {
+      return this.$store.state.repoCoinValue
     },
     flyoutPanels () {
       return this.$store.state.flyoutPanels

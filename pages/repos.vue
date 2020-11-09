@@ -1,20 +1,6 @@
 <template>
   <v-card class="mx-auto" :loading="loading">
-    <v-app-bar color="indigo">
-      <v-icon class="mr-2">mdi-bitcoin</v-icon>
-      Repositories
-      <v-spacer />
-      {{ coins.length }} coins in {{ repositorys.length }} repos
-      <v-spacer />
-      <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
-      <v-switch
-        v-model="coinValue"
-        class="ml-3 mr-2"
-        hide-details
-        title="Display amount of coins held or the USD valuation"
-      />
-      <span @click="coinValue=true" class="clickable text--secondary"> value </span>
-    </v-app-bar>
+    <repo-bar :repositorys="repositorys" :coins="coins" />
 
     <v-data-table
       :headers="headers"
@@ -117,10 +103,15 @@
 <script>
 import { loadRepositorys } from '@/database'
 import { formatAmount, formatCurrency } from '@/utils'
+import repoBar from '../components/RepoBar.vue'
 
 export default {
 
   fetchOnServer: true,
+
+  components: {
+    'repo-bar': repoBar,
+  },
 
   async fetch () {
     await loadRepositorys()
@@ -134,7 +125,6 @@ export default {
     loading: false,
     snackbarText: '',
     snackbarModel: false,
-    coinValue: true,
   }),
 
   computed: {
@@ -143,6 +133,9 @@ export default {
     },
     Repositorys () {
       return this.$store.$db().model('repositorys')
+    },
+    coinValue () {
+      return this.$store.state.repoCoinValue
     },
     /*
     ** Database data
@@ -420,11 +413,5 @@ export default {
 <style lang="scss">
 .text-end {
   text-align: right !important;
-}
-</style>
-
-<style lang="scss" scoped>
-.clickable {
-  cursor: pointer;
 }
 </style>

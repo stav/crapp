@@ -17,6 +17,7 @@ export const state = () => ({
   flyoutPanels: [],
   flyoutRepoId: null,
   footerAbsolute: true,
+  repoCoinValue: true,
   navDrawer: null,
   selectedRepos: [],
   sparkPair: {},
@@ -175,6 +176,9 @@ export const mutations = {
   },
   toggleFooterAbsolute (state) {
     state.footerAbsolute = !state.footerAbsolute
+  },
+  setRepoCoinValue (state, value) {
+    state.repoCoinValue = value
   },
   setSparks (state, { symbol, data }) {
     symbol = symbol || state.flyoutCoin.symbol
