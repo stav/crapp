@@ -17,8 +17,7 @@ export function loadBinanceBalances (balances) {
 
   // Secondly remove any coins from repo in the db not in the balances
   for (const coin of binance.coins) {
-    const symbol = coin.coin.symbol
-    if (balances.find(balance => balance.asset === symbol)) {
+    if (balances.find(balance => balance.asset === coin.coin.symbol)) {
       // RepoCoin.update({
       //   where: coin.id,
       //   data: { quantity }

@@ -15,8 +15,7 @@ export function loadCoinbaseProAccounts (accounts) {
 
   // Secondly remove any coins from repo in the db not in the accounts
   for (const coin of coinbasepro.coins) {
-    const symbol = coin.coin.symbol
-    if (!accounts.find(account => account.currency === symbol)) {
+    if (!accounts.find(account => account.currency === coin.coin.symbol)) {
       coin.$delete()
     }
   }
@@ -36,8 +35,7 @@ export function loadCoinbaseAccounts (accounts) {
 
   // Secondly remove any coins from repo in the db not in the accounts
   for (const coin of coinbase.coins) {
-    const symbol = coin.coin.symbol
-    if (!accounts.find(account => account.currency === symbol)) {
+    if (!accounts.find(account => account.currency === coin.coin.symbol)) {
       coin.$delete()
     }
   }
