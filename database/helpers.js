@@ -3,26 +3,40 @@ import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
 
+function updateRepoCoin (symbol, repoId, repoCoinId, quantity) {
+  let coin = Coin.query().where('symbol', symbol).first()
+  if (!coin) {
+    Coin.insert({ data: { symbol } })
+    coin = Coin.query().where('symbol', symbol).first()
+  }
+  RepoCoin.insertOrUpdate({
+    data: {
+      id: repoCoinId,
+      repoId,
+      coinId: coin.id,
+      quantity,
+    }
+  })
+}
+
 export function loadCoinbaseProAccounts (accounts) {
   const repos = Repository.query().with(['coins', 'coins.coin'])
   const coinbasepro = repos.where('name', 'Coinbase Pro').first()
 
+  // First update the repo in the db with all the accounts we received
   for (const account of accounts) {
     const symbol = account.currency
     const repoCoin = coinbasepro.coins.find(coin => coin.coin?.symbol === symbol)
-    let coin = Coin.query().where('symbol', symbol).first()
-    if (!coin) {
-      Coin.insert({ data: { symbol } })
-      coin = Coin.query().where('symbol', symbol).first()
+    const quantity = parseFloat(account?.balance) || 0
+    updateRepoCoin(symbol, coinbasepro.id, repoCoin?.id, quantity)
+  }
+
+  // Secondly remove any coins from repo in the db not in the accounts
+  for (const coin of coinbasepro.coins) {
+    const symbol = coin.coin.symbol
+    if (!accounts.find(account => account.currency === symbol)) {
+      coin.$delete()
     }
-    RepoCoin.insertOrUpdate({
-      data: {
-        id: repoCoin?.id,
-        repoId: coinbasepro.id,
-        coinId: coin.id,
-        quantity: account ? parseFloat(account.balance) : 0,
-      }
-    })
   }
 }
 
@@ -30,22 +44,20 @@ export function loadCoinbaseAccounts (accounts) {
   const repos = Repository.query().with(['coins', 'coins.coin'])
   const coinbase = repos.where('name', 'Coinbase').first()
 
+  // First update the repo in the db with all the accounts we received
   for (const account of accounts) {
     const symbol = account.currency
     const repoCoin = coinbase.coins.find(coin => coin.coin?.symbol === symbol)
-    let coin = Coin.query().where('symbol', symbol).first()
-    if (!coin) {
-      Coin.insert({ data: { symbol } })
-      coin = Coin.query().where('symbol', symbol).first()
+    const quantity = parseFloat(account?.balance?.amount) || 0
+    updateRepoCoin(symbol, coinbase.id, repoCoin?.id, quantity)
+  }
+
+  // Secondly remove any coins from repo in the db not in the accounts
+  for (const coin of coinbase.coins) {
+    const symbol = coin.coin.symbol
+    if (!accounts.find(account => account.currency === symbol)) {
+      coin.$delete()
     }
-    RepoCoin.insertOrUpdate({
-      data: {
-        id: repoCoin?.id,
-        repoId: coinbase.id,
-        coinId: coin.id,
-        quantity: account ? parseFloat(account.balance.amount) : 0,
-      }
-    })
   }
 }
 
@@ -53,22 +65,27 @@ export function loadBinanceBalances (balances) {
   const repos = Repository.query().with(['coins', 'coins.coin'])
   const binance = repos.where('name', 'Binance').first()
 
+  // First update the repo in the db with all the balances we received
   for (const balance of balances) {
     const symbol = balance.asset
     const repoCoin = binance.coins.find(coin => coin.coin?.symbol === symbol)
-    let coin = Coin.query().where('symbol', symbol).first()
-    if (!coin) {
-      Coin.insert({ data: { symbol } })
-      coin = Coin.query().where('symbol', symbol).first()
+    const free = parseFloat(balance.free || 0)
+    const locked = parseFloat(balance.locked || 0)
+    const quantity = free + locked
+    updateRepoCoin(symbol, binance.id, repoCoin?.id, quantity)
+  }
+
+  // Secondly remove any coins from repo in the db not in the balances
+  for (const coin of binance.coins) {
+    const symbol = coin.coin.symbol
+    if (balances.find(balance => balance.asset === symbol)) {
+      // RepoCoin.update({
+      //   where: coin.id,
+      //   data: { quantity }
+      // })
+    } else {
+      coin.$delete()
     }
-    RepoCoin.insertOrUpdate({
-      data: {
-        id: repoCoin?.id,
-        repoId: binance.id,
-        coinId: coin.id,
-        quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
-      }
-    })
   }
 }
 
@@ -118,7 +135,7 @@ function insertRepos (repos) {
 /*
 ** Load Repositories
 **
-** Read the list of repository data from and input file and load up the db
+** Read the list of repository data from input file and load up the db
 */
 export async function loadRepositorys () {
   Repository.deleteAll()

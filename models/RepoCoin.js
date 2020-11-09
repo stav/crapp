@@ -13,8 +13,4 @@ export default class RepoCoin extends Model {
       coin: this.belongsTo(Coin, 'coinId')
     }
   }
-
-  static beforeCreate (model) {
-    model.name = model.name || model.symbol
-  }
 }
