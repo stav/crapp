@@ -1,5 +1,7 @@
 import { Database } from '@vuex-orm/core'
-import { loadBinanceBalances, loadCoinbaseAccounts, loadCoinbaseProAccounts, loadRepositorys } from './helpers'
+import { loadRepositorys } from './helpers'
+import { loadBinanceBalances } from './binance'
+import { loadCoinbaseAccounts, loadCoinbaseProAccounts } from './coinbase'
 import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
