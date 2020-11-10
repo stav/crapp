@@ -122,10 +122,7 @@ export default {
   methods: {
     getKrakenData () {
       this.loading = true
-      this.$store.dispatch('loadKrakenFly', this.done)
-    },
-    done () {
-      this.loading = false
+      this.$store.dispatch('loadKrakenFly', () => { this.loading = false })
     },
     clearHistory () {
       this.loading = false
