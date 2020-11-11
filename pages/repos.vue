@@ -54,7 +54,7 @@ export default {
     **
     */
     symbols () {
-      return this.$store.getters.sortedUniqueSymbols()
+      return this.$store.getters.sortedUniqueSymbols
     },
   },
 

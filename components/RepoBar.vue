@@ -114,8 +114,8 @@ export default {
       this.$store.dispatch('loadBinanceBalances', this.done)
     },
     done (message) {
-      console.debug(message)
       if (message) {
+        console.debug(message)
         this.snackbarText = message
         this.snackbarModel = true
       }

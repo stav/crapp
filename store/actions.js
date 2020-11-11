@@ -131,8 +131,8 @@ async function loadKrakenSparks (context, symbol) {
 ** coinsUnlisted = [ "USD" ]
 */
 async function fetchPrices (context) {
-  const symbols = context.getters.sortedUniqueSymbols()
-  const coinsUnListed = context.getters.coinsUnListed()
+  const symbols = context.getters.sortedUniqueSymbols
+  const coinsUnListed = context.getters.coinsUnListed
   const coinsListed = symbols.filter(coin => !coinsUnListed.includes(coin))
   const priceFetcherPath = '/api/coinmarketcap/quotes?symbol='
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
@@ -155,7 +155,7 @@ async function fetchPrices (context) {
     if (symbols.includes('USD')) {
       context.dispatch('setCoin', { symbol: 'USD', price: 1 })
     }
-    const unlisted = context.getters.coinsUnListed()
+    const unlisted = context.getters.coinsUnListed
     const coinsUnListed = symbols.filter(coin => unlisted.includes(coin))
     const exceptions = coinsUnListed.length ? `(except ${coinsUnListed})` : ''
     console.debug(`Loaded prices ${exceptions}`)

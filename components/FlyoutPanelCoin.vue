@@ -114,7 +114,7 @@ export default {
       return this.$store.getters.sparkLines()
     },
     pair () {
-      return this.$store.getters.sparkPair()
+      return this.$store.getters.sparkPair
     },
 
   },

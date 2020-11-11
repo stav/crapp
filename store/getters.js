@@ -3,10 +3,16 @@ import Coin from '~/models/Coin'
 
 export default {
 
+  /*
+  ** coinPriceUSD
+  */
   coinPriceUSD: () => (symbol) => {
     return Coin.query().where('symbol', symbol).first()?.price
   },
 
+  /*
+  ** coinSum
+  */
   coinSum: state => (symbol) => {
     return RepoCoin
       .query()
@@ -33,14 +39,23 @@ export default {
   **
   ** return [ "BTC", … ]
   */
-  sortedUniqueSymbols: () => () => {
+  sortedUniqueSymbols () {
     const uniqueSymbols = new Set(Coin.all().map(coin => coin.symbol))
     return Array.from(uniqueSymbols).sort()
   },
 
-  coinsUnListed: state => () => state.coinMarketCapUnlisted,
+  /*
+  ** coinsUnListed
+  */
+  coinsUnListed: state => state.coinMarketCapUnlisted,
 
+  /*
+  ** sparkLines
+  */
   sparkLines: state => symbol => state.sparks[symbol || state.flyoutCoin?.symbol] || [],
 
-  sparkPair: state => () => state.sparkPair[state.flyoutCoin?.symbol] || '',
+  /*
+  ** sparkPair
+  */
+  sparkPair: state => state.sparkPair[state.flyoutCoin?.symbol] || '',
 }
