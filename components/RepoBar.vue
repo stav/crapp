@@ -2,6 +2,25 @@
   <v-app-bar color="indigo">
     <v-icon class="mr-2">mdi-bitcoin</v-icon> Repositories <v-spacer />
     {{ coins.length }} coins in {{ repositorys.length }} repos <v-spacer />
+    <v-card class="mx-auto" :loading="loading">
+      <v-card-actions v-if="repositorys.length">
+        <v-btn
+          @click="fetchAllSparks"
+          title="Press to fetch latest history prices displayed as sparklines"
+          small class="accent px-1"
+        >
+          Sparks
+        </v-btn>
+        <v-btn
+          @click="fetchPrices"
+          title="Press to fetch latest current prices"
+          small class="accent px-1"
+        >
+          Load Coin Data
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-spacer />
     <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
     <v-switch
       v-model="coinValue"
@@ -16,6 +35,9 @@
 <script>
 export default {
 
+  /*
+  ** PROPS
+  */
   props: {
     coins: {
       type: Array,
@@ -33,6 +55,16 @@ export default {
     },
   },
 
+  /*
+  ** DATA
+  */
+  data: () => ({
+    loading: false,
+  }),
+
+  /*
+  ** COMPUTED
+  */
   computed: {
     coinValue: {
       get () {
@@ -41,6 +73,23 @@ export default {
       set (value) {
         this.$store.commit('setRepoCoinValue', value)
       }
+    },
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    fetchAllSparks () {
+      this.loading = 'white'
+      this.$store.dispatch('loadKraken', { symbols: this.coins, done: this.done })
+    },
+    fetchPrices () {
+      this.loading = 'accent'
+      this.$store.dispatch('fetchPrices', this.done)
+    },
+    done () {
+      this.loading = false
     },
   },
 
