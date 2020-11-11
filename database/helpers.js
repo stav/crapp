@@ -5,7 +5,7 @@ import Coin from '~/models/Coin'
 
 // const coins = repos.reduce(
 //   (acc, cur, idx, src) => {
-//     console.log('reduce', acc, cur, idx, src)
+//     console.debug('reduce', acc, cur, idx, src)
 //     acc.add(cur)
 //   }, new Set()
 // )
