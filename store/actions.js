@@ -76,8 +76,8 @@ export default {
     })
   },
   async fetchPrices (context, done) {
-    await fetchPrices(context)
-    done && done()
+    const message = await fetchPrices(context)
+    done && done(message)
   },
 }
 
@@ -138,10 +138,12 @@ async function fetchPrices (context) {
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)
   const result = await response.json()
+  let message
 
   if (result.error) {
     const e = result.error
-    console.error(`Error: ${e.message}, ${e.text}`)
+    message = `Error: ${e.message}, ${e.text}`
+    console.error(message)
   } else {
     const { quotes: { data } } = result
     for (const coinData of Object.values(data)) {
@@ -158,6 +160,7 @@ async function fetchPrices (context) {
     const unlisted = context.getters.coinsUnListed
     const coinsUnListed = symbols.filter(coin => unlisted.includes(coin))
     const exceptions = coinsUnListed.length ? `(except ${coinsUnListed})` : ''
-    console.debug(`Loaded prices ${exceptions}`)
+    message = `Loaded prices ${exceptions}`
   }
+  return message
 }

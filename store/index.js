@@ -15,9 +15,11 @@ export const state = () => ({
   flyoutPanels: [],
   flyoutRepoId: null,
   footerAbsolute: true,
-  repoCoinValue: true,
   navDrawer: null,
+  repoCoinValue: true,
   selectedRepos: [],
+  snackbarModel: false,
+  snackbarText: '',
   sparkPair: {},
   sparks: {},
 })
