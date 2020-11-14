@@ -64,5 +64,6 @@ export default {
   snackMessage (state, message) {
     state.snackbarText = message
     state.snackbarModel = true
+    console.log(this._vm)
   },
 }

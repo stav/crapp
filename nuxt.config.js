@@ -54,6 +54,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~/plugins/vue-toastification' },
   ],
 
   /*
@@ -87,7 +88,16 @@ export default {
   */
   modules: [
     '@nuxtjs/axios',
+    'vue-toastification/nuxt',
   ],
+
+  /*
+  ** https://github.com/Maronato/vue-toastification
+  */
+  toast: {
+    timeout: 2000,
+    closeOnClick: true,
+  },
 
   /*
   ** vuetify module configuration
@@ -117,5 +127,8 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    transpile: [
+      'vue-toastification',
+    ],
   }
 }

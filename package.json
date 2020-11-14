@@ -17,7 +17,8 @@
     "@vuex-orm/core": "^0.36.3",
     "crypto": "^1.0.1",
     "nuxt": "^2.14.0",
-    "vue-json-component": "^0.4.1"
+    "vue-json-component": "^0.4.1",
+    "vue-toastification": "^1.7.8"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.0",
