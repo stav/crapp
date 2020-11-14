@@ -13,6 +13,11 @@
 
 <script>
 export default {
+
+  mounted () {
+    console.log('asdf', this)
+  },
+
   computed: {
     snackbarText () {
       return this.$store.state.snackbarText

@@ -10,3 +10,17 @@
     </v-btn>
   </div>
 </template>
+
+<script>
+export default {
+
+  mounted () {
+    console.log('asdf', this)
+    this.$notify(
+      { group: "foo", title: "Success", text: "Your account was registered!" },
+      2000
+    ) // 2s
+  }
+
+}
+</script>

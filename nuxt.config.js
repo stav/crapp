@@ -54,6 +54,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~/plugins/vt-notifications' },
   ],
 
   /*
@@ -117,5 +118,8 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    transpile: [
+      'vt-notifications'
+    ],
   }
 }
