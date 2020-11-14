@@ -15,8 +15,10 @@
     "@nuxt/typescript-runtime": "^1.0.0",
     "@nuxtjs/axios": "^5.12.1",
     "@vuex-orm/core": "^0.36.3",
+    "awesome-notifications": "^3.1.1",
     "crypto": "^1.0.1",
     "nuxt": "^2.14.0",
+    "vue-awesome-notifications": "^3.1.1",
     "vue-json-component": "^0.4.1"
   },
   "devDependencies": {

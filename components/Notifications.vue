@@ -15,6 +15,7 @@
 export default {
   computed: {
     snackbarText () {
+      console.log(this)
       return this.$store.state.snackbarText
     },
     snackbarModel: {
