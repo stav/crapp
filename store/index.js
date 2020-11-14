@@ -19,7 +19,8 @@ export const state = () => ({
   repoCoinValue: true,
   selectedRepos: [],
   snackbarModel: false,
-  snackbarText: '',
+  snackbarFlag: false,
+  snackbarText: [],
   sparkPair: {},
   sparks: {},
 })

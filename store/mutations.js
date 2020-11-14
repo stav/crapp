@@ -58,11 +58,19 @@ export default {
     sparkPair[symbol] = pair
     state.sparkPair = Object.assign({ ...state.sparkPair }, sparkPair)
   },
+  setSnackbarFlag (state, value) {
+    state.snackbarFlag = value
+  },
   setSnackbarModel (state, value) {
     state.snackbarModel = value
+    state.snackbarFlag = false
+  },
+  setSnackbarText (state, value) {
+    state.snackbarText = value
   },
   snackMessage (state, message) {
-    state.snackbarText = message
+    state.snackbarText.unshift(message)
     state.snackbarModel = true
+    state.snackbarFlag = true
   },
 }
