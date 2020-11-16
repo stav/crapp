@@ -7,7 +7,12 @@
       <v-card class="mx-auto">
         <v-card-text class="accent">
           <v-list v-if="repository.coins" class="pa-0">
-            <v-list-item v-for="coin of repository.coins" :key="coin.id" class="pl-0 pb-4 accent">
+            <v-list-item
+              v-for="coin of repository.coins"
+              :key="coin.id"
+              class="pl-0 pb-4 accent"
+              @click="() => flyCoin(coin.coin.symbol)"
+            >
               <v-list-item-content class="pa-0">
                 <v-container class="pa-0">
                   <v-row no-gutters style="flex-wrap: nowrap;">
@@ -32,13 +37,23 @@
 
 <script>
 export default {
+
   computed: {
     repository () {
       const repoId = this.$store.state.flyoutRepoId
       const model = this.$store.$db().model('repositorys')
       const repos = model.query().with(['coins', 'coins.coin'])
       return repos.find(repoId) || {}
-    }
-  }
+    },
+  },
+
+  methods: {
+    flyCoin (symbol) {
+      this.$store.commit('setFlyoutDrawer', true)
+      this.$store.commit('openCoinFlyout')
+      this.$store.commit('setFlyoutCoin', { symbol })
+    },
+  },
+
 }
 </script>

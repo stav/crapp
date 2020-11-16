@@ -27,7 +27,7 @@
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
           <v-btn
             v-if="header.coin"
-            @click="() => flyCoin(header)"
+            @click="() => flyCoin(header.value)"
             small class="accent px-1"
             v-text="header.value"
             :title="coinPrice(header.value)"
@@ -231,10 +231,10 @@ export default {
         0 // zero starting value
       ))
     },
-    flyCoin (header) {
+    flyCoin (symbol) {
       this.$store.commit('setFlyoutDrawer', true)
       this.$store.commit('openCoinFlyout')
-      this.$store.commit('setFlyoutCoin', { symbol: header.value })
+      this.$store.commit('setFlyoutCoin', { symbol })
     },
     flyRepository (repo) {
       this.$store.commit('setFlyoutDrawer', true)
