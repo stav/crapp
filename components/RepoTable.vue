@@ -237,10 +237,7 @@ export default {
       this.$store.commit('setFlyoutCoin', { symbol })
     },
     flyRepository (repo) {
-      this.$store.commit('setFlyoutDrawer', true)
-      this.$store.commit('closeCoinFlyout')
-      this.$store.commit('openRepoFlyout')
-      this.$store.commit('setFlyoutRepo', repo)
+      this.$store.dispatch('flyRepository', repo)
     },
     coinSum (symbol) {
       return this.$store.getters.coinSum(symbol)

@@ -79,6 +79,12 @@ export default {
     const message = await fetchPrices(context)
     done && done(message)
   },
+  flyRepository (context, repo) {
+    context.commit('setFlyoutDrawer', true)
+    context.commit('closeCoinFlyout')
+    context.commit('openRepoFlyout')
+    context.commit('setFlyoutRepo', repo)
+  },
 }
 
 async function loadKrakenSparks (context, symbol) {

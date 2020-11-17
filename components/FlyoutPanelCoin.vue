@@ -1,23 +1,26 @@
 <template>
   <v-expansion-panel>
+    <!-- HEADER -->
     <v-expansion-panel-header color="blue-grey darken-2">
       {{ symbol }}
     </v-expansion-panel-header>
+
     <v-expansion-panel-content color="blue-grey darken-2">
+      <!-- NAME -->
       <h3 v-text="name" />
+
+      <!-- TRIBOXS -->
       <v-card class="mt-2 mx-auto">
         <v-card-text class="primary">
           <div class="sub-title font-weight-light"> Coins </div>
           <div class="text-h5 font-weight-heavy white--text" v-text="coinSumFormat" />
           <div class="sub-title font-weight-light" v-text="coinSumAmount" />
         </v-card-text>
-
         <v-card-text class="accent">
           <div class="sub-title font-weight-light"> Price </div>
           <div class="text-h5 font-weight-heavy white--text" v-text="coinPriceCurrency" />
           <div class="sub-title font-weight-light" v-text="coinPriceAmount" />
         </v-card-text>
-
         <v-card-text class="secondary">
           <div class="sub-title font-weight-light"> Value </div>
           <div class="text-h5 font-weight-heavy white--text" v-text="coinValueCurrency" />
@@ -25,26 +28,28 @@
         </v-card-text>
       </v-card>
 
-      <v-card :loading="loading" class="mx-auto mt-4">
-        <v-progress-linear :active="loading" color="primary" indeterminate />
-
-        <v-sheet class="ma-3 mt-6" v-show="pair"> {{ pair }}</v-sheet>
-
+      <!-- HISTORY SPARK -->
+      <v-card :loading="loading" class="accent mt-4 mx-auto">
+        <div class="text-caption ml-2 pt-2" v-show="pair">{{ pair }}</div>
         <v-sparkline
           :value="sparks"
           color="white"
           line-width="2"
           padding="16"
         />
-
         <v-card-actions>
-          <v-btn small fab @click="clearHistory" :disabled="!symbol || !pair">
+          <v-btn
+            small fab class="accent"
+            :disabled="!symbol || !pair"
+            @click="clearHistory"
+          >
             <v-icon> mdi-close </v-icon>
           </v-btn>
-          <v-btn @click="getKrakenData" :disabled="!symbol"> History </v-btn>
+          <v-btn @click="getKrakenData" :disabled="!symbol" class="accent"> History </v-btn>
         </v-card-actions>
       </v-card>
 
+      <!-- CONVERT -->
       <v-input hide-details class="mt-4">
         <v-text-field
           v-model="convert"
@@ -58,6 +63,24 @@
         />
       </v-input>
       <div class="ml-4 mt-2" v-show="convert" v-text="convertedUSD" />
+
+      <!-- REPOS -->
+      <v-card class="mt-4 mx-auto">
+        <v-list dense>
+          <div class="text-subtitle-1 ml-2">Repositories</div>
+          <v-list-item
+            v-for="repo in repos" :key="repo.id"
+            @click="() => flyRepository(repo)"
+          >
+            <v-list-item-icon>
+              <v-icon>mdi-bitcoin</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title v-text="repo.name" />
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-card>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -86,6 +109,13 @@ export default {
     },
     symbol () {
       return this.coin?.symbol
+    },
+    repos () {
+      const model = this.$store.$db().model('repositorys')
+      const query = model.query().with('coins', (query) => {
+        query.where('coinId', this.coin?.id)
+      }).has('coins')
+      return query.get().filter(repo => repo.coins.length)
     },
     coinSumAmount () {
       return this.$store.getters.coinSum(this.symbol)
@@ -128,6 +158,9 @@ export default {
       this.loading = false
       this.$store.commit('setSparks', { data: [] })
       this.$store.commit('setSparkPair', { pair: '' })
+    },
+    flyRepository (repo) {
+      this.$store.dispatch('flyRepository', repo)
     },
   },
 
