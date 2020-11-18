@@ -72,6 +72,7 @@ export default {
     { path: '/api/coinbase', handler: '~/api/coinbase' },
     { path: '/api/binance', handler: '~/api/binance' },
     { path: '/api/kraken', handler: '~/api/kraken' },
+    { path: '/api/icons', handler: '~/api/icons' },
   ],
 
   /*

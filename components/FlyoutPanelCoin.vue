@@ -174,6 +174,13 @@ export default {
     flyRepository (repo) {
       this.$store.dispatch('flyRepository', repo)
     },
+    async icons () {
+      const symbol = this.$store.state.flyoutCoin?.symbol
+      const response = await fetch('/api/icons/' + symbol)
+      const text = await response.text()
+      console.log('response', text)
+      return text
+    },
   },
 
 }
