@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256px" height="222px" viewBox="0 0 256 222" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>Basic Attention Token</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Black-&amp;-White" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-1507.000000, -3297.000000)" id="Basic-Attention-Token" fill="#000000">
+            <g transform="translate(1507.000000, 3297.000000)">
+                <path d="M77.7438061,177.444328 L179.812904,177.444328 L255.897927,220.994055 L0.714513557,221.295056 L77.7438061,177.444328 Z M180.243935,175.66683 L129.036347,90.515213 L129.061665,0 L256,219.049442 L180.243935,175.66683 Z M128.178877,90.6833497 L77.4344058,175.442769 L3.06220095e-05,219.559809 L128.204177,0.20414673 L128.178877,90.6833497 Z" id="Combined-Shape"></path>
+                <path d="M128.646298,87.8800764 L183.049987,178.403509 L74.4851712,178.403509 L128.646298,87.8800764 Z M78.0124365,176.403509 L179.514606,176.403509 L128.65013,91.7690464 L78.0124365,176.403509 Z" id="Stroke-5" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

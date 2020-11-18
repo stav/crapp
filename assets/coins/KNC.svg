@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="148px" height="258px" viewBox="0 0 148 258" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>Kyber Network</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="63.1322034 250.578624 135.115089 190.670067 63.1322034 111.077966"></polygon>
+        <polygon id="path-2" points="63.1322034 5.07249584 63.1322034 100.78 138.970879 63.491432"></polygon>
+        <polygon id="path-3" points="57.5489259 8.6779661 8.02711864 64.2471742 18.2140106 185.348252 57.5489259 243.651123"></polygon>
+        <polygon id="path-4" points="65.0847458 105.807575 138.956042 69.4237288 137.291862 183.108624"></polygon>
+    </defs>
+    <g id="Black-&amp;-White" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-2718.000000, -3279.000000)" id="Kyber-Network">
+            <g transform="translate(2719.000000, 3280.000000)">
+                <g id="Path-15">
+                    <use fill="#000000" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <path stroke="#FFFFFF" stroke-width="2" d="M62.1322034,252.711907 L62.1322034,108.481422 L136.555698,190.772126 L62.1322034,252.711907 Z"></path>
+                </g>
+                <g id="Path-16">
+                    <use fill="#000000" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    <path stroke="#FFFFFF" stroke-width="2" d="M62.1322034,3.03990279 L140.85412,63.6798144 L62.1322034,102.386022 L62.1322034,3.03990279 Z"></path>
+                </g>
+                <g id="Path-17">
+                    <use fill="#000000" fill-rule="evenodd" xlink:href="#path-3"></use>
+                    <path stroke="#FFFFFF" stroke-width="2" d="M58.5489259,6.05280524 L58.5489259,246.921346 L17.2393625,185.691618 L6.9946119,63.9027215 L58.5489259,6.05280524 Z"></path>
+                </g>
+                <g id="Path-18">
+                    <use fill="#000000" fill-rule="evenodd" xlink:href="#path-4"></use>
+                    <path stroke="#FFFFFF" stroke-width="2" d="M63.434372,105.50572 L139.979849,67.8047598 L138.255424,185.605109 L63.434372,105.50572 Z"></path>
+                </g>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="59.4440678" cy="4.1220339" r="4.1220339"></circle>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="4.1220339" cy="66.3864407" r="4.1220339"></circle>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="59.4440678" cy="106.738983" r="4.1220339"></circle>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="16.9220339" cy="189.179661" r="4.1220339"></circle>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="61.8305085" cy="251.877966" r="4.1220339"></circle>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="138.847458" cy="190.481356" r="4.1220339"></circle>
+                <circle id="Oval-11" stroke="#FFFFFF" stroke-width="2" fill="#000000" cx="141.884746" cy="64.4338983" r="4.1220339"></circle>
+            </g>
+        </g>
+    </g>
+</svg>
