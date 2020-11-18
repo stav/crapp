@@ -2,6 +2,7 @@
   <v-expansion-panel>
     <!-- HEADER -->
     <v-expansion-panel-header color="blue-grey darken-2">
+      <v-img max-width="30" max-height="30" contain :src="logo" class="mr-4" />
       {{ symbol }}
     </v-expansion-panel-header>
 
@@ -146,7 +147,18 @@ export default {
     pair () {
       return this.$store.getters.sparkPair
     },
-
+    logo () {
+      const symbol = this.$store.state.flyoutCoin?.symbol
+      try {
+        return require(`@/assets/coins/${symbol}.svg`)
+      } catch (e) {
+        try {
+          return require(`@/assets/coins/${symbol}.png`)
+        } catch (e) {
+          return require('@/assets/coins/default.svg')
+        }
+      }
+    },
   },
 
   methods: {
