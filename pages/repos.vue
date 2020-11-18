@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto">
-    <repo-bar :repositorys="repositorys" :coins="symbols" />
-    <repo-table :repositorys="repositorys" :coins="symbols" />
+    <repo-bar :repositorys="repositorys" :symbols="symbols" />
+    <repo-table :repositorys="repositorys" :symbols="symbols" />
   </v-card>
 </template>
 

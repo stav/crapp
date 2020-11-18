@@ -77,7 +77,7 @@ export default {
   ** PROPS
   */
   props: {
-    coins: {
+    symbols: {
       type: Array,
       required: true,
       default() {
@@ -139,10 +139,10 @@ export default {
       /*
       ** Right-most columns (dynamically created one for each coin)
       */
-      for (const coin of this.coins) {
+      for (const symbol of this.symbols) {
         _.push({
-          text: coin,
-          value: coin,
+          text: symbol,
+          value: symbol,
           align: 'end',
           sortable: true,
           coin: true,
@@ -226,7 +226,7 @@ export default {
       return this.$store.getters.sparkLines(symbol)
     },
     portfolioTotalUSD () {
-      return (this.coins.reduce(
+      return (this.symbols.reduce(
         (total, symbol) => total + (this.coinTotalUSD(symbol) || 0),
         0 // zero starting value
       ))
