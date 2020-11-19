@@ -36,11 +36,12 @@ function insertRepos (repos) {
   for (const repo of repos) {
     Repository.insert({
       data: {
-        name: repo.name,
         coins: repo.coins.map(_ => ({
           coinId: Coin.query().where('symbol', _.symbol).first().id,
           quantity: _.quantity,
-        }))
+        })),
+        active: repo.active,
+        name: repo.name,
       }
     })
   }

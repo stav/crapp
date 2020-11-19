@@ -25,7 +25,8 @@ export default {
   */
   async fetch () {
     await loadRepositorys()
-    this.$store.commit('setSelectedRepos', this.repositorys)
+    const activeRepos = this.repositorys.filter(_ => _.active)
+    this.$store.commit('setSelectedRepos', activeRepos)
     this.$store.dispatch('fetchPrices')
   },
 
