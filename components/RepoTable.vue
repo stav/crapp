@@ -2,6 +2,7 @@
   <v-data-table
     :headers="headers"
     :items="valuedRepositorys"
+    item-class="cls"
     v-model="selectedRows"
     show-select
     sort-by="valuation"
@@ -220,7 +221,7 @@ export default {
             ? formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
             : coins[symbol] = amount
       }
-      return Object.assign(repo, coins, { valuation: formatCurrency(valuation) })
+      return Object.assign(repo, coins, { valuation: formatCurrency(valuation), cls: 'meat' })
     },
     sparks (symbol) {
       return this.$store.getters.sparkLines(symbol)
@@ -261,6 +262,9 @@ export default {
 <style lang="scss">
 .text-end {
   text-align: right !important;
+}
+.v-data-table tr.meat:not(.v-data-table__selected) {
+  color: #3a3a3a;
 }
 </style>
 
