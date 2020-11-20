@@ -2,8 +2,8 @@
   <v-expansion-panel>
     <!-- HEADER -->
     <v-expansion-panel-header color="blue-grey darken-2">
-      <v-img max-width="30" height="30" contain :src="logo" class="mr-4 invert" />
       {{ symbol }}
+      <coin-logo :quantity="coinSumFormat" />
     </v-expansion-panel-header>
 
     <v-expansion-panel-content color="blue-grey darken-2">
@@ -72,9 +72,10 @@
           <v-list-item
             v-for="repo in repos" :key="repo.id"
             @click="() => flyRepository(repo)"
+            class="mr-2"
           >
             <v-list-item-icon>
-              <v-icon>mdi-bitcoin</v-icon>
+              <coin-logo :quantity="coinSumForRepoFormat(repo)" />
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title v-text="repo.name" />
@@ -88,9 +89,20 @@
 
 <script>
 import { formatAmount, formatCurrency } from '@/utils'
+import coinLogo from '@/components/CoinLogo.vue'
 
 export default {
 
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    'coin-logo': coinLogo,
+  },
+
+  /*
+  ** DATA
+  */
   data () {
     return {
       loading: false,
@@ -101,6 +113,9 @@ export default {
     }
   },
 
+  /*
+  ** COMPUTED
+  */
   computed: {
     coin () {
       return this.$store.state.flyoutCoin
@@ -111,12 +126,22 @@ export default {
     symbol () {
       return this.coin?.symbol
     },
+    /*
+    ** repos
+    **
+    ** Returns an Array of repositories that cointain at least one flyout coin.
+    ** Furthermore, each repo.coins contains only flyout coins.
+    */
     repos () {
       const model = this.$store.$db().model('repositorys')
       const query = model.query().with('coins', (query) => {
         query.where('coinId', this.coin?.id)
-      }).has('coins')
-      return query.get().filter(repo => repo.coins.length)
+      })
+      return query
+        .has('coins') // this doesnt really work so we'll need to .filter
+        .get() // Renders JavaScript Array
+        .filter(repo => repo.coins.length) // why doesnt .has do this?
+        .sort((a, b) => this.coinSumForRepo(b) - this.coinSumForRepo(a))
     },
     coinSumAmount () {
       return this.$store.getters.coinSum(this.symbol)
@@ -147,20 +172,11 @@ export default {
     pair () {
       return this.$store.getters.sparkPair
     },
-    logo () {
-      const symbol = this.$store.state.flyoutCoin?.symbol
-      try {
-        return require(`@/assets/coins/${symbol}.svg`)
-      } catch (e) {
-        try {
-          return require(`@/assets/coins/${symbol}.png`)
-        } catch (e) {
-          return require('@/assets/coins/default.svg')
-        }
-      }
-    },
   },
 
+  /*
+  ** METHODS
+  */
   methods: {
     getKrakenData () {
       this.loading = true
@@ -174,16 +190,13 @@ export default {
     flyRepository (repo) {
       this.$store.dispatch('flyRepository', repo)
     },
+    coinSumForRepo (repo) {
+      return repo.coins?.reduce((total, coin) => total + coin.quantity, 0)
+    },
+    coinSumForRepoFormat (repo) {
+      return formatAmount(this.coinSumForRepo(repo))
+    },
   },
 
 }
 </script>
-
-<style lang="scss" scoped>
-.invert-green {
-  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
-}
-.invert {
-  filter: invert(100%) saturate(0);
-}
-</style>
