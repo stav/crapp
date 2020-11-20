@@ -1,7 +1,12 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="text-h6">
-      {{ repository.name }}
+      <span
+        class="d-inline-block text-truncate"
+        style="width: 120px"
+        v-text="repository.name"
+      />
+      <v-chip x-small pill class="px-2" color="accent">{{ sumCoins }}</v-chip>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-card class="mx-auto">
@@ -36,15 +41,53 @@
 </template>
 
 <script>
+import { formatCurrency } from '@/utils'
+
 export default {
 
   computed: {
+    /*
+    ** repository
+    **
+    ** {
+    **   "$id": "$uid22",
+    **   "id": "$uid22",
+    **   "name": "Coinbase Pro",
+    **   "active": true,
+    **   "coins": [{
+    **     "$id": "$uid74",
+    **     "id": "$uid74",
+    **     "coinId": "$uid2",
+    **     "repoId": "$uid22",
+    **     "quantity": 0.998093,
+    **     "coin": {
+    **       "$id": "$uid2",
+    **       "id": "$uid2",
+    **       "name": "Ethereum",
+    **       "slug": "ethereum",
+    **       "price": 506.33756,
+    **       "symbol": "ETH"
+    **     }
+    **   }]
+    ** }
+    */
     repository () {
       const repoId = this.$store.state.flyoutRepoId
       const model = this.$store.$db().model('repositorys')
       const repos = model.query().with(['coins', 'coins.coin'])
       return repos.find(repoId) || {}
     },
+    sumCoins () {
+      const coins = this.repository.coins || []
+      const total = coins.reduce(
+        (total, coin) => total + coin.quantity * coin.coin.price,
+        0 // Initialize sum at zero
+      )
+      return formatCurrency(total)
+    },
+  },
+
+  mounted () {
   },
 
   methods: {
