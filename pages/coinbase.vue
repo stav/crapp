@@ -85,7 +85,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import { JSONView } from 'vue-json-component'
 import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
 

@@ -40,7 +40,7 @@
   </v-expansion-panel>
 </template>
 
-<script>
+<script lang="ts">
 import { formatCurrency } from '@/utils'
 
 export default {

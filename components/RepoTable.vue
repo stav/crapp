@@ -67,7 +67,7 @@
   </v-data-table>
 </template>
 
-<script>
+<script lang="ts">
 import { formatAmount, formatCurrency } from '@/utils'
 
 export default {

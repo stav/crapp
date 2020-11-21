@@ -91,7 +91,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import { JSONView } from 'vue-json-component'
 import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
 

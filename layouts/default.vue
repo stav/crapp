@@ -13,7 +13,7 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
 import notifications from '@/components/Notifications.vue'
 import flyoutDrawer from '@/components/FlyoutDrawer.vue'
 import navDrawer from '@/components/NavDrawer.vue'

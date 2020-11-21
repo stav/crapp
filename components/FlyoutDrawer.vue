@@ -8,7 +8,7 @@
   </v-navigation-drawer>
 </template>
 
-<script>
+<script lang="ts">
 import flyoutPanelCoin from '@/components/FlyoutPanelCoin.vue'
 import flyoutPanelRepo from '@/components/FlyoutPanelRepo.vue'
 import flyoutPanelUtil from '@/components/FlyoutPanelUtil.vue'

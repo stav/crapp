@@ -117,5 +117,15 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    extend(config, { isDev, _isClient }) {
+      config.module.rules.push({
+        test: /\.ts$/,
+        loader: 'ts-loader'
+      })
+      // Sets webpack's mode to development if `isDev` is true.
+      if (isDev) {
+        config.mode = 'development'
+      }
+    }
   }
 }

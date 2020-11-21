@@ -87,7 +87,7 @@
   </v-expansion-panel>
 </template>
 
-<script>
+<script lang="ts">
 import { formatAmount, formatCurrency } from '@/utils'
 import coinLogo from '@/components/CoinLogo.vue'
 
