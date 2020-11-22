@@ -134,8 +134,8 @@ export default {
       ** Left-most columns (static)
       */
       const _ = [
-        { text: '', value: 'name', sortable: true },
-        { text: 'Valuation', value: 'valuation', align: 'end', sortable: true, sort },
+        { text: '', value: 'name', sortable: true, coin: false },
+        { text: 'Valuation', value: 'valuation', align: 'end', sortable: true, sort, coin: false },
       ]
       /*
       ** Right-most columns (dynamically created one for each coin)

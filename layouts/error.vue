@@ -12,7 +12,7 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script>
 export default {
   layout: 'empty',
   props: {

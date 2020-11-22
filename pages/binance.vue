@@ -93,7 +93,7 @@
 
 <script lang="ts">
 import { JSONView } from 'vue-json-component'
-import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
+const binanceImageIcon = require('@/assets/logos-download.com/Binance_logo_coin.png')
 
 async function getJson (resource) {
   const response = await fetch('/api/binance/' + resource)

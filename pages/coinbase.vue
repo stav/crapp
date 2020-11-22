@@ -87,7 +87,7 @@
 
 <script lang="ts">
 import { JSONView } from 'vue-json-component'
-import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
+const coinbaseImageIcon = require('@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png')
 
 export default {
 
@@ -135,7 +135,7 @@ export default {
     async getAccountsData () {
       this.loading = true
       const response = await fetch('/api/coinbase/v2/accounts')
-      const { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
+      const { data: accounts } = response.status === 200 ? await response.json() : { data: { status: response.status } }
       this.accounts = accounts.filter(account => parseFloat(account.balance.amount))
       this.loading = false
     },

@@ -21,8 +21,8 @@
 </template>
 
 <script lang="ts">
-import coinbaseImageIcon from '@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png'
-import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
+const coinbaseImageIcon = require('@/assets/lh3.googleusercontent.com/rq5wUrwR5zZKqRQol3IfwOENAKDH51RHrqLS2Mq8ttsN7Nt8DSaib6M7Ng0ZiwtOsoM=w27.png')
+const binanceImageIcon = require('@/assets/logos-download.com/Binance_logo_coin.png')
 
 export default {
 
