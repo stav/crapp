@@ -5,10 +5,10 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import { loadRepositorys } from '@/database'
-import repoTable from '../components/RepoTable.vue'
-import repoBar from '../components/RepoBar.vue'
+import repoTable from '~/components/RepoTable.vue'
+import repoBar from '~/components/RepoBar.vue'
 
 export default {
 

@@ -9,11 +9,13 @@
       "DOM"
     ],
     "esModuleInterop": true,
-    "allowJs": true,
+    "noImplicitThis": false,
+    "allowJs": false,
     "sourceMap": true,
     "strict": true,
-    "noEmit": true,
+    "noEmit": false,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "~/*": [
