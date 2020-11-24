@@ -6,6 +6,9 @@
 </template>
 
 <script lang="ts">
+import 'core-js/stable' // or a more selective import such as "core-js/es/array"
+// import 'regenerator-runtime/runtime'
+import regeneratorRuntime from 'regenerator-runtime'
 import { loadRepositorys } from '@/database'
 import repoTable from '~/components/RepoTable.vue'
 import repoBar from '~/components/RepoBar.vue'
