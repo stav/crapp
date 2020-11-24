@@ -24,9 +24,11 @@ export default {
   ** FETCH
   */
   async fetch () {
-    await loadRepositorys()
-    const activeRepos = this.repositorys.filter(_ => _.active)
-    this.$store.commit('setSelectedRepos', activeRepos)
+    if (this.repositorys.length === 0) {
+      await loadRepositorys()
+      const activeRepos = this.repositorys.filter(_ => _.active)
+      this.$store.commit('setSelectedRepos', activeRepos)
+    }
     this.$store.dispatch('fetchPrices')
   },
 
