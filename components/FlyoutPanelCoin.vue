@@ -8,7 +8,16 @@
 
     <v-expansion-panel-content color="blue-grey darken-2">
       <!-- NAME -->
-      <h3 v-text="name" />
+      <v-container class="pa-0">
+        <v-row no-gutters>
+          <v-col cols="10"><h3 v-text="name" /></v-col>
+          <v-col cols="2">
+            <v-btn icon exact nuxt router to="/charts" title="Show chart page for this coin">
+              <v-icon> mdi-chart-areaspline </v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
 
       <!-- TRIBOXS -->
       <v-card class="mt-2 mx-auto">

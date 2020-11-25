@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@amcharts/amcharts4": "^4.10.11",
     "@nuxt/typescript-runtime": "^1.0.0",
     "@nuxtjs/axios": "^5.12.1",
     "@vuex-orm/core": "^0.36.3",

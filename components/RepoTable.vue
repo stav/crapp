@@ -106,6 +106,8 @@ export default {
   */
   computed: {
     /*
+    ** headers
+    **
     ** Data-table options
     **
     ** Return an array of column settings objects
@@ -133,7 +135,7 @@ export default {
       /*
       ** Left-most columns (static)
       */
-      const _ = [
+      const headers = [
         { text: '', value: 'name', sortable: true },
         { text: 'Valuation', value: 'valuation', align: 'end', sortable: true, sort },
       ]
@@ -141,7 +143,7 @@ export default {
       ** Right-most columns (dynamically created one for each coin)
       */
       for (const symbol of this.symbols) {
-        _.push({
+        headers.push({
           text: symbol,
           value: symbol,
           align: 'end',
@@ -150,7 +152,7 @@ export default {
           sort,
         })
       }
-      return _
+      return headers
     },
     fHeaders () {
       return [{}].concat(this.headers) // Add a blank column to beginning of headers

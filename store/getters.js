@@ -58,4 +58,47 @@ export default {
   ** sparkPair
   */
   sparkPair: state => state.sparkPair[state.flyoutCoin?.symbol] || '',
+
+  /*
+  ** getKrakenHistorySeries
+  **
+  ** json == {
+  **   "history": {
+  **     "error": [],
+  **     "result": {
+  **       "XXBTZUSD": [[
+  **         1595260800,      // time
+  **         "9181.9",        // open
+  **         "9208.0",        // high
+  **         "9153.9",        // low
+  **         "9163.9",        // close
+  **         "9179.2",        // vwap
+  **         "473.73122415",  // volume
+  **         1595             // count
+  **       ],… ] } } }
+  */
+  getKrakenHistorySeries: state => async (symbol, interval) => {
+    symbol = symbol || state.flyoutCoin?.symbol
+    if (!symbol) { return [] }
+
+    const response = await fetch('/api/kraken/history?symbol=' + symbol + '&interval=' + interval)
+    const json = response.status === 200 ? await response.json() : { status: response.status }
+
+    function xract(entry) {
+      const date = new Date(parseFloat(entry[0]) * 1000)
+      const value = parseFloat(entry[5])
+      return { date, value }
+    }
+
+    if (json.history.error.length) {
+      console.error('Kraken histoy error:', json.history.error)
+      return []
+    } else {
+      const result = json.history.result
+      const pair = Object.keys(result)[0]
+      const data = result[pair].map(xract)
+      return data
+    }
+  },
+
 }

@@ -54,7 +54,6 @@ export default {
     ** symbols
     **
     ** [ "BTC", "ETH", "LINK", … ]
-    **
     */
     symbols () {
       return this.$store.getters.sortedUniqueSymbols

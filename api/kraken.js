@@ -29,7 +29,7 @@ function config (url) {
     case '/history': {
       const params = {
         pair: _url.searchParams.get('symbol') + 'USD',
-        interval: 240,
+        interval: _url.searchParams.get('interval'),
       }
       requests.push({ key: 'history', config: configRequest('/0/public/OHLC', params) })
       break

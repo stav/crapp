@@ -87,9 +87,6 @@ export default {
     },
   },
 
-  mounted () {
-  },
-
   methods: {
     flyCoin (symbol) {
       this.$store.commit('setFlyoutDrawer', true)
