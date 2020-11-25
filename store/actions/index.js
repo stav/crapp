@@ -1,4 +1,9 @@
-import { loadBinanceBalances, loadCoinbaseAccounts, loadCoinbaseProAccounts } from '@/database'
+import {
+  loadRepositorys,
+  loadBinanceBalances,
+  loadCoinbaseAccounts,
+  loadCoinbaseProAccounts,
+} from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
 import fetchPrices from './fetchPrices'
 import Coin from '~/models/Coin'
@@ -51,6 +56,12 @@ export default {
     }
   },
 
+  flyCoin (context, symbol) {
+    context.commit('setFlyoutDrawer', true)
+    context.commit('openCoinFlyout')
+    context.commit('setFlyoutCoin', { symbol })
+  },
+
   setCoin (_context, coin) {
     Coin.insertOrUpdate({
       data: {
@@ -70,6 +81,17 @@ export default {
     context.commit('closeCoinFlyout')
     context.commit('openRepoFlyout')
     context.commit('setFlyoutRepo', repo)
+  },
+
+  async loadRepositorys (context) {
+    let repositorys = context.getters.repositorys
+    if (repositorys.length === 0) {
+      await loadRepositorys()
+      repositorys = context.getters.repositorys
+      const activeRepos = repositorys.filter(_ => _.active)
+      context.commit('setSelectedRepos', activeRepos)
+    }
+    await fetchPrices(context)
   },
 
 }

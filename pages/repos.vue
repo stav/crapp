@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { loadRepositorys } from '@/database'
 import repoTable from '../components/RepoTable.vue'
 import repoBar from '../components/RepoBar.vue'
 
@@ -23,13 +22,8 @@ export default {
   /*
   ** FETCH
   */
-  async fetch () {
-    if (this.repositorys.length === 0) {
-      await loadRepositorys()
-      const activeRepos = this.repositorys.filter(_ => _.active)
-      this.$store.commit('setSelectedRepos', activeRepos)
-    }
-    this.$store.dispatch('fetchPrices')
+  fetch () {
+    this.$store.dispatch('loadRepositorys')
   },
 
   /*
@@ -39,16 +33,10 @@ export default {
     /*
     ** repositorys
     **
-    ** Database data
-    **
     ** Return an array of unvalued repositories
     */
     repositorys () {
-      return this.$store.$db()
-        .model('repositorys')
-        .query()
-        .with(['coins', 'coins.coin'])
-        .all()
+      return this.$store.getters.repositorys
     },
     /*
     ** symbols

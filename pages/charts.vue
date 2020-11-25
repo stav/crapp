@@ -3,25 +3,17 @@
     <v-app-bar color="green darken-4">
       <v-icon class="mr-2">mdi-chart-areaspline</v-icon> History <v-spacer />
       <v-radio-group dense row mandatory v-model="interval" :hide-details="true">
-        <v-radio label="1" value="1" />
-        <v-radio label="5" value="5" />
-        <v-radio label="15" value="15" />
-        <v-radio label="30" value="30" />
-        <v-radio label="60" value="60" />
-        <v-radio label="240" value="240" />
-        <v-radio label="1440" value="1440" />
-        <v-radio label="10080" value="10080" />
-        <v-radio label="21600" value="21600" />
+        <v-radio v-for="i in intervals" :key="i" :label="i" :value="i" @click="loadInterval" />
       </v-radio-group>
       <v-spacer />
-      {{ coin }}
+      {{ symbol }}
     </v-app-bar>
     <div class="history-chart" ref="chartdiv" />
     <v-card-actions>
       <v-btn
-        v-for="symbol of symbols" :key="symbol"
-        v-text="symbol"
-        @click="() => load(symbol)"
+        v-for="s of symbols" :key="s"
+        @click="() => loadSymbol(s)"
+        v-text="s"
       />
     </v-card-actions>
   </v-card>
@@ -37,19 +29,34 @@ am4core.useTheme(theme)
 export default {
 
   /*
+  ** FETCH
+  */
+  fetch () {
+    this.$store.dispatch('loadRepositorys')
+  },
+
+  /*
   ** DATA
   */
   data () {
     return {
-      coin: '',
+      symbol: '',
       interval: '240',
+      intervals: [ // minutes
+        '1',
+        '5',
+        '15',
+        '30',
+        '60',
+        '240',
+        '1440',
+        '10080',
+        '21600',
+      ],
     }
   },
 
   computed: {
-    // coin () {
-    //   return this.$store.state.flyoutCoin
-    // },
     /*
     ** symbols
     **
@@ -61,7 +68,6 @@ export default {
   },
 
   mounted () {
-    console.log('mounted')
     const chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart)
     chart.paddingRight = 20
 
@@ -84,7 +90,7 @@ export default {
     chart.scrollbarX = scrollbarX
 
     this.chart = chart
-    this.load()
+    this.loadSymbol()
   },
 
   beforeDestroy () {
@@ -94,11 +100,13 @@ export default {
   },
 
   methods: {
-    async load (symbol) {
-      symbol = symbol || this.$store.state.flyoutCoin?.symbol
-      this.chart.data = await this.$store.getters.getKrakenHistorySeries(symbol, this.interval)
-      this.coin = symbol
-      console.log('load', this.coin)
+    async loadSymbol (symbol) {
+      this.symbol = symbol || this.$store.state.flyoutCoin?.symbol
+      await this.loadInterval()
+    },
+    async loadInterval () {
+      this.$store.dispatch('flyCoin', this.symbol)
+      this.chart.data = await this.$store.getters.getKrakenHistorySeries(this.symbol, this.interval)
     },
   },
 

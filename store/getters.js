@@ -1,7 +1,19 @@
+import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
 
 export default {
+
+  /*
+  ** repositorys
+  **
+  ** Database data
+  **
+  ** Return an array of unvalued repositories
+  */
+  repositorys () {
+    return Repository.query().with(['coins', 'coins.coin']).all()
+  },
 
   /*
   ** coinPriceUSD

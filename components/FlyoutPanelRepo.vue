@@ -89,9 +89,7 @@ export default {
 
   methods: {
     flyCoin (symbol) {
-      this.$store.commit('setFlyoutDrawer', true)
-      this.$store.commit('openCoinFlyout')
-      this.$store.commit('setFlyoutCoin', { symbol })
+      this.$store.dispatch('flyCoin', symbol)
     },
   },
 
