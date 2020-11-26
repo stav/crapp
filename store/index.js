@@ -17,6 +17,7 @@ export const state = () => ({
   footerAbsolute: true,
   navDrawer: null,
   repoCoinValue: true,
+  repoZeroCoins: false,
   selectedRepos: [],
   snackbarModel: false,
   snackbarText: '',

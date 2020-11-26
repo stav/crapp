@@ -27,6 +27,14 @@
       </v-card-actions>
     </v-card>
     <v-spacer />
+    <v-switch
+      v-model="zeroCoins"
+      class="ml-3 mr-2"
+      hide-details
+      title="Show coins that we have zero of?"
+    />
+    <span @click="zeroCoins=true" class="clickable text--secondary"> Zeros </span>
+    <v-spacer />
     <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
     <v-switch
       v-model="coinValue"
@@ -78,6 +86,14 @@ export default {
       },
       set (value) {
         this.$store.commit('setRepoCoinValue', value)
+      }
+    },
+    zeroCoins: {
+      get () {
+        return this.$store.state.repoZeroCoins
+      },
+      set (value) {
+        this.$store.commit('setRepoZeroCoins', value)
       }
     },
   },

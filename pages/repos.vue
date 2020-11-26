@@ -44,7 +44,18 @@ export default {
     ** [ "BTC", "ETH", "LINK", … ]
     */
     symbols () {
-      return this.$store.getters.sortedUniqueSymbols
+      const showZeros = this.$store.state.repoZeroCoins
+      const symbols = this.$store.getters.sortedUniqueSymbols
+      return symbols.filter(s => showZeros || this.coinSum(s))
+    },
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    coinSum (symbol) {
+      return this.$store.getters.coinSum(symbol)
     },
   },
 

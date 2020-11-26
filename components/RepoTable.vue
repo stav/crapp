@@ -179,6 +179,9 @@ export default {
     coinValue () {
       return this.$store.state.repoCoinValue
     },
+    zeroCoins () {
+      return this.$store.state.repoZeroCoins
+    },
     selectedRows: {
       get () {
         return this.$store.state.selectedRepos
