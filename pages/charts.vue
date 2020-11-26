@@ -70,15 +70,20 @@ export default {
   mounted () {
     const chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart)
     chart.paddingRight = 20
+    chart.cursor = new am4charts.XYCursor()
 
     const dateAxis = chart.xAxes.push(new am4charts.DateAxis())
     dateAxis.renderer.grid.template.location = 0
+    dateAxis.tooltipDateFormat = 'yyyy-MM-dd'
 
     const valueAxis = chart.yAxes.push(new am4charts.ValueAxis())
-    valueAxis.tooltip.disabled = true
+    valueAxis.title.text = 'Price (USD)'
+    valueAxis.extraTooltipPrecision = 1
     valueAxis.renderer.minWidth = 35
 
     const series = chart.series.push(new am4charts.LineSeries())
+    series.name = 'Price History'
+    series.tooltipText = '$ {valueY.value}'
     series.dataFields.dateX = 'date'
     series.dataFields.valueY = 'value'
 
