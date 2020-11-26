@@ -83,12 +83,10 @@ export default {
     context.commit('setFlyoutRepo', repo)
   },
 
-  async loadRepositorys (context) {
-    let repositorys = context.getters.repositorys
-    if (repositorys.length === 0) {
+  async loadRepositorys (context, force) {
+    if (context.getters.repositorys.length === 0 || force) {
       await loadRepositorys()
-      repositorys = context.getters.repositorys
-      const activeRepos = repositorys.filter(_ => _.active)
+      const activeRepos = context.getters.repositorys.filter(_ => _.active)
       context.commit('setSelectedRepos', activeRepos)
     }
     await fetchPrices(context)

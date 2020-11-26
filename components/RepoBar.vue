@@ -1,7 +1,10 @@
 <template>
   <v-app-bar color="indigo">
-    <v-icon class="mr-2">mdi-bitcoin</v-icon> Repositories <v-spacer />
-    {{ symbols.length }} coins in {{ repositorys.length }} repos <v-spacer />
+    <v-icon class="mr-2">mdi-bitcoin</v-icon>
+    <v-btn @click="loadRepositorys" color="primary"> Repositories </v-btn>
+    <v-spacer />
+    {{ symbols.length }} coins in {{ repositorys.length }} repos
+    <v-spacer />
     <v-card class="indigo darken-1 mx-auto" :loading="loading">
       <v-card-actions v-if="repositorys.length">
         <v-btn
@@ -109,6 +112,9 @@ export default {
       }
       this.loading = false
     },
+    loadRepositorys () {
+      this.$store.dispatch('loadRepositorys', true)
+    }
   },
 
 }
