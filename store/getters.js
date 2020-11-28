@@ -79,14 +79,14 @@ export default {
   **     "error": [],
   **     "result": {
   **       "XXBTZUSD": [[
-  **         1595260800,      // time
-  **         "9181.9",        // open
-  **         "9208.0",        // high
-  **         "9153.9",        // low
-  **         "9163.9",        // close
-  **         "9179.2",        // vwap
-  **         "473.73122415",  // volume
-  **         1595             // count
+  **         1595260800,      // [0] time
+  **         "9181.9",        // [1] open
+  **         "9208.0",        // [2] high
+  **         "9153.9",        // [3] low
+  **         "9163.9",        // [4] close
+  **         "9179.2",        // [5] vwap
+  **         "473.73122415",  // [6] volume
+  **         1595             // [7] count
   **       ],… ] } } }
   */
   getKrakenHistorySeries: state => async (symbol, interval) => {

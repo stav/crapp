@@ -1,4 +1,5 @@
 import repositorys from '~/data/repositorys'
+import Transaction from '~/models/Transaction'
 import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
@@ -11,29 +12,51 @@ import Coin from '~/models/Coin'
 // )
 
 /*
-** Insert Coins
+** insertCoins
 **
-** Insert all coins found in the given repositories into the db
+** Insert all given coins
 */
-function insertCoins (repos) {
-  for (const repo of repos) {
-    for (const coin of repo.coins) {
-      const _coin = Coin.query().where('symbol', coin.symbol).first()
-      if (!_coin) {
-        Coin.insert({ data: { symbol: coin.symbol } })
-      }
+function insertCoins (entitys) {
+  for (const entity of entitys || []) {
+    const _coin = Coin.query().where('symbol', entity.symbol).first()
+    if (!_coin) {
+      Coin.insert({ data: { symbol: entity.symbol } })
     }
   }
 }
 
 /*
-** Insert Repositories
+** insertTransactions
+**
+** Insert all given transactions
+*/
+function insertTransactions (repo) {
+  for (const tran of repo.transactions || []) {
+    const coin = Coin.query().where('symbol', tran.symbol).first()
+    Transaction.insert({
+      data: {
+        date: tran.date,
+        type: tran.type,
+        repo: repo.name,
+        coinId: coin.id,
+        symbol: tran.symbol,
+        quantity: tran.amount,
+        currency: tran.currency,
+      }
+    })
+  }
+}
+
+/*
+** insertRepos
 **
 ** Insert all the given repositories into the db
 */
 function insertRepos (repos) {
-  insertCoins(repos)
   for (const repo of repos) {
+    insertCoins(repo.coins)
+    insertCoins(repo.transactions)
+    insertTransactions(repo)
     Repository.insert({
       data: {
         coins: repo.coins.map(_ => ({
@@ -48,13 +71,15 @@ function insertRepos (repos) {
 }
 
 /*
-** Load Repositories
+** loadRepositorys
 **
 ** Read the list of repository data from input file and load up the db
 */
 export async function loadRepositorys () {
-  Repository.deleteAll()
+  Coin.deleteAll()
   RepoCoin.deleteAll()
+  Repository.deleteAll()
+  Transaction.deleteAll()
   insertRepos(await repositorys())
 }
 

@@ -23,6 +23,7 @@
 import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
 import theme from '@amcharts/amcharts4/themes/dark'
+import Transaction from '~/models/Transaction'
 
 am4core.useTheme(theme)
 
@@ -56,6 +57,9 @@ export default {
     }
   },
 
+  /*
+  ** COMPUTED
+  */
   computed: {
     /*
     ** symbols
@@ -67,6 +71,9 @@ export default {
     },
   },
 
+  /*
+  ** MOUNTED
+  */
   mounted () {
     const chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart)
     chart.paddingRight = 20
@@ -87,8 +94,16 @@ export default {
     series.dataFields.dateX = 'date'
     series.dataFields.valueY = 'value'
 
-    series.tooltipText = '{valueY.value}'
-    chart.cursor = new am4charts.XYCursor()
+    const series2 = chart.series.push(new am4charts.ColumnSeries())
+    series2.name = 'Units'
+    // series2.alwaysShowTooltip = true
+    series2.strokeWidth = 6
+    series2.dataFields.dateX = 'date'
+    series2.dataFields.valueY = 'units'
+    series2.stroke = am4core.color('#CDA2AB')
+    series2.columns.template.propertyFields.fill = 'color'
+    series2.columns.template.propertyFields.stroke = 'white'
+    series2.columns.template.tooltipText = '{type} on {repo}:\n[bold]{quantity}[/b]'
 
     const scrollbarX = new am4charts.XYChartScrollbar()
     scrollbarX.series.push(series)
@@ -98,20 +113,59 @@ export default {
     this.loadSymbol()
   },
 
+  /*
+  ** BEFORE DESTROY
+  */
   beforeDestroy () {
     if (this.chart) {
       this.chart.dispose()
     }
   },
 
+  /*
+  ** METHODS
+  */
   methods: {
+
     async loadSymbol (symbol) {
       this.symbol = symbol || this.$store.state.flyoutCoin?.symbol
       await this.loadInterval()
     },
+
     async loadInterval () {
+      function sort (a, b) {
+        if (a.timestamp > b.timestamp) { return 1 }
+        if (a.timestamp < b.timestamp) { return -1 }
+        return 0
+      }
+      function addTransactions () {
+        // const coin = Coin.query().where('symbol', this.symbol).first()
+        console.log('charts', trans, data)
+        let t = 0
+        for (let d = 0; d < data.length; d++) {
+          const { date: chartDate, value } = data[d]
+          const chartTimestamp = chartDate.getTime()
+          const transTimestamp = trans[t].timestamp
+          console.log(transTimestamp)
+          if (transTimestamp < chartTimestamp) {
+            console.log(d, t, transTimestamp, chartTimestamp)
+            data[d].units = value
+            data[d].type = trans[t].type
+            data[d].repo = trans[t].repo
+            data[d].quantity = trans[t].quantity
+            data[d].color = trans[t].quantity > 0 ? 'green' : 'red'
+            console.log('data[d]', data[d])
+            if (++t >= trans.length) { break }
+            // data.splice(d, 0, { date: new Date(transTimestamp), units: Math.abs(value) })
+          }
+        }
+      }
       this.$store.dispatch('flyCoin', this.symbol)
-      this.chart.data = await this.$store.getters.getKrakenHistorySeries(this.symbol, this.interval)
+      const series = this.$store.getters.getKrakenHistorySeries
+      const data = await series(this.symbol, this.interval)
+      const trans = Transaction.query().where('symbol', this.symbol).get().sort(sort)
+      if (trans.length) { addTransactions() }
+      this.chart.data = data
     },
   },
 
