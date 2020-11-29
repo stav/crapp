@@ -140,21 +140,17 @@ export default {
       }
       function addTransactions () {
         // const coin = Coin.query().where('symbol', this.symbol).first()
-        console.log('charts', trans, data)
         let t = 0
         for (let d = 0; d < data.length; d++) {
           const { date: chartDate, value } = data[d]
           const chartTimestamp = chartDate.getTime()
           const transTimestamp = trans[t].timestamp
-          console.log(transTimestamp)
           if (transTimestamp < chartTimestamp) {
-            console.log(d, t, transTimestamp, chartTimestamp)
             data[d].units = value
             data[d].type = trans[t].type
             data[d].repo = trans[t].repo
             data[d].quantity = trans[t].quantity
             data[d].color = trans[t].quantity > 0 ? 'green' : 'red'
-            console.log('data[d]', data[d])
             if (++t >= trans.length) { break }
             // data.splice(d, 0, { date: new Date(transTimestamp), units: Math.abs(value) })
           }

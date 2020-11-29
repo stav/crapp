@@ -2,6 +2,9 @@ import { Model } from '@vuex-orm/core'
 import Transaction from './Transaction'
 import RepoCoin from './RepoCoin'
 
+/*
+** Repository
+*/
 export default class Repository extends Model {
   static entity = 'repositorys'
 
