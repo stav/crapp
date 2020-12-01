@@ -1,5 +1,6 @@
 import * as CryptoDotCom from './cdc'
 import * as BlockFi from './blockfi'
+import * as UniSwap from './uniswap'
 import * as Kraken from './kraken'
 import repositorys from '~/data/repositorys'
 import Transaction from '~/models/Transaction'
@@ -38,6 +39,10 @@ function insertTransactions (repo) {
 
     case 'crypto wallet':
       CryptoDotCom.insertTransactions(repo)
+      break
+
+    case 'uniswap':
+      UniSwap.insertTransactions(repo)
       break
 
     default:

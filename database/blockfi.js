@@ -4,9 +4,6 @@
 import Transaction from '~/models/Transaction'
 import Coin from '~/models/Coin'
 
-/*
-** Finals
-*/
 const dateStringRegex = /(?<Y>\d{4})-(?<M>\d{2})-(?<D>\d{2})/
 
 /*
@@ -15,7 +12,6 @@ const dateStringRegex = /(?<Y>\d{4})-(?<M>\d{2})-(?<D>\d{2})/
 ** Insert all given transactions
 */
 export function insertTransactions (repo) {
-  console.log('BlockFi insertTransactions', repo)
   for (const tran of repo.transactions || []) {
     const coin = Coin.query().where('symbol', tran.symbol).first()
     Transaction.insert({
@@ -34,7 +30,6 @@ export function insertTransactions (repo) {
 }
 
 function getTransTimestamp (dateString) {
-  console.log('BlockFi getTransTimestamp', dateString)
   const groups = dateStringRegex.exec(dateString).groups
   const { Y, M, D, h, m, s } = Object.assign({ h: 0, m: 0, s: 0 }, groups)
   const iY = parseInt(Y)

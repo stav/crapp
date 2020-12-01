@@ -4,9 +4,6 @@
 import Transaction from '~/models/Transaction'
 import Coin from '~/models/Coin'
 
-/*
-** Finals
-*/
 const dateStringRegex = /(?<M>\d{2})-(?<D>\d{2})-(?<Y>\d{2}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2}) \+\d{4}/
 
 /*
@@ -35,8 +32,7 @@ export function insertTransactions (repo) {
 
 function getTransTimestamp (dateString) {
   console.log('Kraken getTransTimestamp', dateString)
-  const groups = dateStringRegex.exec(dateString).groups
-  const { Y, M, D, h, m, s } = Object.assign({ h: 0, m: 0, s: 0 }, groups)
+  const { Y, M, D, h, m, s } = dateStringRegex.exec(dateString).groups
   const iY = parseInt(Y)
   const day = parseInt(D)
   const year = iY < 100 ? 2000 + iY : iY
