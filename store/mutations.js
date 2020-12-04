@@ -34,6 +34,9 @@ export default {
   setFlyoutPanels (state, value) {
     state.flyoutPanels = value
   },
+  setCoinPockets (state, value) {
+    state.coinPockets = value
+  },
   setFlyoutCoin (state, { symbol }) {
     state.flyoutCoin = Coin.query().where('symbol', symbol).first()
   },

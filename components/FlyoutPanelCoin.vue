@@ -10,7 +10,7 @@
       <!-- NAME -->
       <v-container class="pa-0">
         <v-row no-gutters>
-          <v-col cols="10"><h3 v-text="name" /></v-col>
+          <v-col cols="10"><h3 v-text="coin.name" /></v-col>
           <v-col cols="2">
             <v-btn icon exact nuxt router to="/charts" title="Show chart page for this coin">
               <v-icon> mdi-chart-areaspline </v-icon>
@@ -19,24 +19,8 @@
         </v-row>
       </v-container>
 
-      <!-- TRIBOXS -->
-      <v-card class="mt-2 mx-auto">
-        <v-card-text class="primary">
-          <div class="sub-title font-weight-light"> Coins </div>
-          <div class="text-h5 font-weight-heavy white--text" v-text="coinSumFormat" />
-          <div class="sub-title font-weight-light" v-text="coinSumAmount" />
-        </v-card-text>
-        <v-card-text class="accent">
-          <div class="sub-title font-weight-light"> Price </div>
-          <div class="text-h5 font-weight-heavy white--text" v-text="coinPriceCurrency" />
-          <div class="sub-title font-weight-light" v-text="coinPriceAmount" />
-        </v-card-text>
-        <v-card-text class="secondary">
-          <div class="sub-title font-weight-light"> Value </div>
-          <div class="text-h5 font-weight-heavy white--text" v-text="coinValueCurrency" />
-          <div class="sub-title font-weight-light" v-text="coinValueAmount" />
-        </v-card-text>
-      </v-card>
+      <!-- POCKETS -->
+      <coin-pockets />
 
       <!-- HISTORY SPARK -->
       <v-card :loading="loading" class="accent mt-4 mx-auto">
@@ -58,21 +42,6 @@
           <v-btn @click="getKrakenData" :disabled="!symbol" class="accent"> History </v-btn>
         </v-card-actions>
       </v-card>
-
-      <!-- CONVERT -->
-      <v-input hide-details class="mt-4">
-        <v-text-field
-          v-model="convert"
-          :label="`Convert ${symbol}`"
-          :rules="[rules.numeric]"
-          placeholder="1.5"
-          hide-details
-          clearable
-          outlined
-          dense
-        />
-      </v-input>
-      <div class="ml-4 mt-2" v-show="convert" v-text="convertedUSD" />
 
       <!-- REPOS -->
       <v-card class="mt-4 mx-auto">
@@ -97,8 +66,9 @@
 </template>
 
 <script>
-import { formatAmount, formatCurrency } from '@/utils'
-import coinLogo from '@/components/CoinLogo.vue'
+import { formatAmount } from '@/utils'
+import coinPockets from '~/components/FlyoutCoinPockets.vue'
+import coinLogo from '~/components/CoinLogo.vue'
 
 export default {
 
@@ -106,6 +76,7 @@ export default {
   ** COMPONENTS
   */
   components: {
+    'coin-pockets': coinPockets,
     'coin-logo': coinLogo,
   },
 
@@ -115,10 +86,6 @@ export default {
   data () {
     return {
       loading: false,
-      convert: null,
-      rules: {
-        numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
-      },
     }
   },
 
@@ -127,10 +94,7 @@ export default {
   */
   computed: {
     coin () {
-      return this.$store.state.flyoutCoin
-    },
-    name () {
-      return this.coin?.name
+      return this.$store.state.flyoutCoin || {}
     },
     symbol () {
       return this.coin?.symbol
@@ -158,22 +122,8 @@ export default {
     coinSumFormat () {
       return formatAmount(this.coinSumAmount)
     },
-
     coinPriceAmount () {
       return this.$store.getters.coinPriceUSD(this.symbol)
-    },
-    coinPriceCurrency () {
-      return formatCurrency(this.coinPriceAmount)
-    },
-
-    coinValueAmount () {
-      return this.coinSumAmount * this.coinPriceAmount
-    },
-    coinValueCurrency () {
-      return formatCurrency(this.coinValueAmount)
-    },
-    convertedUSD () {
-      return 'USD ' + formatCurrency(this.convert * this.coinPriceAmount)
     },
     sparks () {
       return this.$store.getters.sparkLines()

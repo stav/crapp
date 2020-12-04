@@ -8,6 +8,7 @@
         <v-card-text class="accent"> repoCoinValue:  {{ repoCoinValue }}  </v-card-text>
         <v-card-text class="accent"> repoZeroCoins:  {{ repoZeroCoins }}  </v-card-text>
         <v-card-text class="accent"> flyoutPanels:   {{ flyoutPanels }}   </v-card-text>
+        <v-card-text class="accent"> coinPockets:    {{ coinPockets }}    </v-card-text>
         <v-card-text class="accent"> flyoutDrawer:   {{ flyoutDrawer }}   </v-card-text>
         <v-card-text class="accent"> flyoutCoin:     {{ flyoutCoin }}     </v-card-text>
         <v-card-text class="accent"> flyoutRepoId:   {{ flyoutRepoId }}   </v-card-text>
@@ -18,17 +19,6 @@
 
 <script>
 export default {
-
-  data () {
-    return {
-      loading: false,
-      convert: null,
-      rules: {
-        numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
-      },
-    }
-  },
-
   computed: {
     navDrawer () {
       return this.$store.state.navDrawer
@@ -45,6 +35,9 @@ export default {
     flyoutPanels () {
       return this.$store.state.flyoutPanels
     },
+    coinPockets () {
+      return this.$store.state.coinPockets
+    },
     flyoutDrawer () {
       return this.$store.state.flyoutDrawer
     },
@@ -54,7 +47,6 @@ export default {
     flyoutRepoId () {
       return this.$store.state.flyoutRepoId
     },
-  },
-
+  }
 }
 </script>
