@@ -4,10 +4,10 @@
       <v-expansion-panel-header :color="pocket.color">
         <template v-slot:default="{ open }">
           {{ pocket.name }}
-          <v-fade-transition >
+          <v-fade-transition>
             <span v-if="!open">
               <v-chip
-                v-if="pocket.id !== 4"
+                v-if="[1, 2, 3].includes(pocket.id)"
                 x-small pill class="ml-2 px-2"
                 :color="pocket.color + ' darken-1'"
               >
@@ -24,21 +24,14 @@
           <div v-if="[1, 2, 3].includes(pocket.id)" class="sub-title font-weight-light" v-text="pocket.back" />
         </div>
 
+        <!-- HISTORY -->
+        <pocket-history v-if="pocket.id === 5" :symbol="symbol" />
+
         <!-- CONVERT -->
-        <div v-if="pocket.id === 4">
-          <v-input hide-details>
-            <v-text-field
-              v-model="convert"
-              :rules="[rules.numeric]"
-              placeholder="1.5"
-              hide-details
-              clearable
-              outlined
-              dense
-            />
-          </v-input>
-          <div class="ml-4 mt-2" v-show="convert" v-text="convertedUSD" />
-        </div>
+        <pocket-convert v-if="pocket.id === 4" :symbol="symbol" />
+
+        <!-- REPOS -->
+        <pocket-repos v-if="pocket.id === 6" :coin="coin" :symbol="symbol" />
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -46,19 +39,19 @@
 
 <script>
 import { formatAmount, formatCurrency } from '@/utils'
+import PocketConvert from './PocketConvert.vue'
+import PocketHistory from './PocketHistory.vue'
+import PocketRepos from './PocketRepos.vue'
 
 export default {
 
   /*
-  ** DATA
+  ** COMPONENTS
   */
-  data () {
-    return {
-      convert: null,
-      rules: {
-        numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
-      },
-    }
+  components: {
+    'pocket-convert': PocketConvert,
+    'pocket-history': PocketHistory,
+    'pocket-repos': PocketRepos,
   },
 
   /*
@@ -78,7 +71,9 @@ export default {
         { id: 1, name: 'Coins', color: 'primary', front: this.coinSumFormat, back: this.coinSumAmount },
         { id: 2, name: 'Price', color: 'accent', front: this.coinPriceCurrency, back: this.coinPriceAmount },
         { id: 3, name: 'Value', color: 'secondary', front: this.coinValueCurrency, back: this.coinValueAmount },
+        { id: 5, name: 'History', color: 'accent', front: null, back: null },
         { id: 4, name: `Convert ${this.symbol}`, color: 'green darken-4', front: null, back: null },
+        { id: 6, name: 'Repositories', color: 'blank', front: null, back: null },
       ]
     },
     coin () {
@@ -93,22 +88,17 @@ export default {
     coinSumFormat () {
       return formatAmount(this.coinSumAmount)
     },
-
     coinPriceAmount () {
       return this.$store.getters.coinPriceUSD(this.symbol)
     },
     coinPriceCurrency () {
       return formatCurrency(this.coinPriceAmount)
     },
-
     coinValueAmount () {
       return this.coinSumAmount * this.coinPriceAmount
     },
     coinValueCurrency () {
       return formatCurrency(this.coinValueAmount)
-    },
-    convertedUSD () {
-      return 'USD ' + formatCurrency(this.convert * this.coinPriceAmount)
     },
   },
 

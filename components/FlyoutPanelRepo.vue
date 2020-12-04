@@ -9,6 +9,7 @@
       <v-chip x-small pill class="px-2" color="accent">{{ sumCoins }}</v-chip>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
+      <div class="pb-2 text--disabled" v-text="repository.name" />
       <v-card class="mx-auto">
         <v-card-text class="accent">
           <v-list v-if="repository.coins" class="pa-0">
