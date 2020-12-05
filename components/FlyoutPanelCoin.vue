@@ -12,7 +12,7 @@
         <v-row no-gutters>
           <v-col cols="10"><h3 v-text="coin.name" /></v-col>
           <v-col cols="2">
-            <v-btn icon exact nuxt router to="/charts" title="Show chart page for this coin">
+            <v-btn icon exact nuxt router to="/history" title="Show chart page for this coin">
               <v-icon> mdi-chart-areaspline </v-icon>
             </v-btn>
           </v-col>

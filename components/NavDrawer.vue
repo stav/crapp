@@ -50,9 +50,14 @@ export default {
           to: '/repos'
         },
         {
-          title: 'Charts',
+          title: 'History',
           icon: 'mdi-chart-areaspline',
-          to: '/charts'
+          to: '/history'
+        },
+        {
+          title: 'Pie',
+          icon: 'mdi-chart-pie',
+          to: '/pie'
         },
       ],
     }
