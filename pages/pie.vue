@@ -1,7 +1,20 @@
 <template>
   <v-card class="mx-auto">
     <v-app-bar color="green darken-4">
-      <v-icon class="mr-2">mdi-chart-pie</v-icon> I like Pie <v-spacer />
+      <v-icon class="mr-2">mdi-chart-pie</v-icon> I like Pie
+      <v-spacer />
+      <v-input hide-details class="floor">
+        <v-text-field
+          v-model="floor"
+          @input="apply"
+          :rules="[rules.numeric]"
+          placeholder="1000"
+          hide-details
+          clearable
+          outlined
+          dense
+        />
+      </v-input>
     </v-app-bar>
     <div class="pie-chart" ref="chartdiv" />
   </v-card>
@@ -27,6 +40,18 @@ export default {
   },
 
   /*
+  ** DATA
+  */
+  data () {
+    return {
+      floor: 1000,
+      rules: {
+        numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
+      },
+    }
+  },
+
+  /*
   ** COMPUTED
   */
   computed: {
@@ -41,10 +66,10 @@ export default {
     /*
     ** filteredSymbols
     **
-    ** Only symbols where we have more than zero (0) coins
+    ** Only symbols where we have more than `floor` coins
     */
     filteredSymbols () {
-      return this.symbols.filter(symbol => this.coinSumAmount(symbol))
+      return this.symbols.filter(symbol => this.coinValueAmount(symbol) > this.floor)
     },
     /*
     ** data
@@ -66,9 +91,9 @@ export default {
   ** MOUNTED
   */
   mounted () {
-    const chart = am4core.create(this.$refs.chartdiv, am4charts.PieChart)
+    const chart = am4core.create(this.$refs.chartdiv, am4charts.PieChart3D)
 
-    const pieSeries = chart.series.push(new am4charts.PieSeries())
+    const pieSeries = chart.series.push(new am4charts.PieSeries3D())
     pieSeries.dataFields.value = 'amount'
     pieSeries.dataFields.category = 'symbol'
     pieSeries.slices.template.stroke = am4core.color('#4a2abb')
@@ -109,6 +134,9 @@ export default {
     coinValueAmount (symbol) {
       return this.coinSumAmount(symbol) * this.coinPriceAmount(symbol)
     },
+    apply () {
+      this.chart.data = this.data
+    }
   },
 
 }
@@ -118,5 +146,8 @@ export default {
 .pie-chart {
   width: 100%;
   height: 500px;
+}
+.floor {
+  max-width: 200px;
 }
 </style>
