@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar fixed app :clipped-left="true" :clipped-right="true">
+  <v-app-bar fixed app collapse-on-scroll clipped-left clipped-right>
     <v-app-bar-nav-icon title="Toggle navigation drawer" @click.stop="navDrawer=!navDrawer" />
 
     <v-btn icon @click.stop="toggleFooterAbsolute" title="Toggle footer absolute">
