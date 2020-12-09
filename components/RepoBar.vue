@@ -16,7 +16,7 @@
         </v-btn>
         <v-btn
           @click="fetchPrices"
-          title="Press to fetch latest current prices"
+          title="Press to fetch latest prices"
           small class="accent"
         >
           Prices
@@ -130,7 +130,7 @@ export default {
     },
     loadRepositorys () {
       this.$store.dispatch('loadRepositorys', true)
-    }
+    },
   },
 
 }

@@ -10,7 +10,12 @@
       <!-- NAME -->
       <v-container class="pa-0">
         <v-row no-gutters>
-          <v-col cols="10"><h3 v-text="coin.name" /></v-col>
+          <v-col cols="8"><h3 v-text="coin.name" /></v-col>
+          <v-col cols="2">
+            <v-btn icon @click="fetchPrices" title="Fetch latest prices">
+              <v-icon> mdi-backup-restore </v-icon>
+            </v-btn>
+          </v-col>
           <v-col cols="2">
             <v-btn icon exact nuxt router to="/history" title="Show chart page for this coin">
               <v-icon> mdi-chart-areaspline </v-icon>
@@ -55,6 +60,20 @@ export default {
     },
     coinSumFormat () {
       return formatAmount(this.coinSumAmount)
+    },
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    fetchPrices () {
+      this.$store.dispatch('fetchPrices', this.done)
+    },
+    done (message) {
+      if (message) {
+        this.$store.commit('snackMessage', message)
+      }
     },
   },
 
