@@ -1,5 +1,6 @@
 <template>
   <v-expansion-panel>
+    <!-- HEADER -->
     <v-expansion-panel-header class="text-h6">
       <span
         class="d-inline-block text-truncate"
@@ -9,42 +10,27 @@
       <v-chip x-small pill class="px-2" color="accent">{{ sumCoins }}</v-chip>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
+      <!-- NAME -->
       <div class="pb-2 text--disabled" v-text="repository.name" />
-      <v-card class="mx-auto">
-        <v-card-text class="accent">
-          <v-list v-if="repository.coins" class="pa-0">
-            <v-list-item
-              v-for="coin of repository.coins"
-              :key="coin.id"
-              class="pl-0 pb-4 accent"
-              @click="() => flyCoin(coin.coin.symbol)"
-            >
-              <v-list-item-content class="pa-0">
-                <v-container class="pa-0">
-                  <v-row no-gutters style="flex-wrap: nowrap;">
-                    <v-col class="flex-grow-0 flex-shrink-1">
-                      <code v-text="coin.coin.symbol" />
-                    </v-col>
-                    <v-col class="flex-grow-1 flex-shrink-1 align-end pl-2">
-                      <v-list-item-subtitle class="text--disabled" v-text="coin.coin.name" />
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <v-list-item-title v-text="coin.quantity" class="text-h5" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-          <h3 v-if="!repository.coins"> Select a repository by clicking on it. </h3>
-        </v-card-text>
-      </v-card>
+
+      <!-- POCKETS -->
+      <repo-pockets :repository="repository" />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
 
 <script>
 import { formatCurrency } from '@/utils'
+import repoPockets from '~/components/FlyoutRepoPockets.vue'
 
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    'repo-pockets': repoPockets,
+  },
 
   computed: {
     /*
@@ -75,7 +61,7 @@ export default {
     repository () {
       const repoId = this.$store.state.flyoutRepoId
       const model = this.$store.$db().model('repositorys')
-      const repos = model.query().with(['coins', 'coins.coin'])
+      const repos = model.query().with(['coins', 'coins.coin', 'trans'])
       return repos.find(repoId) || {}
     },
     sumCoins () {
@@ -85,12 +71,6 @@ export default {
         0 // Initialize sum at zero
       )
       return formatCurrency(total)
-    },
-  },
-
-  methods: {
-    flyCoin (symbol) {
-      this.$store.dispatch('flyCoin', symbol)
     },
   },
 

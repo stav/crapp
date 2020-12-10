@@ -12,14 +12,13 @@ const dateStringRegex = /(?<M>\d{2})-(?<D>\d{2})-(?<Y>\d{2}) (?<h>\d{2}):(?<m>\d
 ** Insert all given transactions
 */
 export function insertTransactions (repo) {
-  console.log('Kraken insertTransactions', repo)
   for (const tran of repo.transactions || []) {
     const coin = Coin.query().where('symbol', tran.symbol).first()
     Transaction.insert({
       data: {
         date: tran.date,
         type: tran.type,
-        repo: repo.name,
+        repoId: repo.id,
         coinId: coin.id,
         symbol: tran.symbol,
         quantity: tran.amount,
@@ -31,7 +30,6 @@ export function insertTransactions (repo) {
 }
 
 function getTransTimestamp (dateString) {
-  console.log('Kraken getTransTimestamp', dateString)
   const { Y, M, D, h, m, s } = dateStringRegex.exec(dateString).groups
   const iY = parseInt(Y)
   const day = parseInt(D)

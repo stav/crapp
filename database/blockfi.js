@@ -18,7 +18,7 @@ export function insertTransactions (repo) {
       data: {
         date: tran.date,
         type: tran.type,
-        repo: repo.name,
+        repoId: repo.id,
         coinId: coin.id,
         symbol: tran.symbol,
         quantity: tran.amount,

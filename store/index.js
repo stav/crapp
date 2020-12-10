@@ -12,6 +12,7 @@ export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'USD', 'UNIV2'],
   flyoutCoin: null,
   coinPockets: [],
+  repoPockets: [],
   flyoutDrawer: null,
   flyoutPanels: [],
   flyoutRepoId: null,

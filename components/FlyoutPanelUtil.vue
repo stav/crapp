@@ -9,6 +9,7 @@
         <v-card-text class="accent"> repoZeroCoins:  {{ repoZeroCoins }}  </v-card-text>
         <v-card-text class="accent"> flyoutPanels:   {{ flyoutPanels }}   </v-card-text>
         <v-card-text class="accent"> coinPockets:    {{ coinPockets }}    </v-card-text>
+        <v-card-text class="accent"> repoPockets:    {{ repoPockets }}    </v-card-text>
         <v-card-text class="accent"> flyoutDrawer:   {{ flyoutDrawer }}   </v-card-text>
         <v-card-text class="accent"> flyoutCoin:     {{ flyoutCoin }}     </v-card-text>
         <v-card-text class="accent"> flyoutRepoId:   {{ flyoutRepoId }}   </v-card-text>
@@ -37,6 +38,9 @@ export default {
     },
     coinPockets () {
       return this.$store.state.coinPockets
+    },
+    repoPockets () {
+      return this.$store.state.repoPockets
     },
     flyoutDrawer () {
       return this.$store.state.flyoutDrawer

@@ -78,12 +78,16 @@ function insertRepository (repo) {
 **
 ** Insert all the given repositories into the db
 */
-function insertRepositorys (repos) {
-  for (const repo of repos) {
-    insertCoins(repo.coins)
-    insertCoins(repo.transactions)
-    insertTransactions(repo)
-    insertRepository(repo)
+function insertRepositorys (inputs) {
+  for (const input of inputs) {
+    insertCoins(input.coins)
+    insertCoins(input.transactions)
+    insertRepository(input)
+    insertTransactions({
+      id: Repository.query().where('name', input.name).first().id,
+      name: input.name,
+      transactions: input.transactions,
+    })
   }
 }
 

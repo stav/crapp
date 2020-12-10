@@ -37,6 +37,9 @@ export default {
   setCoinPockets (state, value) {
     state.coinPockets = value
   },
+  setRepoPockets (state, value) {
+    state.repoPockets = value
+  },
   setFlyoutCoin (state, { symbol }) {
     state.flyoutCoin = Coin.query().where('symbol', symbol).first()
   },
