@@ -22,9 +22,11 @@ export default class Transaction extends Model {
   static fields () {
     return {
       id: this.uid(),
+      fee: this.number(0.0),
       date: this.string(''),
       type: this.string(''),
       repo: this.string(''),
+      note: this.string(''),
       coinId: this.attr(null),
       symbol: this.string(''),
       currency: this.string(''),

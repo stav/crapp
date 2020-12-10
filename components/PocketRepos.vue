@@ -28,7 +28,7 @@ export default {
   props: {
     coin: {
       type: Object,
-      required: true,
+      required: false,
       default() {
         return {}
       },

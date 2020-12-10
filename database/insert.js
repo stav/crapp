@@ -1,4 +1,5 @@
 import * as CryptoDotCom from './cdc'
+import * as CoinbasePro from './coinbasepro'
 import * as BlockFi from './blockfi'
 import * as UniSwap from './uniswap'
 import * as Kraken from './kraken'
@@ -43,6 +44,10 @@ function insertTransactions (repo) {
 
     case 'uniswap':
       UniSwap.insertTransactions(repo)
+      break
+
+    case 'coinbase pro':
+      CoinbasePro.insertTransactions(repo)
       break
 
     default:
