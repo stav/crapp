@@ -1,23 +1,17 @@
 <template>
   <v-card class="mx-auto">
-    <v-card-text class="accent">
-      <v-list v-if="trans" class="pa-0">
+    <v-card-text class="accent px-0">
+      <v-list dense v-if="trans" class="px-1">
         <v-list-item
           v-for="tran of trans" :key="tran.id"
-          class="pl-0 pb-4 accent"
+          class="px-0 pb-4 accent"
+          :title="tran.note"
         >
+          <v-list-item-icon class="mr-4">
+            <coin-logo :symbol="tran.symbol" :quantity="formatAmount(tran.quantity)" />
+          </v-list-item-icon>
           <v-list-item-content class="pa-0">
-            <v-container class="pa-0">
-              <v-row no-gutters style="flex-wrap: nowrap;">
-                <v-col class="flex-grow-0 flex-shrink-1">
-                  <code v-text="tran.symbol" />
-                </v-col>
-                <v-col class="flex-grow-1 flex-shrink-1 align-end pl-2">
-                  <v-list-item-subtitle class="text--disabled" v-text="tran.name" />
-                </v-col>
-              </v-row>
-            </v-container>
-            <v-list-item-title v-text="tran.quantity" class="text-h5" />
+            <v-list-item-title v-text="tran.symbol" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -27,7 +21,17 @@
 </template>
 
 <script>
+import { formatAmount } from '@/utils'
+import coinLogo from '~/components/CoinLogo.vue'
+
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    'coin-logo': coinLogo,
+  },
 
   /*
   ** PROPS
@@ -39,6 +43,15 @@ export default {
       default() {
         return []
       },
+    },
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    formatAmount (value) {
+      return formatAmount(value)
     },
   },
 

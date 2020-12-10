@@ -1,12 +1,13 @@
 <template>
   <v-card class="mx-auto">
-    <v-list dense>
+    <v-list dense class="px-1">
       <v-list-item
         v-for="repo in repos" :key="repo.id"
         @click="() => flyRepository(repo)"
-        class="pa-0"
+        :title="repo.name"
+        class="pa-1"
       >
-        <v-list-item-icon>
+        <v-list-item-icon class="mr-6">
           <coin-logo :quantity="coinSumForRepoFormat(repo)" />
         </v-list-item-icon>
         <v-list-item-content>
@@ -19,8 +20,16 @@
 
 <script>
 import { formatAmount } from '@/utils'
+import coinLogo from '~/components/CoinLogo.vue'
 
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    'coin-logo': coinLogo,
+  },
 
   /*
   ** PROPS

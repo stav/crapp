@@ -19,6 +19,13 @@ export default {
   ** PROPS
   */
   props: {
+    symbol: {
+      type: String,
+      required: false,
+      default() {
+        return ''
+      },
+    },
     quantity: {
       type: String,
       required: false,
@@ -33,7 +40,7 @@ export default {
   */
   computed: {
     logo () {
-      const symbol = this.$store.state.flyoutCoin?.symbol
+      const symbol = this.symbol || this.$store.state.flyoutCoin?.symbol
       try {
         return require(`@/assets/coins/${symbol}.svg`)
       } catch (e) {

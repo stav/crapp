@@ -12,10 +12,10 @@
 
     <!-- TRANSACTIONS -->
     <v-expansion-panel>
-      <v-expansion-panel-header color="accent">
+      <v-expansion-panel-header color="secondary">
         Transactions
       </v-expansion-panel-header>
-      <v-expansion-panel-content color="accent">
+      <v-expansion-panel-content color="secondary">
         <pocket-trans :trans="repository.trans" />
       </v-expansion-panel-content>
     </v-expansion-panel>

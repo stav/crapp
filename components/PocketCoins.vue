@@ -1,24 +1,18 @@
 <template>
   <v-card class="mx-auto">
-    <v-card-text class="accent">
-      <v-list v-if="coins" class="pa-0">
+    <v-card-text class="accent px-0">
+      <v-list dense v-if="coins" class="px-1">
         <v-list-item
           v-for="coin of coins" :key="coin.id"
           @click="() => flyCoin(coin.coin.symbol)"
-          class="pl-0 pb-4 accent"
+          class="px-0 pb-4 accent"
+          :title="`${coin.coin.name} (${coin.coin.symbol})`"
         >
+          <v-list-item-icon class="mr-4">
+            <coin-logo :symbol="coin.coin.symbol" :quantity="formatAmount(coin.quantity)" />
+          </v-list-item-icon>
           <v-list-item-content class="pa-0">
-            <v-container class="pa-0">
-              <v-row no-gutters style="flex-wrap: nowrap;">
-                <v-col class="flex-grow-0 flex-shrink-1">
-                  <code v-text="coin.coin.symbol" />
-                </v-col>
-                <v-col class="flex-grow-1 flex-shrink-1 align-end pl-2">
-                  <v-list-item-subtitle class="text--disabled" v-text="coin.coin.name" />
-                </v-col>
-              </v-row>
-            </v-container>
-            <v-list-item-title v-text="coin.quantity" class="text-h5" />
+            <v-list-item-title v-text="coin.coin.name" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -28,7 +22,17 @@
 </template>
 
 <script>
+import { formatAmount } from '@/utils'
+import coinLogo from '~/components/CoinLogo.vue'
+
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    'coin-logo': coinLogo,
+  },
 
   /*
   ** PROPS
@@ -47,6 +51,9 @@ export default {
   ** METHODS
   */
   methods: {
+    formatAmount (value) {
+      return formatAmount(value)
+    },
     flyCoin (symbol) {
       this.$store.dispatch('flyCoin', symbol)
     },
