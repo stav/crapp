@@ -21,7 +21,7 @@
 
 <script>
 import { formatCurrency } from '@/utils'
-import repoPockets from '~/components/FlyoutRepoPockets.vue'
+import repoPockets from '~/components/FlyoutPocketsRepo.vue'
 
 export default {
 

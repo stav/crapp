@@ -32,7 +32,7 @@
 
 <script>
 import { formatAmount } from '@/utils'
-import coinPockets from '~/components/FlyoutCoinPockets.vue'
+import coinPockets from '~/components/FlyoutPocketsCoin.vue'
 import coinLogo from '~/components/CoinLogo.vue'
 
 export default {
