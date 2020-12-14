@@ -103,7 +103,15 @@ export default {
     }
 
     if (json.history.error.length) {
-      console.error('Kraken histoy error:', json.history.error)
+      const unknown = json.history.error.reduce(
+        (found, error) => found || error.includes('Unknown asset pair'),
+        false
+      )
+      if (unknown) {
+        console.info(`${symbol} not found on Kraken`)
+      } else {
+        console.error('Kraken histoy error:', json.history.error)
+      }
       return []
     } else {
       const result = json.history.result

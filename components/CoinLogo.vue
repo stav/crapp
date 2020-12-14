@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-badge
-      color="primary"
+      :color="color"
       overlap offset-x="20"
       :content="quantity"
     >
@@ -31,6 +31,13 @@ export default {
       required: false,
       default() {
         return 0
+      },
+    },
+    color: {
+      type: String,
+      required: false,
+      default() {
+        return 'primary'
       },
     },
   },
