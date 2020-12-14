@@ -7,6 +7,9 @@ export default {
   setSelectedRepos (state, repos) {
     state.selectedRepos = repos
   },
+  setNavVariant (state, mini) {
+    state.navVariant = mini
+  },
   setNavDrawer (state, fly) {
     state.navDrawer = fly
   },

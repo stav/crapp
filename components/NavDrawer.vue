@@ -2,8 +2,7 @@
   <v-navigation-drawer
     fixed app
     v-model="navDrawer"
-    :mini-variant="true"
-    :expand-on-hover="true"
+    :mini-variant="navVariant"
     :clipped="true"
   >
     <v-list>
@@ -71,6 +70,9 @@ export default {
       set (value) {
         this.$store.commit('setNavDrawer', value)
       }
+    },
+    navVariant () {
+      return this.$store.state.navVariant
     },
   },
 

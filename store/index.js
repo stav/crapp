@@ -18,6 +18,7 @@ export const state = () => ({
   flyoutRepoId: null,
   footerAbsolute: true,
   navDrawer: null,
+  navVariant: true,
   repoCoinValue: true,
   repoZeroCoins: false,
   selectedRepos: [],

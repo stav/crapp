@@ -2,6 +2,10 @@
   <v-app-bar fixed app collapse-on-scroll clipped-left clipped-right>
     <v-app-bar-nav-icon title="Toggle navigation drawer" @click.stop="navDrawer=!navDrawer" />
 
+    <v-btn icon @click.stop="navVariant = !navVariant">
+      <v-icon>mdi-{{ `chevron-${navVariant ? 'right' : 'left'}` }}</v-icon>
+    </v-btn>
+
     <v-btn icon @click.stop="toggleFooterAbsolute" title="Toggle footer absolute">
       <v-icon>mdi-minus</v-icon>
     </v-btn>
@@ -26,6 +30,14 @@ export default {
       },
       set (value) {
         this.$store.commit('setNavDrawer', value)
+      }
+    },
+    navVariant: {
+      get () {
+        return this.$store.state.navVariant
+      },
+      set (value) {
+        this.$store.commit('setNavVariant', value)
       }
     },
   },
