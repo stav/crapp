@@ -33,8 +33,8 @@
 */
 export default async function fetchPrices (context) {
   const symbols = context.getters.sortedUniqueSymbols
-  const coinsUnListed = context.getters.coinsUnListed
-  const coinsListed = symbols.filter(coin => !coinsUnListed.includes(coin))
+  const coinsUnlisted = context.getters.coinsUnlisted
+  const coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
   const priceFetcherPath = '/api/coinmarketcap/quotes?symbol='
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)
@@ -58,9 +58,9 @@ export default async function fetchPrices (context) {
     if (symbols.includes('USD')) {
       context.dispatch('setCoin', { symbol: 'USD', price: 1 })
     }
-    const unlisted = context.getters.coinsUnListed
-    const coinsUnListed = symbols.filter(coin => unlisted.includes(coin))
-    const exceptions = coinsUnListed.length ? `(except ${coinsUnListed})` : ''
+    const unlisted = context.getters.coinsUnlisted
+    const coinsUnlisted = symbols.filter(coin => unlisted.includes(coin))
+    const exceptions = coinsUnlisted.length ? `(except ${coinsUnlisted})` : ''
     message = `Loaded prices ${exceptions}`
   }
   return message

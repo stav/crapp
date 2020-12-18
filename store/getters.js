@@ -57,9 +57,9 @@ export default {
   },
 
   /*
-  ** coinsUnListed
+  ** coinsUnlisted
   */
-  coinsUnListed: state => state.coinMarketCapUnlisted,
+  coinsUnlisted: state => state.coinMarketCapUnlisted,
 
   /*
   ** sparkLines
