@@ -9,13 +9,10 @@
       {{ symbol }}
     </v-app-bar>
     <div class="history-chart" ref="chartdiv" />
-    <v-card-actions>
-      <v-btn
-        v-for="s of symbols" :key="s"
-        @click="() => loadSymbol(s)"
-        v-text="s"
-      />
-    </v-card-actions>
+    <v-btn
+      v-for="s of symbols" :key="s" v-text="s"
+      @click="() => loadSymbol(s)"
+    />
   </v-card>
 </template>
 
@@ -128,6 +125,7 @@ export default {
 
     const percentSeries = chart.series.push(new am4charts.StepLineSeries())
     percentSeries.name = 'Change'
+    percentSeries.hidden = true
     percentSeries.dataFields.dateX = 'date'
     percentSeries.dataFields.valueY = 'value'
     percentSeries.dataFields.valueYShow = 'changePercent'
@@ -143,6 +141,7 @@ export default {
 
     const unitsSeries = chart.series.push(new am4charts.ColumnSeries())
     unitsSeries.name = 'Units'
+    unitsSeries.hidden = true
     unitsSeries.yAxis = unitsAxis
     unitsSeries.extraTooltipPrecision = 1
     unitsSeries.dataFields.dateX = 'date'
