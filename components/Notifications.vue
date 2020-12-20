@@ -3,7 +3,7 @@
     top right app
     v-model="snackbarModel"
     timeout="3000"
-    color="light-green darken-4"
+    color="light-blue darken-4"
   >
     <div class="clickable" @click="snackbarModel = false">
       {{ snackbarText }}

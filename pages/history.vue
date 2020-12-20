@@ -115,9 +115,17 @@ export default {
           }
         }
       }
+      const series = async () => {
+        const series = this.$store.getters.getKrakenHistorySeries
+        const result = await series(this.symbol, this.interval)
+        if (typeof result === 'string') {
+          this.$store.commit('snackMessage', result)
+          return []
+        }
+        return result
+      }
       this.$store.dispatch('flyCoin', this.symbol)
-      const series = this.$store.getters.getKrakenHistorySeries
-      const data = await series(this.symbol, this.interval)
+      const data = await series()
       const trans = Transaction.query().where('symbol', this.symbol).get().sort(sort)
       if (trans.length) { addTransactions() }
       this.chart.data = data

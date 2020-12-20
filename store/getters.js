@@ -108,11 +108,9 @@ export default {
         false
       )
       if (unknown) {
-        console.info(`${symbol} not found on Kraken`)
-      } else {
-        console.error('Kraken histoy error:', json.history.error)
+        return `${symbol} not found on Kraken`
       }
-      return []
+      return `Kraken histoy error: ${json.history.error}`
     } else {
       const result = json.history.result
       const pair = Object.keys(result)[0]
