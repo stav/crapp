@@ -70,6 +70,7 @@ export default {
     { path: '/api/coinmarketcap', handler: '~/api/coinmarketcap' },
     { path: '/api/coinbasepro', handler: '~/api/coinbasepro' },
     { path: '/api/coinbase', handler: '~/api/coinbase' },
+    { path: '/api/bitfinex', handler: '~/api/bitfinex' },
     { path: '/api/binance', handler: '~/api/binance' },
     { path: '/api/kraken', handler: '~/api/kraken' },
   ],

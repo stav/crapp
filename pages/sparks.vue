@@ -2,6 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="2">
+        <v-btn @click="bitfinex" color="primary"> Bitfinex </v-btn>
         <v-btn
           v-for="symbol of symbols" :key="symbol"
           @click="() => spark(symbol)"
@@ -69,10 +70,21 @@ export default {
     },
   },
 
+  /*
+  ** METHODS
+  */
   methods: {
+
+    color (symbol) {
+      return this.colors[symbol] || 'accent'
+    },
+
+    disabled (symbol) {
+      return this.disableds[symbol]
+    },
+
     async series (symbol) {
-      const series = this.$store.getters.getKrakenHistorySeries
-      const result = await series(symbol, this.interval)
+      const result = await this.priceHistory(symbol, this.interval)
       if (typeof result === 'string') { // error
         this.$store.commit('snackMessage', result)
         const disabled = {}
@@ -82,6 +94,7 @@ export default {
       }
       return result
     },
+
     async spark (symbol) {
       this.$store.commit('setFlyoutCoin', { symbol })
       this.$store.commit('openCoinFlyout')
@@ -96,12 +109,42 @@ export default {
         this.colors = Object.assign({}, this.colors, color)
       }
     },
-    color (symbol) {
-      return this.colors[symbol] || 'accent'
+
+    /*
+    ** priceHistory
+    **
+    ** [ [ MTS, OPEN, CLOSE, HIGH, LOW, VOLUME ],... ]
+    **
+    ** result == {
+    **   "candles": [
+    **     [ 1608604200000, 22806, 22806, 22806, 22806, 0.005 ],
+    **     [ 1608604140000, 22805, 22805, 22819.195206, 22802, 0.9808448 ],
+    **     [ 1608604080000, 22830, 22805.657248, 22830, 22797, 1.16280923 ]
+    ** ] }
+    */
+    async priceHistory (symbol) {
+      const response = await fetch('/api/bitfinex/candles?symbol=' + symbol)
+      const result = await response.json()
+
+      if (result.error) {
+        const e = result.error
+        const message = `Error: ${e.message}, ${e.text}`
+        console.error(message)
+        return message
+      }
+      const { candles } = result
+      if (candles.length === 0) {
+        return `No history pricing for ${symbol}`
+      }
+      return candles.map(candle => candle[2])
     },
-    disabled (symbol) {
-      return this.disableds[symbol]
+
+    async bitfinex () {
+      for (const symbol of this.symbols) {
+        await this.spark(symbol)
+      }
     },
+
   },
 
 }

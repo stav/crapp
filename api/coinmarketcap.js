@@ -3,6 +3,7 @@ import axios from 'axios'
 /*
 ** CoinMarketCap API Server Middleware
 **
+** https://pro.coinmarketcap.com/account
 ** https://coinmarketcap.com/api/documentation/v1/
 */
 export default async function (req, res) {
