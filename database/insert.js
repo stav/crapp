@@ -29,25 +29,27 @@ function insertCoins (entitys) {
 ** Insert all given transactions
 */
 function insertTransactions (repo) {
-  switch (repo.name.toLowerCase()) {
+  const transactions = repo.transactions
+  const [firstWordOfRepoName, _rest] = repo.name.split(/\s/) // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
+  switch (firstWordOfRepoName.toLowerCase()) {
     case 'kraken':
-      Kraken.insertTransactions(repo)
+      Kraken.insertTransactions(repo.id, transactions)
       break
 
     case 'blockfi':
-      BlockFi.insertTransactions(repo)
+      BlockFi.insertTransactions(repo.id, transactions)
       break
 
-    case 'crypto wallet':
-      CryptoDotCom.insertTransactions(repo)
+    case 'crypto.com':
+      CryptoDotCom.insertTransactions(repo.id, transactions)
       break
 
     case 'uniswap':
-      UniSwap.insertTransactions(repo)
+      UniSwap.insertTransactions(repo.id, transactions)
       break
 
-    case 'coinbase pro':
-      CoinbasePro.insertTransactions(repo)
+    case 'coinbase':
+      CoinbasePro.insertTransactions(repo.id, transactions)
       break
 
     default:

@@ -9,15 +9,14 @@ import Coin from '~/models/Coin'
 **
 ** Insert all given transactions
 */
-export function insertTransactions (repo) {
-  console.log('BlockFi insertTransactions', repo)
-  for (const tran of repo.transactions || []) {
+export function insertTransactions (repoId, trans) {
+  for (const tran of trans || []) {
     const coin = Coin.query().where('symbol', tran.symbol).first()
     Transaction.insert({
       data: {
+        repoId,
         date: tran.date,
         type: tran.type,
-        repoId: repo.id,
         coinId: coin.id,
         symbol: tran.symbol,
         quantity: tran.quantity,

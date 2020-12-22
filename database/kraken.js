@@ -11,14 +11,14 @@ const dateStringRegex = /(?<M>\d{2})-(?<D>\d{2})-(?<Y>\d{2}) (?<h>\d{2}):(?<m>\d
 **
 ** Insert all given transactions
 */
-export function insertTransactions (repo) {
-  for (const tran of repo.transactions || []) {
+export function insertTransactions (repoId, trans) {
+  for (const tran of trans || []) {
     const coin = Coin.query().where('symbol', tran.symbol).first()
     Transaction.insert({
       data: {
+        repoId,
         date: tran.date,
         type: tran.type,
-        repoId: repo.id,
         coinId: coin.id,
         symbol: tran.symbol,
         quantity: tran.amount,
