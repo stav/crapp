@@ -10,15 +10,43 @@ import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
 
 /*
+** exportCoinSymbols
+**
+** Return a list of coin symbols
+*/
+function exportCoinSymbols (repo) {
+  return repo.coins.map(coin => coin.symbol)
+}
+
+/*
+** exportTranSymbols
+**
+** Return a list of transaction symbols
+*/
+function exportTranSymbols (repo) {
+  const [firstWordOfRepoName, _rest] = repo.name.split(/\s/) // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
+  let symbols
+  switch (firstWordOfRepoName.toLowerCase()) {
+    case 'coinbase':
+      symbols = CoinbasePro.mapTransactionSymbols(repo.transactions)
+      break
+
+    default:
+      symbols = repo.transactions?.map(tran => tran.symbol) || []
+  }
+  return symbols
+}
+
+/*
 ** insertCoins
 **
 ** Insert all given coins
 */
-function insertCoins (entitys) {
-  for (const entity of entitys || []) {
-    const _coin = Coin.query().where('symbol', entity.symbol).first()
+function insertCoins (symbols) {
+  for (const symbol of symbols || []) {
+    const _coin = Coin.query().where('symbol', symbol).first()
     if (!_coin) {
-      Coin.insert({ data: { symbol: entity.symbol } })
+      Coin.insert({ data: { symbol } })
     }
   }
 }
@@ -29,7 +57,7 @@ function insertCoins (entitys) {
 ** Insert all given transactions
 */
 function insertTransactions (repo) {
-  const transactions = repo.transactions
+  const transactions = repo.trans
   const [firstWordOfRepoName, _rest] = repo.name.split(/\s/) // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
   switch (firstWordOfRepoName.toLowerCase()) {
     case 'kraken':
@@ -82,13 +110,13 @@ function insertRepository (repo) {
 */
 function insertRepositorys (inputs) {
   for (const input of inputs) {
-    insertCoins(input.coins)
-    insertCoins(input.transactions)
+    insertCoins(exportCoinSymbols(input))
+    insertCoins(exportTranSymbols(input))
     insertRepository(input)
     insertTransactions({
       id: Repository.query().where('name', input.name).first().id,
       name: input.name,
-      transactions: input.transactions,
+      trans: input.transactions,
     })
   }
 }

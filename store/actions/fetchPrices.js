@@ -45,23 +45,20 @@ export default async function fetchPrices (context) {
     const e = result.error
     message = `Error: ${e.message}, ${e.text}`
     console.error(message)
-  } else {
-    const { quotes: { data } } = result
-    for (const coinData of Object.values(data)) {
-      context.dispatch('setCoin', {
-        symbol: coinData.symbol,
-        price: coinData.quote.USD?.price,
-        name: coinData.name,
-        slug: coinData.slug,
-      })
-    }
-    if (symbols.includes('USD')) {
-      context.dispatch('setCoin', { symbol: 'USD', price: 1 })
-    }
-    const unlisted = context.getters.coinsUnlisted
-    const coinsUnlisted = symbols.filter(coin => unlisted.includes(coin))
-    const exceptions = coinsUnlisted.length ? `(except ${coinsUnlisted})` : ''
-    message = `Loaded prices ${exceptions}`
+    return message
   }
-  return message
+  const { quotes: { data } } = result
+  for (const coinData of Object.values(data)) {
+    context.dispatch('setCoin', {
+      symbol: coinData.symbol,
+      price: coinData.quote.USD?.price,
+      name: coinData.name,
+      slug: coinData.slug,
+    })
+  }
+  if (symbols.includes('USD')) {
+    context.dispatch('setCoin', { symbol: 'USD', price: 1 })
+  }
+  const exceptions = coinsUnlisted.length ? `(except ${coinsUnlisted})` : ''
+  return `Loaded prices ${exceptions}`
 }

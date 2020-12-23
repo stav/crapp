@@ -1,11 +1,9 @@
 /*
-** UniSwap data assist
+** Coinbase Pro data assist
 */
 import Transaction from '~/models/Transaction'
 import Coin from '~/models/Coin'
 
-const dateStringRegex = /(?<M>\w{3})-(?<D>\d{2})-(?<Y>\d{4}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2}) (?<A>AM|PM)/
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 /*
 ** insertTransactions
 **
@@ -13,38 +11,30 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 */
 export function insertTransactions (repoId, trans) {
   for (const tran of trans || []) {
-    const coin = Coin.query().where('symbol', tran.symbol).first()
+    const symbol = tran['size unit']
+    const date = tran['created at']
+    const coin = Coin.query().where('symbol', symbol).first()
     const data = {
       repoId,
+      symbol,
+      date,
       fee: tran.fee,
-      date: tran.date,
       type: tran.type,
-      note: tran.note,
+      note: `${tran.side} ${tran.size} ${symbol} for ${tran.price} each`,
       coinId: coin.id,
-      symbol: tran.symbol,
-      quantity: tran.quantity,
-      currency: tran.currency,
-      timestamp: getTransTimestamp(tran.date),
+      quantity: tran.size,
+      currency: tran.price,
+      timestamp: (new Date(date)).getTime(),
     }
     Transaction.insert({ data })
   }
 }
 
 /*
-** getTransTimestamp
+** mapTransactionSymbols
 **
-** Return Integer Linux timestamp
+** Map a list of the transactions symbols
 */
-function getTransTimestamp (dateString) {
-  const { Y, M, D, h, m, s, A } = dateStringRegex.exec(dateString).groups
-  const iY = parseInt(Y)
-  const ih = parseInt(h)
-
-  const day = parseInt(D)
-  const year = iY < 100 ? 1900 + iY : iY
-  const month = months.indexOf(M)
-
-  const hour = A === 'A' ? ih : ih + 12
-
-  return Date.UTC(year, month, day, hour, m, s)
+export function mapTransactionSymbols (trans) {
+  return trans?.map(tran => tran['size unit']) || []
 }

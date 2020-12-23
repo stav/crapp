@@ -99,7 +99,6 @@ export default {
       this.$store.commit('setFlyoutCoin', { symbol })
       this.$store.commit('openCoinFlyout')
       const data = await this.series(symbol)
-      console.log('spark', symbol, data)
       if (data.length) {
         const value = {}
         value[symbol] = data
