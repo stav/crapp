@@ -3,7 +3,7 @@
     <v-card-text class="accent px-0">
       <v-list dense v-if="trans" class="px-1">
         <v-list-item
-          v-for="tran of trans" :key="tran.id"
+          v-for="tran of localTransactions" :key="tran.id"
           @click="() => flyCoin(tran.symbol)"
           class="px-0 pb-4 accent"
           :title="tran.timestring + '\n' + tran.note"
@@ -17,7 +17,7 @@
           </v-list-item-icon>
           <v-list-item-content class="pa-0">
             <v-list-item-title v-text="tran.symbol" />
-            <v-chip x-small pill class="px-1" color="orange darken-4">{{ age(tran) }} days ago</v-chip>
+            <v-chip x-small pill class="px-1" color="orange darken-4"> {{ tran.age }} days ago </v-chip>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -49,6 +49,17 @@ export default {
       default() {
         return []
       },
+    },
+  },
+
+  /*
+  ** COMPUTED
+  */
+  computed: {
+    localTransactions () {
+      return [...this.trans]
+        .map(tran => Object.assign({}, tran, { age: this.age(tran) })) // add age
+        .sort((a, b) => a.timestamp - b.timestamp) // sort by timestamp
     },
   },
 
