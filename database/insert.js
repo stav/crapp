@@ -4,10 +4,19 @@ import * as BlockFi from './blockfi'
 import * as UniSwap from './uniswap'
 import * as Kraken from './kraken'
 import repositorys from '~/data/repositorys'
+import Statement from '~/models/Statement'
 import Transaction from '~/models/Transaction'
 import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
+
+const translators = {
+  kraken: Kraken,
+  blockfi: BlockFi,
+  uniswap: UniSwap,
+  coinbase: CoinbasePro,
+  'crypto.com': CryptoDotCom,
+}
 
 /*
 ** exportCoinSymbols
@@ -24,15 +33,14 @@ function exportCoinSymbols (repo) {
 ** Return a list of transaction symbols
 */
 function exportTranSymbols (repo) {
-  const [firstWordOfRepoName, _rest] = repo.name.split(/\s/) // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
   let symbols
-  switch (firstWordOfRepoName.toLowerCase()) {
+  switch (repo.slug) {
     case 'coinbase':
-      symbols = CoinbasePro.mapTransactionSymbols(repo.transactions)
+      symbols = CoinbasePro.mapTransactionSymbols(repo.trans)
       break
 
     default:
-      symbols = repo.transactions?.map(tran => tran.symbol) || []
+      symbols = repo.trans?.map(tran => tran.symbol) || []
   }
   return symbols
 }
@@ -54,34 +62,30 @@ function insertCoins (symbols) {
 /*
 ** insertTransactions
 **
-** Insert all given transactions
+** Insert all of the repo's transactions
 */
 function insertTransactions (repo) {
-  const transactions = repo.trans
-  const [firstWordOfRepoName, _rest] = repo.name.split(/\s/) // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
-  switch (firstWordOfRepoName.toLowerCase()) {
-    case 'kraken':
-      Kraken.insertTransactions(repo.id, transactions)
-      break
+  if (repo.slug in translators) {
+    insertCoins(exportTranSymbols(repo))
+    translators[repo.slug].insertTransactions(repo.id, repo.trans)
+  } else {
+    // console.debug(`No transactions for repository (${repo.name})`)
+  }
+}
 
-    case 'blockfi':
-      BlockFi.insertTransactions(repo.id, transactions)
-      break
-
-    case 'crypto.com':
-      CryptoDotCom.insertTransactions(repo.id, transactions)
-      break
-
-    case 'uniswap':
-      UniSwap.insertTransactions(repo.id, transactions)
-      break
-
+/*
+** insertStatements
+**
+** Insert all given statements
+*/
+function insertStatements (repo) {
+  switch (repo.slug) {
     case 'coinbase':
-      CoinbasePro.insertTransactions(repo.id, transactions)
+      CoinbasePro.insertStatements(repo)
       break
 
     default:
-      console.debug(`No transactions for repository (${repo.name})`)
+      // console.debug(`No statements for repository (${repo.name})`)
   }
 }
 
@@ -91,6 +95,7 @@ function insertTransactions (repo) {
 ** Insert the given repository into the db
 */
 function insertRepository (repo) {
+  insertCoins(exportCoinSymbols(repo))
   Repository.insert({
     data: {
       coins: repo.coins.map(_ => ({
@@ -110,13 +115,19 @@ function insertRepository (repo) {
 */
 function insertRepositorys (inputs) {
   for (const input of inputs) {
-    insertCoins(exportCoinSymbols(input))
-    insertCoins(exportTranSymbols(input))
     insertRepository(input)
+    const repoId = Repository.query().where('name', input.name).first().id
     insertTransactions({
-      id: Repository.query().where('name', input.name).first().id,
+      id: repoId,
       name: input.name,
+      slug: input.slug,
       trans: input.transactions,
+    })
+    insertStatements({
+      id: repoId,
+      name: input.name,
+      slug: input.slug,
+      stmts: input.statements,
     })
   }
 }
@@ -129,7 +140,8 @@ function insertRepositorys (inputs) {
 export async function loadRepositorys () {
   Coin.deleteAll()
   RepoCoin.deleteAll()
-  Repository.deleteAll()
+  Statement.deleteAll()
   Transaction.deleteAll()
+  Repository.deleteAll()
   insertRepositorys(await repositorys())
 }

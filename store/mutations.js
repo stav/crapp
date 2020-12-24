@@ -16,6 +16,9 @@ export default {
   setFlyoutDrawer (state, fly) {
     state.flyoutDrawer = fly
   },
+  setStatementBalances (state, value) {
+    state.statementBalances = value
+  },
   toggleFlyout (state) {
     state.flyoutDrawer = !state.flyoutDrawer
   },
