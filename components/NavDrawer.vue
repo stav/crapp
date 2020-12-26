@@ -60,8 +60,13 @@ export default {
         },
         {
           title: 'Sparks',
-          icon: 'mdi-chart-areaspline',
+          icon: 'mdi-chart-line-variant',
           to: '/sparks'
+        },
+        {
+          title: 'Statements',
+          icon: 'mdi-script-text-outline',
+          to: '/statements'
         },
       ],
     }

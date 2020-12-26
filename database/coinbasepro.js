@@ -100,7 +100,6 @@ class Statements {
 export function insertStatements (repo) {
   const statement = new Statements(repo.stmts)
   const orders = statement.getOrders()
-  console.log('insertStatements', orders)
   for (const order of orders) {
     const data = {
       repoId: repo.id,

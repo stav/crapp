@@ -1,36 +1,41 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="2">
-        <v-btn @click="bitfinex" color="primary"> Bitfinex </v-btn>
-        <v-btn
-          v-for="symbol of symbols" :key="symbol"
-          @click="() => spark(symbol)"
-          v-text="symbol"
-          :disabled="disabled(symbol)"
-          :color="color(symbol)"
-          class="mr-1 mb-1"
-        />
-      </v-col>
-      <v-col cols="10">
-        <v-container>
-          <v-row no-gutters>
-            <v-col
-              v-for="symbol in Object.keys(sparks)" :key="symbol"
-              @click="() => spark(symbol)"
-            >
-              <v-card class="ma-1" max-width="400">
-                <v-sheet :color="sheetColor" width="400">
-                  <span v-text="symbol" class="ml-2" />
-                  <v-sparkline :value="sparks[symbol]" line-width="1" color="white" />
-                </v-sheet>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card class="mx-auto">
+    <v-app-bar :color="sheetColor">
+      <v-icon class="mr-2">mdi-chart-line-variant</v-icon> Sparklines
+    </v-app-bar>
+    <v-container>
+      <v-row>
+        <v-col cols="2">
+          <v-btn @click="bitfinex" color="primary"> Bitfinex </v-btn>
+          <v-btn
+            v-for="symbol of symbols" :key="symbol"
+            @click="() => spark(symbol)"
+            v-text="symbol"
+            :disabled="disabled(symbol)"
+            :color="color(symbol)"
+            class="mr-1 mb-1"
+          />
+        </v-col>
+        <v-col cols="10">
+          <v-container>
+            <v-row no-gutters>
+              <v-col
+                v-for="symbol in Object.keys(sparks)" :key="symbol"
+                @click="() => spark(symbol)"
+              >
+                <v-card class="ma-1" max-width="400">
+                  <v-sheet :color="sheetColor" width="400">
+                    <span v-text="symbol" class="ml-2" />
+                    <v-sparkline :value="sparks[symbol]" line-width="1" color="white" />
+                  </v-sheet>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
@@ -149,7 +154,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .v-sheet :hover {
     cursor: pointer;
   }
