@@ -7,19 +7,13 @@
       <template v-slot:default>
         <thead>
           <tr>
-            <th class="text-left"> Deposit </th>
-            <th class="text-left"> Match </th>
-            <th class="text-left"> Withdrawal </th>
-            <th class="text-left"> Fee </th>
+            <th class="text-left"> Description </th>
             <th class="text-right" v-for="symbol of symbols" :key="symbol" v-text="symbol" />
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, i) in matrix" :key="i">
-            <td>{{ row.deposit }}</td>
-            <td>{{ row.match }}</td>
-            <td>{{ row.withdrawal }}</td>
-            <td>{{ row.fee }}</td>
+          <tr v-for="(row, i) in matrix" :key="i" :title="JSON.stringify(row.statement)">
+            <td>{{ row.desc }}</td>
             <td v-for="symbol of symbols" :key="symbol" v-text="row[symbol]" class="text-right" />
           </tr>
         </tbody>
@@ -97,27 +91,59 @@ export default {
     },
 
     load () {
-      // const matrix = []
+      function desc(stmt) {
+        const desc = []
+
+        const deposits = Object.entries(stmt.deposit)
+        if (deposits.length > 0) {
+          for (const [symbol, deposit] of deposits) {
+            desc.push(`Deposit ${formatAmount(deposit.amount)} ${symbol}`)
+          }
+        }
+
+        const matchs = Object.entries(stmt.match)
+        if (matchs.length > 0) {
+          const tradeFrom = []
+          const tradeTo = []
+          for (const [symbol, match] of matchs) {
+            const trade = `${formatAmount(match.amount)} ${symbol}`
+            if (match.amount < 0) {
+              tradeFrom.push(trade)
+            } else {
+              tradeTo.push(trade)
+            }
+          }
+          desc.push(`Trade ${tradeFrom} for ${tradeTo}`)
+        }
+
+        const withdrawals = Object.entries(stmt.withdrawal)
+        if (withdrawals.length > 0) {
+          for (const [symbol, withdrawal] of withdrawals) {
+            desc.push(`Withdrawal ${formatAmount(withdrawal.amount)} ${symbol}`)
+          }
+        }
+
+        return desc
+      }
       // const runningBalances = Array(this.symbols.length).fill(0)
       const runningBalances = {}
       for (const symbol of this.symbols) {
         runningBalances[symbol] = ''
       }
+      const matrix = []
       for (const statement of this.statements) {
         const row = {
-          fee: statement.fee,
-          match: statement.match,
-          deposit: statement.deposit,
-          withdrawal: statement.withdrawal,
+          statement,
+          desc: desc(statement),
         }
         for (const symbol of this.symbols) {
           row[symbol] = this.balance(symbol, statement) || runningBalances[symbol]
           runningBalances[symbol] = row[symbol]
         }
-        this.matrix.push(row)
+        matrix.push(row)
       }
-      console.log(this.matrix)
-      // this.matrix = matrix
+      console.log(matrix)
+      this.matrix = matrix
     },
 
   },
