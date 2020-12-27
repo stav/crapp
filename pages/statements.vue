@@ -34,6 +34,39 @@ function keys(stmt) {
   )
 }
 
+function desc(stmt) {
+  const desc = []
+
+  const deposits = Object.entries(stmt.deposit)
+  if (deposits.length > 0) {
+    for (const [symbol, deposit] of deposits) {
+      desc.push(`Deposit ${formatAmount(deposit.amount)} ${symbol}`)
+    }
+  }
+  const matchs = Object.entries(stmt.match)
+  if (matchs.length > 0) {
+    const tradeFrom = []
+    const tradeTo = []
+    for (const [symbol, match] of matchs) {
+      const trade = `${formatAmount(match.amount)} ${symbol}`
+      if (match.amount < 0) {
+        tradeFrom.push(trade)
+      } else {
+        tradeTo.push(trade)
+      }
+    }
+    desc.push(`Trade ${tradeFrom} for ${tradeTo}`)
+  }
+  const withdrawals = Object.entries(stmt.withdrawal)
+  if (withdrawals.length > 0) {
+    for (const [symbol, withdrawal] of withdrawals) {
+      desc.push(`Withdrawal ${formatAmount(withdrawal.amount)} ${symbol}`)
+    }
+  }
+
+  return desc
+}
+
 export default {
 
   /*
@@ -91,41 +124,6 @@ export default {
     },
 
     load () {
-      function desc(stmt) {
-        const desc = []
-
-        const deposits = Object.entries(stmt.deposit)
-        if (deposits.length > 0) {
-          for (const [symbol, deposit] of deposits) {
-            desc.push(`Deposit ${formatAmount(deposit.amount)} ${symbol}`)
-          }
-        }
-
-        const matchs = Object.entries(stmt.match)
-        if (matchs.length > 0) {
-          const tradeFrom = []
-          const tradeTo = []
-          for (const [symbol, match] of matchs) {
-            const trade = `${formatAmount(match.amount)} ${symbol}`
-            if (match.amount < 0) {
-              tradeFrom.push(trade)
-            } else {
-              tradeTo.push(trade)
-            }
-          }
-          desc.push(`Trade ${tradeFrom} for ${tradeTo}`)
-        }
-
-        const withdrawals = Object.entries(stmt.withdrawal)
-        if (withdrawals.length > 0) {
-          for (const [symbol, withdrawal] of withdrawals) {
-            desc.push(`Withdrawal ${formatAmount(withdrawal.amount)} ${symbol}`)
-          }
-        }
-
-        return desc
-      }
-      // const runningBalances = Array(this.symbols.length).fill(0)
       const runningBalances = {}
       for (const symbol of this.symbols) {
         runningBalances[symbol] = ''
