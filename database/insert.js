@@ -10,6 +10,14 @@ import Repository from '~/models/Repository'
 import RepoCoin from '~/models/RepoCoin'
 import Coin from '~/models/Coin'
 
+const translators = {
+  kraken: Kraken,
+  blockfi: BlockFi,
+  uniswap: UniSwap,
+  coinbase: CoinbasePro,
+  'crypto.com': CryptoDotCom,
+}
+
 /*
 ** exportCoinSymbols
 **
@@ -28,11 +36,11 @@ function exportTranSymbols (repo) {
   let symbols
   switch (repo.slug) {
     case 'coinbase':
-      symbols = CoinbasePro.mapTransactionSymbols(repo.transactions)
+      symbols = CoinbasePro.mapTransactionSymbols(repo.trans)
       break
 
     default:
-      symbols = repo.transactions?.map(tran => tran.symbol) || []
+      symbols = repo.trans?.map(tran => tran.symbol) || []
   }
   return symbols
 }
@@ -54,32 +62,14 @@ function insertCoins (symbols) {
 /*
 ** insertTransactions
 **
-** Insert all given transactions
+** Insert all of the repo's transactions
 */
 function insertTransactions (repo) {
-  switch (repo.slug) {
-    case 'kraken':
-      Kraken.insertTransactions(repo.id, repo.trans)
-      break
-
-    case 'blockfi':
-      BlockFi.insertTransactions(repo.id, repo.trans)
-      break
-
-    case 'crypto.com':
-      CryptoDotCom.insertTransactions(repo.id, repo.trans)
-      break
-
-    case 'uniswap':
-      UniSwap.insertTransactions(repo.id, repo.trans)
-      break
-
-    case 'coinbase':
-      CoinbasePro.insertTransactions(repo.id, repo.trans)
-      break
-
-    default:
-      console.debug(`No transactions for repository (${repo.name})`)
+  if (repo.slug in translators) {
+    insertCoins(exportTranSymbols(repo))
+    translators[repo.slug].insertTransactions(repo.id, repo.trans)
+  } else {
+    console.debug(`No transactions for repository (${repo.name})`)
   }
 }
 
@@ -105,6 +95,7 @@ function insertStatements (repo) {
 ** Insert the given repository into the db
 */
 function insertRepository (repo) {
+  insertCoins(exportCoinSymbols(repo))
   Repository.insert({
     data: {
       coins: repo.coins.map(_ => ({
@@ -124,8 +115,6 @@ function insertRepository (repo) {
 */
 function insertRepositorys (inputs) {
   for (const input of inputs) {
-    insertCoins(exportCoinSymbols(input))
-    insertCoins(exportTranSymbols(input))
     insertRepository(input)
     const repoId = Repository.query().where('name', input.name).first().id
     insertTransactions({
