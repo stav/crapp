@@ -69,7 +69,7 @@ function insertTransactions (repo) {
     insertCoins(exportTranSymbols(repo))
     translators[repo.slug].insertTransactions(repo.id, repo.trans)
   } else {
-    console.debug(`No transactions for repository (${repo.name})`)
+    // console.debug(`No transactions for repository (${repo.name})`)
   }
 }
 
@@ -85,7 +85,7 @@ function insertStatements (repo) {
       break
 
     default:
-      console.debug(`No statements for repository (${repo.name})`)
+      // console.debug(`No statements for repository (${repo.name})`)
   }
 }
 

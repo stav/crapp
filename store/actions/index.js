@@ -73,7 +73,7 @@ export default {
 
   async fetchPrices (context, done) {
     const message = await fetchPrices(context)
-    done && done(message)
+    message && done && done(message)
   },
 
   flyRepository (context, repo) {
@@ -83,12 +83,14 @@ export default {
     context.commit('setFlyoutRepo', repo)
   },
 
-  async loadRepositorys (context, force) {
+  async loadRepositorys (context, { force, done } = {}) {
+    // const { force = false, done = undefined } = ref
     if (context.getters.repositorys.length === 0 || force) {
       await loadRepositorys()
       const activeRepos = context.getters.repositorys.filter(_ => _.active)
       context.commit('setSelectedRepos', activeRepos)
     }
+    done && done('Repositories loaded')
     await fetchPrices(context)
   },
 

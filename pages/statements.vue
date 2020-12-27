@@ -64,7 +64,7 @@ function desc(stmt) {
     }
   }
 
-  return desc
+  return desc.join()
 }
 
 export default {

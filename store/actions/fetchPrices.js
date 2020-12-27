@@ -35,6 +35,9 @@ export default async function fetchPrices (context) {
   const symbols = context.getters.sortedUniqueSymbols
   const coinsUnlisted = context.getters.coinsUnlisted
   const coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
+  if (coinsListed.length === 0) {
+    return
+  }
   const priceFetcherPath = '/api/coinmarketcap/quotes?symbol='
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)

@@ -43,6 +43,7 @@
       title="Display amount of coins held or the USD valuation"
     />
     <span @click="coinValue=true" class="clickable text--secondary"> value </span>
+    <v-progress-linear absolute bottom indeterminate :active="active" />
   </v-app-bar>
 </template>
 
@@ -73,6 +74,7 @@ export default {
   ** DATA
   */
   data: () => ({
+    active: false,
     loading: false,
   }),
 
@@ -126,10 +128,16 @@ export default {
       if (message) {
         this.$store.commit('snackMessage', message)
       }
+      this.active = false
       this.loading = false
     },
     loadRepositorys () {
-      this.$store.dispatch('loadRepositorys', true)
+      this.active = true
+      this.$store.dispatch('loadRepositorys', { force: true, done: this.done })
+      this.getCoinbaseProAccountsData()
+      this.getCoinbaseAccountsData()
+      this.getBinanceAccountsData()
+      this.fetchPrices()
     },
   },
 
