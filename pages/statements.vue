@@ -47,6 +47,7 @@ export default {
   */
   async fetch () {
     await this.$store.dispatch('loadRepositorys')
+    this.load()
   },
 
   /*
@@ -69,7 +70,7 @@ export default {
       const arrayOfSymbolArrays = this.statements.map(s => [].concat(keys(s)))
 
       // ["USDC", "USD", "USD", "USD", "BTC",…]
-      const arrayOfAllSymbols = [].concat(...arrayOfSymbolArrays)
+      const arrayOfAllSymbols = arrayOfSymbolArrays.flat()
 
       // {"USDC", "USD", "BTC", "EOS", "COMP",… }
       const setOfUniqueSymbols = new Set(arrayOfAllSymbols)
@@ -81,36 +82,10 @@ export default {
   },
 
   /*
-  ** MOUNTED
-  */
-  mounted () {
-    const matrix = []
-    // const runningBalances = Array(this.symbols.length).fill(0)
-    const runningBalances = {}
-    for (const symbol of this.symbols) {
-      runningBalances[symbol] = ''
-    }
-    for (const statement of this.statements) {
-      const row = {
-        fee: statement.fee,
-        match: statement.match,
-        deposit: statement.deposit,
-        withdrawal: statement.withdrawal,
-      }
-      for (const symbol of this.symbols) {
-        row[symbol] = this.balance(symbol, statement) || runningBalances[symbol]
-        runningBalances[symbol] = row[symbol]
-      }
-      matrix.push(row)
-    }
-    console.log(matrix)
-    this.matrix = matrix
-  },
-
-  /*
   ** METHODS
   */
   methods: {
+
     balance (symbol, statement) {
       const balance = Math.min(
         statement.fee[symbol]?.balance || Number.POSITIVE_INFINITY,
@@ -120,6 +95,31 @@ export default {
       )
       return balance === Number.POSITIVE_INFINITY ? '' : formatAmount(balance)
     },
+
+    load () {
+      // const matrix = []
+      // const runningBalances = Array(this.symbols.length).fill(0)
+      const runningBalances = {}
+      for (const symbol of this.symbols) {
+        runningBalances[symbol] = ''
+      }
+      for (const statement of this.statements) {
+        const row = {
+          fee: statement.fee,
+          match: statement.match,
+          deposit: statement.deposit,
+          withdrawal: statement.withdrawal,
+        }
+        for (const symbol of this.symbols) {
+          row[symbol] = this.balance(symbol, statement) || runningBalances[symbol]
+          runningBalances[symbol] = row[symbol]
+        }
+        this.matrix.push(row)
+      }
+      console.log(this.matrix)
+      // this.matrix = matrix
+    },
+
   },
 
 }
