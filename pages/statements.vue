@@ -1,18 +1,24 @@
 <template>
   <v-card class="mx-auto">
     <v-app-bar color="blue darken-4">
-      <v-icon class="mr-2">mdi-script-text-outline</v-icon> Statements
+      <v-icon class="mr-2">mdi-script-text-outline</v-icon>
+      Statement for Coinbase Pro
+      <v-spacer />
+      Each row is a separate order |
+      Coin values are balances (totals)
     </v-app-bar>
-    <v-simple-table fixed-header height="80vh">
+    <v-simple-table dense fixed-header height="80vh">
       <template v-slot:default>
         <thead>
           <tr>
+            <th class="text-left"> Date </th>
             <th class="text-left"> Description </th>
             <th class="text-right" v-for="symbol of symbols" :key="symbol" v-text="symbol" />
           </tr>
         </thead>
         <tbody>
           <tr v-for="(row, i) in matrix" :key="i" :title="JSON.stringify(row.statement)">
+            <td>{{ row.date }}</td>
             <td>{{ row.desc }}</td>
             <td v-for="symbol of symbols" :key="symbol" v-text="row[symbol]" class="text-right" />
           </tr>
@@ -132,6 +138,7 @@ export default {
       for (const statement of this.statements) {
         const row = {
           statement,
+          date: statement.timestring,
           desc: desc(statement),
         }
         for (const symbol of this.symbols) {
