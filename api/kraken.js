@@ -1,9 +1,31 @@
+import { Buffer } from 'buffer'
+import crypto from 'crypto'
 import axios from 'axios'
+import qs from 'qs'
 
 /*
 ** Kraken API Server Middleware
 **
-** https://www.kraken.com/features/api#public-market-data
+** https://www.kraken.com/features/api#general-usage
+**
+** HTTP header:
+**
+**     API-Key = API key
+**     API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
+**
+** POST data:
+**
+**     nonce = always increasing unsigned 64 bit integer
+**     otp = two-factor password (if two-factor enabled, otherwise not required)
+**
+** Responses are JSON encoded in the form of:
+**
+**     error = array of error messages in the format of:
+**         <char-severity code><string-error category>:<string-error type>[:<string-extra info>]
+**         severity code can be E for error or W for warning
+**     result = result of API call (may not be present if errors occur)
+**
+** Note: Care should be taken when handling any numbers represented as strings, as these may overflow standard data types.
 */
 export default async function (req, res) {
   res.end(
@@ -35,6 +57,10 @@ function config (url) {
       break
     }
 
+    case '/balance':
+      requests.push({ key: 'balance', config: configSignedRequest('/0/private/Balance') })
+      break
+
     default:
       console.error(url)
   }
@@ -49,6 +75,7 @@ async function resolve (requests) {
   for (const request of requests) {
     try {
       const response = await axios(request.config)
+      console.log('kraken resolve', response.config, response.request._header, response.data)
       data[request.key] = response.data
     } catch (error) {
       data.error.push(error)
@@ -61,9 +88,7 @@ async function resolve (requests) {
 }
 
 /*
-** API request helper for general endpoints
-**
-** See nuxt.config.js for privateRuntimeConfig
+** API request helper for public endpoints
 */
 function configRequest (path, params = {}) {
   // Send back the request configuration
@@ -72,8 +97,46 @@ function configRequest (path, params = {}) {
     url: path,
     method: 'GET',
     headers: {
-      // 'X-MBX-APIKEY': process.env.BINANCE_API_KEY,
+      Accept: 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Axios) CrApp',
     },
     params,
+  }
+}
+
+function getMessageSignature (path, request, secret, nonce) {
+  const message = qs.stringify(request)
+  const secretBuffer = Buffer.from(secret, 'base64')
+  const hash = new crypto.createHash('sha256')
+  const hmac = new crypto.createHmac('sha512', secretBuffer)
+  const hash_digest = hash.update(nonce + message).digest('binary')
+  const hmac_digest = hmac.update(path + hash_digest, 'binary').digest('base64')
+  return hmac_digest
+}
+
+/*
+** API request helper for private endpoints
+*/
+function configSignedRequest (path, params = {}) {
+  const nonce = Date.now().toString()
+  const signature = getMessageSignature(
+    path,
+    params,
+    process.env.KRAKEN_PRIVATE_KEY,
+    nonce,
+  )
+  // Send back the request configuration
+  return {
+    baseURL: 'https://api.kraken.com',
+    url: path,
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Axios) CrApp',
+      'API-Key': process.env.KRAKEN_API_KEY,
+      'API-Sign': signature,
+    },
+    params,
+    data: 'nonce=' + nonce,
   }
 }

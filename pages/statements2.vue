@@ -46,7 +46,6 @@ export default {
   */
   async fetch () {
     await this.$store.dispatch('loadRepositorys')
-    this.load()
   },
 
   /*
