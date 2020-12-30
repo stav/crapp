@@ -5,7 +5,7 @@
     timeout="3000"
     color="light-blue darken-4"
   >
-    <div class="clickable" @click="snackbarModel = false">
+    <div class="clickable" @click="() => log()">
       {{ snackbarText }}
     </div>
   </v-snackbar>
@@ -13,6 +13,10 @@
 
 <script>
 export default {
+
+  /*
+  ** COMPUTED
+  */
   computed: {
     snackbarText () {
       return this.$store.state.snackbarText
@@ -25,7 +29,18 @@ export default {
         this.$store.commit('setSnackbarModel', value)
       }
     },
-  }
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    log () {
+      console.info(this.snackbarText)
+      this.snackbarModel = false
+    },
+  },
+
 }
 </script>
 
