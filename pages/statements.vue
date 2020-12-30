@@ -30,17 +30,16 @@
         </thead>
         <tbody>
           <tr
-            v-for="(statement, i) of statements" :key="statement.id"
-            :title="JSON.stringify(statement)"
+            v-for="statement of statements" :key="statement.id"
             @click="() => load(statement)"
           >
             <td>{{ date(statement) }}</td>
             <td>{{ type(statement) }}</td>
             <td>{{ desc(statement) }}</td>
-            <td class="text-right">{{ amount(statement) }}</td>
+            <td class="text-right">{{ size(statement) }}</td>
             <td class="text-right">{{ coin(statement) }}</td>
             <td class="text-right">{{ cost(statement) }}</td>
-            <td v-for="symbol of symbols" :key="symbol" v-text="balance(i, symbol, statement)" class="text-right" />
+            <td v-for="symbol of symbols" :key="symbol" v-text="value(symbol, statement)" class="text-right" />
           </tr>
         </tbody>
       </template>
@@ -68,13 +67,6 @@ export default {
   async fetch () {
     await this.$store.dispatch('loadRepositorys')
   },
-
-  /*
-  ** DATA
-  */
-  data: () => ({
-    matrix: [],
-  }),
 
   /*
   ** COMPUTED
@@ -121,23 +113,29 @@ export default {
       ].filter(amount => amount)
     },
 
-    balance (i, symbol, statement) {
+    amount (symbol, statement) {
       const amounts = this.amounts(symbol, statement)
       if (amounts.length > 1) {
-        console.error(`Statement ${i} contains more than one symbol for ${symbol} ${statement}`)
+        console.error(`Statement contains more than one amount for ${symbol} ${statement}`)
       }
-      const amount = amounts[0] || 0
-      let balance = amount
-      if (this.showBalances) {
-        const previousStatement = this.matrix[i - 1] || {}
-        const previousBalance = previousStatement[symbol] || 0
-        balance += previousBalance
-      }
-      this.matrix[i] = this.matrix[i] || {}
-      this.matrix[i][symbol] = this.matrix[i][symbol] || 0 + balance
-      if (balance) {
-        return formatAmount(balance)
-      }
+      return amounts[0] || 0
+    },
+
+    balance (symbol, statement) {
+      const balance = Math.min(
+        statement.fee[symbol]?.balance || Number.POSITIVE_INFINITY,
+        statement.match[symbol]?.balance || Number.POSITIVE_INFINITY,
+        statement.deposit[symbol]?.balance || Number.POSITIVE_INFINITY,
+        statement.withdrawal[symbol]?.balance || Number.POSITIVE_INFINITY,
+      )
+      return balance === Number.POSITIVE_INFINITY ? '' : balance
+    },
+
+    value (symbol, statement) {
+      const value = this.showBalances
+        ? this.balance(symbol, statement)
+        : this.amount(symbol, statement)
+      return value ? formatAmount(value) : ''
     },
 
     type (stmt) {
@@ -148,7 +146,7 @@ export default {
       ].filter(_ => _).join()
     },
 
-    amount (stmt) {
+    size (stmt) {
       const desc = this.desc(stmt).split(' ')
       return desc[desc.length - 2]
     },
