@@ -14,7 +14,7 @@
         <v-row no-gutters>
           <v-col cols="8"><h3 v-text="coin.name" /></v-col>
           <v-col cols="2">
-            <v-btn icon @click="fetchPrices" title="Fetch latest prices" :disabled="noCoins">
+            <v-btn icon @click="fetchPrice" title="Fetch latest prices" :disabled="noCoins">
               <v-icon> mdi-backup-restore </v-icon>
             </v-btn>
           </v-col>
@@ -75,8 +75,8 @@ export default {
   ** METHODS
   */
   methods: {
-    fetchPrices () {
-      this.$store.dispatch('fetchPrices', this.done)
+    fetchPrice () {
+      this.$store.dispatch('fetchPrice', this.done)
     },
     done (message) {
       if (message) {

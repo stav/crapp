@@ -3,13 +3,14 @@ import database from '@/database'
 import Getters from './getters'
 import Actions from './actions'
 import Mutations from './mutations'
+import unCoins from '~/data/uncoins'
 
 export const plugins = [
   VuexORM.install(database)
 ]
 
 export const state = () => ({
-  coinMarketCapUnlisted: ['CGLD', 'Skey', 'USD', 'UNIV2'],
+  coinMarketCapUnlisted: unCoins,
   statementBalances: false,
   statement: {},
   flyoutCoin: null,

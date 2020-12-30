@@ -71,8 +71,15 @@ export default {
     })
   },
 
+  async fetchPrice (context, done) {
+    const symbols = [context.state.flyoutCoin.symbol]
+    const message = await fetchPrices(context, symbols)
+    message && done && done(message)
+  },
+
   async fetchPrices (context, done) {
-    const message = await fetchPrices(context)
+    const symbols = context.getters.sortedUniqueSymbols
+    const message = await fetchPrices(context, symbols)
     message && done && done(message)
   },
 
@@ -90,8 +97,9 @@ export default {
       const activeRepos = context.getters.repositorys.filter(_ => _.active)
       context.commit('setSelectedRepos', activeRepos)
     }
-    done && done('Repositories loaded')
-    await fetchPrices(context)
+    const symbols = context.getters.sortedUniqueSymbols
+    const message = await fetchPrices(context, symbols)
+    done && done(message)
   },
 
 }

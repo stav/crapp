@@ -31,9 +31,8 @@
 **
 ** coinsUnlisted = [ "USD" ]
 */
-export default async function fetchPrices (context) {
-  const symbols = context.getters.sortedUniqueSymbols
-  const coinsUnlisted = context.getters.coinsUnlisted
+export default async function fetchPrices (ctx, symbols) {
+  const coinsUnlisted = ctx.getters.coinsUnlisted
   const coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
   if (coinsListed.length === 0) {
     return
@@ -52,7 +51,7 @@ export default async function fetchPrices (context) {
   }
   const { quotes: { data } } = result
   for (const coinData of Object.values(data)) {
-    context.dispatch('setCoin', {
+    ctx.dispatch('setCoin', {
       symbol: coinData.symbol,
       price: coinData.quote.USD?.price,
       name: coinData.name,
@@ -60,8 +59,12 @@ export default async function fetchPrices (context) {
     })
   }
   if (symbols.includes('USD')) {
-    context.dispatch('setCoin', { symbol: 'USD', price: 1 })
+    ctx.dispatch('setCoin', { symbol: 'USD', price: 1 })
   }
-  const exceptions = coinsUnlisted.length ? `(except ${coinsUnlisted})` : ''
-  return `Loaded prices ${exceptions}`
+  if (symbols.length === 1) {
+    return 'Loaded price for ' + symbols[0].toString()
+  } else {
+    const exceptions = coinsUnlisted.length ? `(except ${coinsUnlisted})` : ''
+    return `Loaded prices ${exceptions}`
+  }
 }
