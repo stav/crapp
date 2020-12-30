@@ -2,6 +2,7 @@ import Coin from '~/models/Coin'
 
 const coinPanelIndex = 0
 const repoPanelIndex = 1
+const stmtPanelIndex = 2
 
 export default {
   setSelectedRepos (state, repos) {
@@ -18,6 +19,12 @@ export default {
   },
   setStatementBalances (state, value) {
     state.statementBalances = value
+  },
+  setStatement (state, value) {
+    state.statement = value
+    if (!state.flyoutPanels.includes(stmtPanelIndex)) {
+      state.flyoutPanels.push(stmtPanelIndex)
+    }
   },
   toggleFlyout (state) {
     state.flyoutDrawer = !state.flyoutDrawer

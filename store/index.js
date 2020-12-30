@@ -11,6 +11,7 @@ export const plugins = [
 export const state = () => ({
   coinMarketCapUnlisted: ['CGLD', 'Skey', 'USD', 'UNIV2'],
   statementBalances: false,
+  statement: {},
   flyoutCoin: null,
   coinPockets: [],
   repoPockets: [],

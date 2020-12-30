@@ -29,7 +29,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(statement, i) of statements" :key="statement.id" :title="JSON.stringify(statement)">
+          <tr
+            v-for="(statement, i) of statements" :key="statement.id"
+            :title="JSON.stringify(statement)"
+            @click="() => load(statement)"
+          >
             <td>{{ date(statement) }}</td>
             <td>{{ type(statement) }}</td>
             <td>{{ desc(statement) }}</td>
@@ -136,7 +140,7 @@ export default {
       }
     },
 
-    type(stmt) {
+    type (stmt) {
       return [
         Object.entries(stmt.match).length ? 'Trade' : null,
         Object.entries(stmt.deposit).length ? 'Deposit' : null,
@@ -144,17 +148,17 @@ export default {
       ].filter(_ => _).join()
     },
 
-    amount(stmt) {
+    amount (stmt) {
       const desc = this.desc(stmt).split(' ')
       return desc[desc.length - 2]
     },
 
-    coin(stmt) {
+    coin (stmt) {
       const desc = this.desc(stmt).split(' ')
       return desc[desc.length - 1]
     },
 
-    cost(stmt) {
+    cost (stmt) {
       const regex = /(?<frAmt>[-\d,.]+)\s+(?<frSym>\w+)\s+for\s+(?<toAmt>[-\d,.]+)\s+(?<toSym>\w+)/
       if (this.type(stmt) === 'Trade') {
         const desc = this.desc(stmt)
@@ -169,7 +173,7 @@ export default {
       }
     },
 
-    date(stmt) {
+    date (stmt) {
       function pad(value) {
         return value.toString().padStart(2, '0')
       }
@@ -177,7 +181,7 @@ export default {
       return `${date.getFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`
     },
 
-    desc(stmt) {
+    desc (stmt) {
       const desc = []
 
       const deposits = Object.entries(stmt.deposit)
@@ -207,7 +211,11 @@ export default {
         }
       }
       return desc.join()
-    }
+    },
+
+    load (stmt) {
+      this.$store.commit('setStatement', stmt)
+    },
 
   },
 

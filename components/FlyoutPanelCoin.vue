@@ -2,8 +2,10 @@
   <v-expansion-panel>
     <!-- HEADER -->
     <v-expansion-panel-header color="blue-grey darken-2">
-      {{ symbol }}
-      <coin-logo :quantity="coinSumFormat" />
+      <span v-if="symbolLoaded" class="d-flex text-subtitle-1">
+        {{ symbol }}
+        <coin-logo :quantity="coinSumFormat" />
+      </span>
     </v-expansion-panel-header>
 
     <v-expansion-panel-content color="blue-grey darken-2">
@@ -54,6 +56,9 @@ export default {
     },
     symbol () {
       return this.coin?.symbol
+    },
+    symbolLoaded () {
+      return this.symbol && Object.entries(this.symbol).length
     },
     coinSumAmount () {
       return this.$store.getters.coinSum(this.symbol)

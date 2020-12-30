@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="text-h6" color="accent" />
-    <v-expansion-panel-content color="blue-grey darken-2">
+    <v-expansion-panel-content color="accent">
       <v-card class="mx-auto">
         <v-card-text class="accent"> navDrawer:         {{ navDrawer }}         </v-card-text>
         <v-card-text class="accent"> footerAbsolute:    {{ footerAbsolute }}    </v-card-text>
@@ -14,6 +14,7 @@
         <v-card-text class="accent"> flyoutCoin:        {{ flyoutCoin }}        </v-card-text>
         <v-card-text class="accent"> flyoutRepoId:      {{ flyoutRepoId }}      </v-card-text>
         <v-card-text class="accent"> statementBalances: {{ statementBalances }} </v-card-text>
+        <v-card-text class="accent"> statement:         {{ statement }}         </v-card-text>
       </v-card>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -54,6 +55,9 @@ export default {
     },
     statementBalances () {
       return this.$store.state.statementBalances
+    },
+    statement () {
+      return this.$store.state.statement
     },
   }
 }
