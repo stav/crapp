@@ -33,7 +33,7 @@ export default {
     /*
     ** repositorys
     **
-    ** Return an array of unvalued repositories
+    ** An array of unvalued repositories
     */
     repositorys () {
       return this.$store.getters.repositorys
@@ -41,21 +41,12 @@ export default {
     /*
     ** symbols
     **
+    ** An array of symbols with values higher than the floor
+    **
     ** [ "BTC", "ETH", "LINK", … ]
     */
     symbols () {
-      const showZeros = this.$store.state.repoZeroCoins
-      const symbols = this.$store.getters.sortedUniqueSymbols
-      return symbols.filter(s => showZeros || this.coinSum(s))
-    },
-  },
-
-  /*
-  ** METHODS
-  */
-  methods: {
-    coinSum (symbol) {
-      return this.$store.getters.coinSum(symbol)
+      return this.$store.getters.sortedUniqueHighSymbols
     },
   },
 

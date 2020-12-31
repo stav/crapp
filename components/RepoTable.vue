@@ -12,6 +12,7 @@
     @click:row="flyRepository"
   >
     <template v-slot:body.append v-if="repositorys.length">
+      <!-- Sparks -->
       <tr>
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
           <v-btn
@@ -32,17 +33,19 @@
           />
         </td>
       </tr>
+      <!-- Flyer -->
       <tr>
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
           <v-btn
             v-if="header.coin"
+            v-text="header.value"
             @click="() => flyCoin(header.value)"
             small class="accent px-1"
-            v-text="header.value"
-            :title="coinPrice(header.value)"
+            title="Press to fly coin"
           />
         </td>
       </tr>
+      <!-- Sum -->
       <tr class="primary">
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
           <span v-if="header.value === 'name'"> Total (coins) </span>
@@ -53,6 +56,7 @@
           />
         </td>
       </tr>
+      <!-- Price -->
       <tr class="accent">
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
           <span v-if="header.value === 'name'"> Price (each) </span>
@@ -63,6 +67,7 @@
           />
         </td>
       </tr>
+      <!-- Value -->
       <tr class="secondary">
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
           <div v-if="header.value === 'name'" class="text-h6 text-no-wrap">
@@ -182,13 +187,12 @@ export default {
     **  },...]
     */
     valuedRepositorys () {
-      return this.repositorys.map(this.repoValuation)
+      return this.repositorys
+        .map(this.repoValuation)
+        .filter(repo => repo.value)
     },
     coinValue () {
       return this.$store.state.repoCoinValue
-    },
-    zeroCoins () {
-      return this.$store.state.repoZeroCoins
     },
     selectedRows: {
       get () {
@@ -197,6 +201,9 @@ export default {
       set (value) {
         this.$store.commit('setSelectedRepos', value)
       }
+    },
+    floor () {
+      return this.$store.state.repoCoinValueFloor
     },
   },
 
@@ -217,12 +224,14 @@ export default {
     */
     repoValuation (repo) {
       const coins = {}
-      let valuation = 0
+      let repoValue = 0
       // First we sum the coins[symbol] values/quantities using only numeric data
       for (const coin of repo.coins) {
         const symbol = coin.coin.symbol
         const value = coin.quantity * this.coinPrice(symbol)
-        valuation += value
+        if (value >= this.floor) {
+          repoValue += value
+        }
         symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
         coins[symbol] += this.coinValue ? value : coin.quantity
       }
@@ -234,7 +243,12 @@ export default {
             ? formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
             : coins[symbol] = amount
       }
-      return Object.assign(repo, coins, { valuation: formatCurrency(valuation), cls: 'meat' })
+      const valued = {
+        valuation: formatCurrency(repoValue),
+        value: repoValue,
+        cls: 'meat',
+      }
+      return Object.assign({}, repo, coins, valued)
     },
     sparks (symbol) {
       return this.$store.getters.sparkLines(symbol)

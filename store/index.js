@@ -23,7 +23,7 @@ export const state = () => ({
   navDrawer: null,
   navVariant: true,
   repoCoinValue: true,
-  repoZeroCoins: false,
+  repoCoinValueFloor: 1000,
   selectedRepos: [],
   snackbarModel: false,
   snackbarText: '',

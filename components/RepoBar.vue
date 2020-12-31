@@ -13,13 +13,18 @@
       </v-card-actions>
     </v-card>
     <v-spacer />
-    <v-switch
-      v-model="zeroCoins"
-      class="ml-3 mr-2"
-      hide-details
-      title="Show coins that we have zero of?"
-    />
-    <span @click="zeroCoins=true" class="clickable text--secondary"> Zeros </span>
+    <v-input hide-details class="floor">
+      <v-text-field
+        v-model="floor"
+        title="The minimum coin value to display"
+        :rules="[rules.numeric]"
+        placeholder="1000"
+        hide-details
+        clearable
+        outlined
+        dense
+      />
+    </v-input>
     <v-spacer />
     <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
     <v-switch
@@ -62,6 +67,9 @@ export default {
   data: () => ({
     active: false,
     loading: false,
+    rules: {
+      numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
+    },
   }),
 
   /*
@@ -76,12 +84,12 @@ export default {
         this.$store.commit('setRepoCoinValue', value)
       }
     },
-    zeroCoins: {
+    floor: {
       get () {
-        return this.$store.state.repoZeroCoins
+        return this.$store.state.repoCoinValueFloor
       },
       set (value) {
-        this.$store.commit('setRepoZeroCoins', value)
+        this.$store.commit('setRepoCoinValueFloor', value)
       }
     },
   },
@@ -115,7 +123,7 @@ export default {
       this.getCoinbaseProAccountsData()
       this.getCoinbaseAccountsData()
       this.getBinanceAccountsData()
-      this.fetchPrices()
+      this.$store.dispatch('fetchPrices', this.done)
     },
   },
 
@@ -125,5 +133,8 @@ export default {
 <style lang="scss" scoped>
 .clickable {
   cursor: pointer;
+}
+.floor {
+  max-width: 120px;
 }
 </style>

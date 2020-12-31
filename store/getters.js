@@ -38,6 +38,7 @@ export default {
       .get()
       .reduce((total, coin) => total + coin.quantity, 0)
   },
+
   /*
   ** sortedUniqueSymbols
   **
@@ -54,6 +55,16 @@ export default {
   sortedUniqueSymbols () {
     const uniqueSymbols = new Set(Coin.all().map(coin => coin.symbol))
     return Array.from(uniqueSymbols).sort()
+  },
+
+  sortedUniqueHighSymbols (state, getters) {
+    return getters.sortedUniqueSymbols.filter((symbol) => {
+      const amount = getters.coinSum(symbol)
+      const price = getters.coinPriceUSD(symbol)
+      const value = amount * price
+      const floor = state.repoCoinValueFloor
+      return value >= floor
+    })
   },
 
   /*
