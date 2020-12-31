@@ -191,8 +191,8 @@ export default {
         .map(this.repoValuation)
         .filter(repo => repo.value)
     },
-    coinValue () {
-      return this.$store.state.repoCoinValue
+    switchAmountValue () {
+      return this.$store.state.switchAmountValue
     },
     selectedRows: {
       get () {
@@ -233,13 +233,13 @@ export default {
           repoValue += value
         }
         symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
-        coins[symbol] += this.coinValue ? value : coin.quantity
+        coins[symbol] += this.switchAmountValue ? value : coin.quantity
       }
       // Then we format these coins[symbol] as formatted text for display
       for (const symbol in coins) {
         const amount = this.formatAmount(coins[symbol])
         coins[symbol] =
-          this.coinValue
+          this.switchAmountValue
             ? formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
             : coins[symbol] = amount
       }

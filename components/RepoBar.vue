@@ -26,14 +26,14 @@
       />
     </v-input>
     <v-spacer />
-    <span @click="coinValue=false" class="clickable text--secondary"> amount </span>
+    <span @click="switchAmountValue=false" class="clickable text--secondary"> amount </span>
     <v-switch
-      v-model="coinValue"
+      v-model="switchAmountValue"
       class="ml-3 mr-2"
       hide-details
       title="Display amount of coins held or the USD valuation"
     />
-    <span @click="coinValue=true" class="clickable text--secondary"> value </span>
+    <span @click="switchAmountValue=true" class="clickable text--secondary"> value </span>
     <v-progress-linear absolute bottom indeterminate :active="active" />
   </v-app-bar>
 </template>
@@ -76,9 +76,9 @@ export default {
   ** COMPUTED
   */
   computed: {
-    coinValue: {
+    switchAmountValue: {
       get () {
-        return this.$store.state.repoCoinValue
+        return this.$store.state.switchAmountValue
       },
       set (value) {
         this.$store.commit('setRepoCoinValue', value)

@@ -63,7 +63,7 @@ export default {
     state.footerAbsolute = !state.footerAbsolute
   },
   setRepoCoinValue (state, value) {
-    state.repoCoinValue = value
+    state.switchAmountValue = value
   },
   setRepoCoinValueFloor (state, value) {
     state.repoCoinValueFloor = value

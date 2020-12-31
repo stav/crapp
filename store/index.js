@@ -22,7 +22,7 @@ export const state = () => ({
   footerAbsolute: true,
   navDrawer: null,
   navVariant: true,
-  repoCoinValue: true,
+  switchAmountValue: true,
   repoCoinValueFloor: 1000,
   selectedRepos: [],
   snackbarModel: false,
