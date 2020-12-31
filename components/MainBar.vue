@@ -13,6 +13,18 @@
     <v-toolbar-title> CrApp </v-toolbar-title>
 
     <v-spacer />
+    <v-card :loading="loading" v-if="weHaveCoins">
+      <v-card-actions>
+        <v-btn
+          @click="fetchPrices"
+          title="Press to fetch latest prices"
+          small class="accent"
+        >
+          Prices
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-spacer />
 
     <v-btn icon @click.stop="toggleFlyout" title="Toggle coin/repo flyout">
       <v-icon>mdi-bitcoin</v-icon>
@@ -23,6 +35,16 @@
 <script>
 export default {
 
+  /*
+  ** DATA
+  */
+  data: () => ({
+    loading: false,
+  }),
+
+  /*
+  ** COMPUTED
+  */
   computed: {
     navDrawer: {
       get () {
@@ -40,14 +62,30 @@ export default {
         this.$store.commit('setNavVariant', value)
       }
     },
+    weHaveCoins () {
+      return Boolean(this.$store.getters.sortedUniqueSymbols.length)
+    },
   },
 
+  /*
+  ** METHODS
+  */
   methods: {
+    fetchPrices () {
+      this.loading = 'accent'
+      this.$store.dispatch('fetchPrices', this.done)
+    },
     toggleFooterAbsolute () {
       this.$store.commit('toggleFooterAbsolute')
     },
     toggleFlyout () {
       this.$store.commit('toggleFlyout')
+    },
+    done (message) {
+      if (message) {
+        this.$store.commit('snackMessage', message)
+      }
+      this.loading = false
     },
   },
 

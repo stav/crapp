@@ -80,7 +80,7 @@ export default {
   async fetchPrices (context, done) {
     const symbols = context.getters.sortedUniqueSymbols
     const message = await fetchPrices(context, symbols)
-    message && done && done(message)
+    done && done(message)
   },
 
   flyRepository (context, repo) {

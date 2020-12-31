@@ -7,20 +7,6 @@
     <v-spacer />
     <v-card class="indigo darken-1 mx-auto" :loading="loading">
       <v-card-actions v-if="repositorys.length">
-        <v-btn
-          @click="fetchAllSparks"
-          title="Press to fetch latest history prices displayed as sparklines"
-          small class="accent"
-        >
-          Sparks
-        </v-btn>
-        <v-btn
-          @click="fetchPrices"
-          title="Press to fetch latest prices"
-          small class="accent"
-        >
-          Prices
-        </v-btn>
         <v-btn small @click="getBinanceAccountsData"> Binance </v-btn>
         <v-btn small @click="getCoinbaseAccountsData"> Coinbase </v-btn>
         <v-btn small @click="getCoinbaseProAccountsData"> Coinbase Pro </v-btn>
@@ -104,14 +90,6 @@ export default {
   ** METHODS
   */
   methods: {
-    fetchAllSparks () {
-      this.loading = 'white'
-      this.$store.dispatch('loadKraken', { symbols: this.symbols, done: this.done })
-    },
-    fetchPrices () {
-      this.loading = 'accent'
-      this.$store.dispatch('fetchPrices', this.done)
-    },
     getCoinbaseProAccountsData () {
       this.loading = 'blue'
       this.$store.dispatch('loadCoinbaseProAccounts', this.done)

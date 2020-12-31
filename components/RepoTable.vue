@@ -14,6 +14,14 @@
     <template v-slot:body.append v-if="repositorys.length">
       <tr>
         <td v-for="header of fHeaders" :key="header.value" class="text-end">
+          <v-btn
+            v-if="header.value === 'name'"
+            @click="fetchAllSparks"
+            title="Press to fetch latest history prices displayed as sparklines"
+            small class="accent"
+          >
+            Sparks
+          </v-btn>
           <v-sparkline
             v-if="header.coin"
             :value="sparks(header.value)"
@@ -230,6 +238,9 @@ export default {
     },
     sparks (symbol) {
       return this.$store.getters.sparkLines(symbol)
+    },
+    fetchAllSparks () {
+      this.$store.dispatch('loadKraken', { symbols: this.symbols, done: this.done })
     },
     portfolioTotalUSD () {
       return (this.symbols.reduce(
