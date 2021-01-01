@@ -44,7 +44,6 @@ export default {
   */
   data () {
     return {
-      floor: 1000,
       rules: {
         numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
       },
@@ -84,6 +83,14 @@ export default {
         symbol,
         amount: this.coinValueAmount(symbol),
       }))
+    },
+    floor: {
+      get () {
+        return this.$store.state.repoCoinValueFloor
+      },
+      set (value) {
+        this.$store.commit('setRepoCoinValueFloor', value)
+      }
     },
   },
 
