@@ -55,8 +55,8 @@ export default {
     ** Furthermore, each repo.coins contains only flyout coins.
     */
     repos () {
-      const model = this.$store.$db().model('repositorys')
-      const query = model.query().with('coins', (query) => {
+      const model = this.$store.getters.Repositorys
+      const query = model.with('coins', (query) => {
         query.where('coinId', this.coin?.id)
       })
       return query

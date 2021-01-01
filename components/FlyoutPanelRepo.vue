@@ -59,10 +59,7 @@ export default {
     ** }
     */
     repository () {
-      const repoId = this.$store.state.flyoutRepoId
-      const model = this.$store.$db().model('repositorys')
-      const repos = model.query().with(['coins', 'coins.coin', 'trans'])
-      return repos.find(repoId) || {}
+      return this.$store.getters.flyoutRepo
     },
     sumCoins () {
       const coins = this.repository.coins || []

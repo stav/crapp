@@ -1,10 +1,14 @@
+/*
+** repositorys.js
+**
+** Import data
+*/
 import repos from './repositorys.json'
 
 const repositorys = []
 
 // Loop thru all repositories to attach imported file data
 for (const repo of repos) {
-
   // Add slug
   repo.slug = repo.name.split(/\s/)[0].toLowerCase()
 

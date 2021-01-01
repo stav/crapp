@@ -36,7 +36,7 @@ export default {
     ** An array of unvalued repositories
     */
     repositorys () {
-      return this.$store.getters.repositorys
+      return this.$store.getters.highRepositorys
     },
     /*
     ** symbols
