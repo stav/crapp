@@ -24,7 +24,7 @@ const translators = {
 ** Return a list of coin symbols
 */
 function exportCoinSymbols (repo) {
-  return repo.coins.map(coin => coin.symbol)
+  return repo.coins?.map(coin => coin.symbol)
 }
 
 /*
@@ -96,12 +96,13 @@ function insertStatements (repo) {
 */
 function insertRepository (repo) {
   insertCoins(exportCoinSymbols(repo))
+  const coins = repo.coins?.map(_ => ({
+    coinId: Coin.query().where('symbol', _.symbol).first().id,
+    quantity: _.quantity,
+  })) || []
   Repository.insert({
     data: {
-      coins: repo.coins.map(_ => ({
-        coinId: Coin.query().where('symbol', _.symbol).first().id,
-        quantity: _.quantity,
-      })),
+      coins,
       active: repo.active,
       name: repo.name,
     }
