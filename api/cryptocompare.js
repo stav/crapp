@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 /*
-** Kraken API Server Middleware
+** CryptoCompare API Server Middleware
 **
-** https://www.kraken.com/features/api#public-market-data
+** https://min-api.cryptocompare.com/documentation
 */
 export default async function (req, res) {
   res.end(
@@ -21,17 +21,18 @@ function config (url) {
 
   // Configure the requests
   switch (_url.pathname) {
-    case '/assets':
-      requests.push({ key: 'assets', config: configRequest('/0/public/Assets') })
-      break
-
-    // https://www.kraken.com/features/api#get-ohlc-data
-    case '/history': {
+    // https://min-api.cryptocompare.com/documentation?key=Price&cat=multipleSymbolsPriceEndpoint
+    case '/prices': {
+      const symbols = _url.searchParams.get('symbols')
       const params = {
-        pair: _url.searchParams.get('symbol') + 'USD',
-        interval: _url.searchParams.get('interval'),
+        fsyms: symbols,
+        tsyms: 'USD',
+        extraParams: 'CrApp',
       }
-      requests.push({ key: 'history', config: configRequest('/0/public/OHLC', params) })
+      requests.push({
+        key: 'prices',
+        config: configRequest('/data/pricemulti', params),
+      })
       break
     }
 
@@ -68,7 +69,7 @@ async function resolve (requests) {
 function configRequest (path, params = {}) {
   // Send back the request configuration
   return {
-    baseURL: 'https://api.kraken.com',
+    baseURL: 'https://min-api.cryptocompare.com',
     url: path,
     method: 'GET',
     headers: {

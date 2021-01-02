@@ -15,5 +15,6 @@ export default class Coin extends Model {
 
   static beforeCreate (model) {
     model.name = model.name || model.symbol
+    model.slug = model.slug || model.name.toLowerCase()
   }
 }

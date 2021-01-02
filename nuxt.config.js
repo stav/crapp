@@ -2,10 +2,10 @@ import colors from 'vuetify/es5/util/colors'
 
 export default {
   /*
-  ** Nuxt rendering mode
-  ** See https://nuxtjs.org/api/configuration-mode
+  ** Nuxt server-side rendering flag
+  ** See https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-ssr
   */
-  mode: 'universal',
+  ssr: true,
 
   /*
   ** Nuxt target
@@ -68,6 +68,7 @@ export default {
   */
   serverMiddleware: [
     { path: '/api/coinmarketcap', handler: '~/api/coinmarketcap' },
+    { path: '/api/cryptocompare', handler: '~/api/cryptocompare' },
     { path: '/api/coinbasepro', handler: '~/api/coinbasepro' },
     { path: '/api/coinbase', handler: '~/api/coinbase' },
     { path: '/api/bitfinex', handler: '~/api/bitfinex' },

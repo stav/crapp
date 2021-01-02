@@ -37,7 +37,7 @@ export default async function fetchPrices (ctx, symbols) {
   if (coinsListed.length === 0) {
     return
   }
-  const priceFetcherPath = '/api/coinmarketcap/quotes?symbol='
+  const priceFetcherPath = '/api/cryptocompare/prices?symbols='
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)
   const result = await response.json()
@@ -45,17 +45,15 @@ export default async function fetchPrices (ctx, symbols) {
 
   if (result.error) {
     const e = result.error
-    message = `Error: ${e.message}, ${e.text}`
+    message = `Error in fetchPrices: ${e.message}, ${e.text}`
     console.error(message)
     return message
   }
-  const { quotes: { data } } = result
-  for (const coinData of Object.values(data)) {
+  const { prices: data } = result
+  for (const symbol of Object.keys(data)) {
     ctx.dispatch('setCoin', {
-      symbol: coinData.symbol,
-      price: coinData.quote.USD?.price,
-      name: coinData.name,
-      slug: coinData.slug,
+      symbol,
+      price: data[symbol].USD,
     })
   }
   if (symbols.includes('USD')) {
