@@ -4,7 +4,7 @@
     <v-expansion-panel-header color="blue-grey darken-2">
       <span v-if="symbolLoaded" class="d-flex text-subtitle-1">
         {{ symbol }}
-        <coin-logo :quantity="coinSumFormat" />
+        <coin-logo :free="coinSumFormat" />
       </span>
     </v-expansion-panel-header>
 

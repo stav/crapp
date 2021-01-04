@@ -183,7 +183,7 @@ export default {
     **     { id: "$uid3",
     **       coinId: "$uid2",
     **       repoId: "$uid1",
-    **       quantity: 0.1} ]
+    **       qtyFree: 0.1} ]
     **  },...]
     */
     valuedRepositorys () {
@@ -228,10 +228,10 @@ export default {
       // First we sum the coins[symbol] values/quantities using only numeric data
       for (const coin of repo.coins) {
         const symbol = coin.coin.symbol
-        const value = coin.quantity * this.coinPrice(symbol)
+        const value = coin.qtyFree * this.coinPrice(symbol)
         repoValue += value
         symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
-        coins[symbol] += this.switchAmountValue ? value : coin.quantity
+        coins[symbol] += this.switchAmountValue ? value : coin.qtyFree
       }
       // Then we format these coins[symbol] as formatted text for display
       for (const symbol in coins) {

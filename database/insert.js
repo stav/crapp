@@ -98,7 +98,7 @@ function insertRepository (repo) {
   insertCoins(exportCoinSymbols(repo))
   const coins = repo.coins?.map(_ => ({
     coinId: Coin.query().where('symbol', _.symbol).first().id,
-    quantity: _.quantity,
+    qtyFree: _.quantity,
   })) || []
   Repository.insert({
     data: {

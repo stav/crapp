@@ -1,19 +1,31 @@
 <template>
   <div>
     <v-badge
-      :color="color"
-      overlap offset-x="20"
-      :content="quantity"
+      v-if="parseInt(locked)"
+      color="black"
+      overlap offset-y="20"
+      :content="locked"
+      bottom
     >
-      <v-avatar max-width="30" max-height="30">
-        <v-img max-width="30" height="30" contain :src="logo" class="invert" />
-      </v-avatar>
+      <coin-logo-free :symbol="symbol" :free="free" :color="color" />
     </v-badge>
+    <div v-else>
+      <coin-logo-free :symbol="symbol" :free="free" :color="color" />
+    </div>
   </div>
 </template>
 
 <script>
+import coinLogoFree from '~/components/CoinLogoFree.vue'
+
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    'coin-logo-free': coinLogoFree,
+  },
 
   /*
   ** PROPS
@@ -26,11 +38,18 @@ export default {
         return ''
       },
     },
-    quantity: {
+    free: {
       type: String,
       required: false,
       default() {
-        return 0
+        return ''
+      },
+    },
+    locked: {
+      type: String,
+      required: false,
+      default() {
+        return ''
       },
     },
     color: {
@@ -42,32 +61,5 @@ export default {
     },
   },
 
-  /*
-  ** COMPUTED
-  */
-  computed: {
-    logo () {
-      const symbol = this.symbol || this.$store.state.flyoutCoin?.symbol
-      try {
-        return require(`@/assets/coins/${symbol}.svg`)
-      } catch (e) {
-        try {
-          return require(`@/assets/coins/${symbol}.png`)
-        } catch (e) {
-          return require('@/assets/coins/default.svg')
-        }
-      }
-    },
-  },
-
 }
 </script>
-
-<style lang="scss" scoped>
-// .invert-green {
-//   filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
-// }
-.invert {
-  filter: invert(100%) saturate(0);
-}
-</style>

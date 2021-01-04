@@ -53,7 +53,7 @@ export default {
         return included && coin.symbol === symbol
       })
       .get()
-      .reduce((total, coin) => total + coin.quantity, 0)
+      .reduce((total, coin) => total + coin.qtyFree, 0)
   },
 
   /*

@@ -9,8 +9,9 @@ export default class RepoCoin extends Model {
       id: this.uid(),
       coinId: this.attr(null),
       repoId: this.attr(null),
-      quantity: this.number(0.0),
-      coin: this.belongsTo(Coin, 'coinId')
+      coin: this.belongsTo(Coin, 'coinId'),
+      qtyFree: this.number(0.0),
+      qtyLocked: this.number(0.0),
     }
   }
 }

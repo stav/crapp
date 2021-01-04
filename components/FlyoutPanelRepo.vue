@@ -46,7 +46,7 @@ export default {
     **     "id": "$uid74",
     **     "coinId": "$uid2",
     **     "repoId": "$uid22",
-    **     "quantity": 0.998093,
+    **     "qtyFree": 0.998093,
     **     "coin": {
     **       "$id": "$uid2",
     **       "id": "$uid2",
@@ -64,7 +64,7 @@ export default {
     sumCoins () {
       const coins = this.repository.coins || []
       const total = coins.reduce(
-        (total, coin) => total + coin.quantity * coin.coin.price,
+        (total, coin) => total + coin.qtyFree * coin.coin.price,
         0 // Initialize sum at zero
       )
       return formatCurrency(total)

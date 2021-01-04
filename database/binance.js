@@ -11,17 +11,12 @@ export function loadBinanceBalances (balances) {
     const repoCoin = binance.coins.find(coin => coin.coin?.symbol === symbol)
     const free = parseFloat(balance.free || 0)
     const locked = parseFloat(balance.locked || 0)
-    const quantity = free + locked
-    updateRepoCoin(symbol, binance.id, repoCoin?.id, quantity)
+    updateRepoCoin(symbol, binance.id, repoCoin?.id, free, locked)
   }
 
   // Secondly remove any coins from repo in the db not in the balances
   for (const coin of binance.coins) {
     if (balances.find(balance => balance.asset === coin.coin.symbol)) {
-      // RepoCoin.update({
-      //   where: coin.id,
-      //   data: { quantity }
-      // })
     } else {
       coin.$delete()
     }

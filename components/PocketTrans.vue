@@ -11,7 +11,7 @@
           <v-list-item-icon class="mr-4">
             <coin-logo
               :symbol="tran.symbol"
-              :quantity="formatAmount(tran.quantity)"
+              :qtyFree="formatAmount(tran.quantity)"
               :color="tran.quantity > 0 ? 'green' : 'red'"
             />
           </v-list-item-icon>

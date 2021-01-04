@@ -8,21 +8,26 @@ import Coin from '~/models/Coin'
 //   }, new Set()
 // )
 
+function getCoin(symbol) {
+  return Coin.query().where('symbol', symbol).first()
+}
+
 /*
 ** Update Repository Coin associative table
 */
-export function updateRepoCoin (symbol, repoId, repoCoinId, quantity) {
-  let coin = Coin.query().where('symbol', symbol).first()
+export function updateRepoCoin (symbol, repoId, repoCoinId, qtyFree = 0, qtyLocked = 0) {
+  let coin = getCoin(symbol)
   if (!coin) {
     Coin.insert({ data: { symbol } })
-    coin = Coin.query().where('symbol', symbol).first()
+    coin = getCoin(symbol)
   }
   RepoCoin.insertOrUpdate({
     data: {
       id: repoCoinId,
       repoId,
       coinId: coin.id,
-      quantity,
+      qtyFree,
+      qtyLocked,
     }
   })
 }

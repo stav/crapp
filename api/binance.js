@@ -16,6 +16,7 @@ export default async function (req, res) {
 
   // Process the data
   data = postProcess(data)
+  console.log('binance processed data:', data)
 
   // Send the response to the client
   res.end(JSON.stringify(data))

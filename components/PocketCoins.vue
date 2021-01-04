@@ -9,7 +9,11 @@
           :title="`${coin.coin.name} (${coin.coin.symbol})`"
         >
           <v-list-item-icon class="mr-4">
-            <coin-logo :symbol="coin.coin.symbol" :quantity="formatAmount(coin.quantity)" />
+            <coin-logo
+              :symbol="coin.coin.symbol"
+              :free="formatAmount(coin.qtyFree || coin.qtyFree)"
+              :locked="formatAmount(coin.qtyLocked)"
+            />
           </v-list-item-icon>
           <v-list-item-content class="pa-0">
             <v-list-item-title v-text="coin.coin.name" />

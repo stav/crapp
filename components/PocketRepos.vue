@@ -8,7 +8,7 @@
         class="pa-1"
       >
         <v-list-item-icon class="mr-6">
-          <coin-logo :quantity="coinSumForRepoFormat(repo)" />
+          <coin-logo :free="coinSumForRepoFormat(repo)" />
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title v-text="repo.name" />
@@ -75,7 +75,7 @@ export default {
       this.$store.dispatch('flyRepository', repo)
     },
     coinSumForRepo (repo) {
-      return repo.coins?.reduce((total, coin) => total + coin.quantity, 0)
+      return repo.coins?.reduce((total, coin) => total + coin.qtyFree, 0)
     },
     coinSumForRepoFormat (repo) {
       return formatAmount(this.coinSumForRepo(repo))
