@@ -4,6 +4,9 @@ import Repository from '~/models/Repository'
 export function loadCoinbaseProAccounts (accounts) {
   const repos = Repository.query().with(['coins', 'coins.coin'])
   const coinbasepro = repos.where('name', 'Coinbase Pro').first()
+  if (!coinbasepro) {
+    return
+  }
 
   // First update the repo in the db with all the accounts we received
   for (const account of accounts) {
@@ -24,6 +27,9 @@ export function loadCoinbaseProAccounts (accounts) {
 export function loadCoinbaseAccounts (accounts) {
   const repos = Repository.query().with(['coins', 'coins.coin'])
   const coinbase = repos.where('name', 'Coinbase').first()
+  if (!coinbase) {
+    return
+  }
 
   // First update the repo in the db with all the accounts we received
   for (const account of accounts) {

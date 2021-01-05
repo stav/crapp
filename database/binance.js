@@ -4,6 +4,9 @@ import Repository from '~/models/Repository'
 export function loadBinanceBalances (balances) {
   const repos = Repository.query().with(['coins', 'coins.coin'])
   const binance = repos.where('name', 'Binance').first()
+  if (!binance) {
+    return
+  }
 
   // First update the repo in the db with all the balances we received
   for (const balance of balances) {
