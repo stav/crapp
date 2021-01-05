@@ -1,7 +1,12 @@
 [
   {
     "name": "Ledger",
-    "coins": [{"symbol": "BTC", "quantity": 1}]
+    "coins": [
+      { "symbol": "BTC", "quantity": 0.1 },
+      { "symbol": "ETH", "quantity": 1 },
+      { "symbol": "LINK", "quantity": 10 },
+      { "symbol": "USDC", "quantity": 100 }
+    ]
   },
   {
     "name": "Coinbase"
@@ -10,18 +15,31 @@
     "name": "Binance"
   },
   {
-    "name": "BlockFi"
+    "name": "BlockFi",
+    "coins": [
+      { "symbol": "BTC", "quantity": 0.2 },
+    ],
+    "transactions": [
+      { "date": "2020-08-13",  "type": "deposit" ,  "symbol": "ETH",   "amount":  3     },
+      { "date": "2020-08-31",  "type": "interest",  "symbol": "ETH" ,  "amount":  0.005 },
+      { "date": "2020-09-30",  "type": "interest",  "symbol": "ETH" ,  "amount":  0.01  },
+      { "date": "2020-10-31",  "type": "interest",  "symbol": "ETH" ,  "amount":  0.01  },
+      { "date": "2020-11-19",  "type": "withdral",  "symbol": "ETH" ,  "amount": -3.025 }
+    ]
   },
   {
-    "name": "Crypto Wallet"
+    "name": "Kraken",
+    "coins": [
+      { "symbol": "BTC", "quantity": 0.2 }
+    ],
+    "transactions": [
+      { "date": "10-17-20 04:19:17 +0000",  "type": "deposit",  "symbol": "BTC",  "currency": "₿ Bitcoin (XBT)" ,  "amount": 0.2 }
+    ]
   },
   {
-    "name": "Crypto Earn"
-  },
-  {
-    "name": "Crypto Fiat"
-  },
-  {
-    "name": "Crypto Visa"
+    "name": "Bank Trust",
+    "coins": [
+      { "symbol": "USD", "quantity": 5000 }
+    ]
   }
 ]
