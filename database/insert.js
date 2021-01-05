@@ -94,19 +94,19 @@ function insertStatements (repo) {
 **
 ** Insert the given repository into the db
 */
-function insertRepository (repo) {
+async function insertRepository (repo) {
   insertCoins(exportCoinSymbols(repo))
-  const coins = repo.coins?.map(_ => ({
-    coinId: Coin.query().where('symbol', _.symbol).first().id,
-    quantity: _.quantity,
-  })) || []
-  Repository.insert({
+  return (await Repository.insertOrUpdate({
     data: {
-      coins,
-      active: repo.active,
+      id: Repository.query().where('name', repo.name).first()?.id,
       name: repo.name,
+      active: repo.active,
+      coins: repo.coins?.map(_ => ({
+        coinId: Coin.query().where('symbol', _.symbol).first().id,
+        quantity: _.quantity,
+      })) || [],
     }
-  })
+  })).repositorys[0].id
 }
 
 /*
@@ -114,10 +114,9 @@ function insertRepository (repo) {
 **
 ** Insert all the given repositories into the db
 */
-function insertRepositorys (inputs) {
+async function insertRepositorys (inputs) {
   for (const input of inputs) {
-    insertRepository(input)
-    const repoId = Repository.query().where('name', input.name).first().id
+    const repoId = await insertRepository(input)
     insertTransactions({
       id: repoId,
       name: input.name,
@@ -139,10 +138,8 @@ function insertRepositorys (inputs) {
 ** Read the list of repository data from input file and load up the db
 */
 export async function loadRepositorys () {
-  Coin.deleteAll()
   RepoCoin.deleteAll()
   Statement.deleteAll()
   Transaction.deleteAll()
-  Repository.deleteAll()
-  insertRepositorys(await repositorys())
+  await insertRepositorys(await repositorys())
 }
