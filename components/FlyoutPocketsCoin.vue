@@ -18,10 +18,29 @@
         </template>
       </v-expansion-panel-header>
       <v-expansion-panel-content :color="pocket.color">
-        <!-- NORMAL -->
-        <div v-if="pocket.id !== 4">
+        <!-- COINS & VALUE -->
+        <div v-if="pocket.id === 1 || pocket.id === 3">
           <div class="text-h5 font-weight-heavy white--text" v-text="pocket.front" />
-          <div v-if="[1, 2, 3].includes(pocket.id)" class="sub-title font-weight-light" v-text="pocket.back" />
+          <div class="sub-title font-weight-light" v-text="pocket.back" />
+        </div>
+
+        <!-- PRICE -->
+        <div v-if="pocket.id === 2">
+          <div v-if="!editPrice" class="clickable text-h5 font-weight-heavy white--text" @click="editPrice = true" v-text="pocket.front" />
+          <div v-if="editPrice">
+            <v-input hide-details class="floor">
+              <v-text-field
+                v-model="customPrice"
+                title="Enter the new coin price"
+                :rules="[rules.numeric]"
+                hide-details
+                clearable
+                outlined
+                @blur="updatePrice"
+              />
+            </v-input>
+          </div>
+          <div class="sub-title font-weight-light" v-text="pocket.back" />
         </div>
 
         <!-- HISTORY -->
@@ -53,6 +72,17 @@ export default {
     'pocket-history': PocketHistory,
     'pocket-repos': PocketRepos,
   },
+
+  /*
+  ** DATA
+  */
+  data: () => ({
+    customPrice: 0,
+    editPrice: false,
+    rules: {
+      numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
+    },
+  }),
 
   /*
   ** COMPUTED
@@ -102,5 +132,30 @@ export default {
     },
   },
 
+  /*
+  ** MOUNTED
+  */
+  mounted () { // This should be watch, not mounted, update when coin changes
+    console.log('mounted', this.customPrice)
+    this.customPrice = this.coinPriceAmount
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    updatePrice () {
+      console.log('update', this.customPrice)
+      this.$store.commit('setCoinPrice', { symbol: this.symbol, price: this.customPrice })
+      this.editPrice = false
+    },
+  },
+
 }
 </script>
+
+<style lang="scss" scoped>
+.clickable {
+  cursor: pointer;
+}
+</style>

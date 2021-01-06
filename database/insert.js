@@ -48,7 +48,7 @@ function exportTranSymbols (repo) {
 /*
 ** insertCoins
 **
-** Insert all given coins
+** Insert all given coins if doesn't exist, otherwise if it does then ignore
 */
 function insertCoins (symbols) {
   for (const symbol of symbols || []) {

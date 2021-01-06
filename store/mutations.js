@@ -87,4 +87,10 @@ export default {
     state.snackbarText = message
     state.snackbarModel = true
   },
+  setCoinPrice (_state, { symbol, price }) {
+    Coin.update({
+      where: coin => coin.symbol === symbol,
+      data: { price }
+    })
+  },
 }
