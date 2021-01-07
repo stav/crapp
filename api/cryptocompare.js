@@ -50,7 +50,12 @@ async function resolve (requests) {
   for (const request of requests) {
     try {
       const response = await axios(request.config)
-      data[request.key] = response.data
+      if (response.data.Response === 'Error') {
+        console.error('cryptocompare resolve', response.data)
+        data.error.push(response.data.Message)
+      } else {
+        data[request.key] = response.data
+      }
     } catch (error) {
       data.error.push(error)
     }

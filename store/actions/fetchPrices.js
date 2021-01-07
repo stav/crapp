@@ -31,25 +31,31 @@
 **
 ** coinsUnlisted = [ "USD" ]
 */
-export default async function fetchPrices (ctx, symbols) {
-  const coinsUnlisted = ctx.getters.coinsUnlisted
+async function getPrices (coinsUnlisted, symbols) {
   const coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
   if (coinsListed.length === 0) {
-    return
+    throw new Error(`No listed coins ${coinsUnlisted}`)
   }
   const priceFetcherPath = '/api/cryptocompare/prices?symbols='
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)
   const result = await response.json()
-  let message
 
   if (result.error) {
-    const e = result.error
-    message = `Error in fetchPrices: ${e.message}, ${e.text}`
-    console.error(message)
-    return message
+    throw new Error(result.error)
   }
-  const { prices: data } = result
+  return result.prices
+}
+
+export default async function fetchPrices (ctx, symbols) {
+  const coinsUnlisted = ctx.getters.coinsUnlisted
+  let data
+  try {
+    data = await getPrices(coinsUnlisted, symbols)
+  } catch (e) {
+    console.warn(`Error in fetchPrices: ${e.message}`)
+    return e.message
+  }
   for (const symbol of Object.keys(data)) {
     ctx.dispatch('setCoin', {
       symbol,
