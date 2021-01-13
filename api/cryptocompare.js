@@ -36,6 +36,22 @@ function config (url) {
       break
     }
 
+    // https://min-api.cryptocompare.com/documentation?key=Historical&cat=dataHistoday
+    case '/history': {
+      const symbol = _url.searchParams.get('symbol')
+      const params = {
+        fsym: symbol,
+        tsym: 'USD',
+        limit: 2000,
+        extraParams: 'CrApp',
+      }
+      requests.push({
+        key: 'history',
+        config: configRequest('/data/v2/histoday', params),
+      })
+      break
+    }
+
     default:
       console.error(url)
   }
@@ -50,7 +66,12 @@ async function resolve (requests) {
   for (const request of requests) {
     try {
       const response = await axios(request.config)
-      data[request.key] = response.data
+      if (response.data.Response === 'Error') {
+        console.error('cryptocompare resolve', response.data)
+        data.error.push(response.data.Message)
+      } else {
+        data[request.key] = response.data
+      }
     } catch (error) {
       data.error.push(error)
     }
