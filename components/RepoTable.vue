@@ -218,9 +218,11 @@ export default {
     **
     ** Return the provided repository with the coins property evaluated
     ** with the proper coins from the database as well as a mapping to
-    ** create the top-level fields, one for each coin, e.g.:
+    ** create the top-level fields, one for each coin, e.g.: {BTC:1, ETH:10...}
     **
-    **     {BTC:1, ETH:10...}
+    ** repo == { "id": "$uid370", "name": "Kraken", "coins": [{},{}] }
+    ** coins == { "ETH": "$100", "BTC": "$1000" }
+    ** valued == { "valuation": "$1,100.00", "value": 1100, "cls": "meat" }
     */
     repoValuation (repo) {
       const coins = {}
@@ -239,7 +241,7 @@ export default {
         coins[symbol] =
           this.switchAmountValue
             ? formatCurrency(amount.replaceAll(',', '')).slice(0, -3)
-            : coins[symbol] = amount
+            : amount
       }
       const valued = {
         valuation: formatCurrency(repoValue),

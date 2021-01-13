@@ -8,7 +8,9 @@ import unCoins from '~/data/uncoins'
 export const plugins = [
   VuexORM.install(database)
 ]
-
+export const getters = Getters
+export const actions = Actions
+export const mutations = Mutations
 export const state = () => ({
   coinMarketCapUnlisted: unCoins,
   statementBalances: false,
@@ -30,7 +32,3 @@ export const state = () => ({
   sparkPair: {},
   sparks: {},
 })
-
-export const getters = Getters
-export const actions = Actions
-export const mutations = Mutations
