@@ -4,7 +4,11 @@
 import Transaction from '~/models/Transaction'
 import Coin from '~/models/Coin'
 
-const dateStringRegex = /(?<M>\d{2})-(?<D>\d{2})-(?<Y>\d{2}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2}) \+\d{4}/
+const dateStringRegex = /(?<Y>\d{4})-(?<M>\d{2})-(?<D>\d{2}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2})/
+const coinTranslator = {
+  XXBT: 'BTC',
+  XETH: 'ETH',
+}
 
 /*
 ** insertTransactions
@@ -13,17 +17,17 @@ const dateStringRegex = /(?<M>\d{2})-(?<D>\d{2})-(?<Y>\d{2}) (?<h>\d{2}):(?<m>\d
 */
 export function insertTransactions (repoId, trans) {
   for (const tran of trans || []) {
-    const coin = Coin.query().where('symbol', tran.symbol).first()
+    const symbol = coinTranslator[tran.asset] ?? tran.asset
+    const coin = Coin.query().where('symbol', symbol).first()
     Transaction.insert({
       data: {
         repoId,
-        date: tran.date,
+        date: tran.time,
         type: tran.type,
         coinId: coin.id,
-        symbol: tran.symbol,
+        note: `${tran.type} ${tran.amount} ${tran.asset} with Kraken on ${tran.time}`,
         quantity: tran.amount,
-        currency: tran.currency,
-        timestamp: getTransTimestamp(tran.date),
+        timestamp: getTransTimestamp(tran.time),
       }
     })
   }
@@ -31,9 +35,8 @@ export function insertTransactions (repoId, trans) {
 
 function getTransTimestamp (dateString) {
   const { Y, M, D, h, m, s } = dateStringRegex.exec(dateString).groups
-  const iY = parseInt(Y)
   const day = parseInt(D)
-  const year = iY < 100 ? 2000 + iY : iY
+  const year = parseInt(Y)
   const month = parseInt(M) - 1
   const timestamp = Date.UTC(year, month, day, h, m, s)
   return timestamp

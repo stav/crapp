@@ -18,14 +18,12 @@ export function insertTransactions (repoId, trans) {
     const coin = Coin.query().where('symbol', symbol).first()
     const data = {
       repoId,
-      symbol,
       date,
       fee: parseFloat(tran.fee),
       type: tran.side,
-      note: `${tran.side} ${tran.size} ${symbol} for ${tran.price} each`,
+      note: `${tran.side} ${tran.size} ${symbol} for ${tran.price} each with CoinbasePro on ${date}`,
       coinId: coin.id,
       quantity: tran.side.toUpperCase() === 'SELL' ? size * -1 : size,
-      currency: parseFloat(tran.price),
       timestamp: (new Date(date)).getTime(),
     }
     Transaction.insert({ data })

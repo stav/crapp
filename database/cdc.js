@@ -10,7 +10,7 @@ import Coin from '~/models/Coin'
 ** Insert all given transactions
 */
 export function insertTransactions (repoId, trans) {
-  for (const tran of trans || []) {
+  for (const tran of (trans || []).filter(t => t.type !== 'withdra')) {
     const coin = Coin.query().where('symbol', tran.symbol).first()
     Transaction.insert({
       data: {
@@ -18,9 +18,8 @@ export function insertTransactions (repoId, trans) {
         date: tran.date,
         type: tran.type,
         coinId: coin.id,
-        symbol: tran.symbol,
+        note: `${tran.type} ${tran.quantity} ${tran.symbol} with Crypto.com on ${tran.date}`,
         quantity: tran.quantity,
-        currency: tran.currency,
         timestamp: (new Date(tran.date)).getTime(),
       }
     })

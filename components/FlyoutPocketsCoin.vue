@@ -1,13 +1,13 @@
 <template>
   <v-expansion-panels multiple accordion hover v-model="coinPockets">
-    <v-expansion-panel v-for="pocket in pockets" :key="pocket.id">
+    <v-expansion-panel v-for="pocket in pockets" :key="pocket.name">
       <v-expansion-panel-header :color="pocket.color">
         <template v-slot:default="{ open }">
           {{ pocket.name }}
           <v-fade-transition>
             <span v-if="!open">
               <v-chip
-                v-if="[1, 2, 3].includes(pocket.id)"
+                v-if="['Coins', 'Price', 'Value'].includes(pocket.name)"
                 x-small pill class="ml-2 px-2"
                 :color="pocket.color + ' darken-1'"
               >
@@ -18,20 +18,43 @@
         </template>
       </v-expansion-panel-header>
       <v-expansion-panel-content :color="pocket.color">
-        <!-- NORMAL -->
-        <div v-if="pocket.id !== 4">
+        <!-- COINS & VALUE -->
+        <div v-if="pocket.name === 'Coins' || pocket.name === 'Value'">
           <div class="text-h5 font-weight-heavy white--text" v-text="pocket.front" />
-          <div v-if="[1, 2, 3].includes(pocket.id)" class="sub-title font-weight-light" v-text="pocket.back" />
+          <div class="sub-title font-weight-light" v-text="pocket.back" />
+        </div>
+
+        <!-- PRICE -->
+        <div v-if="pocket.name === 'Price'">
+          <div class="text-h5 font-weight-heavy white--text" v-text="pocket.front" />
+          <div class="sub-title font-weight-light" v-text="pocket.back" />
+        </div>
+
+        <!-- Transactions -->
+        <div v-if="pocket.name === 'Transactions'">
+          <v-list dense two-line class="pa-0">
+            <v-list-item v-for="tran in trans" :key="tran.id" class="px-0" :title="tran.note">
+              <v-list-item-content class="pa-0">
+                <v-list-item-title>
+                  {{ formatAmount(tran.balance) }}
+                  <v-icon>mdi-cash</v-icon>
+                  {{ formatAmount(tran.quantity) }}
+                </v-list-item-title>
+                <v-list-item-subtitle v-text="tran.date" />
+              </v-list-item-content>
+            </v-list-item>
+            <v-subheader class="px-0">{{ trans.length }} transactions</v-subheader>
+          </v-list>
         </div>
 
         <!-- HISTORY -->
-        <pocket-history v-if="pocket.id === 5" :symbol="symbol" />
+        <pocket-history v-if="pocket.name === 'History'" :symbol="symbol" />
 
         <!-- CONVERT -->
-        <pocket-convert v-if="pocket.id === 4" :symbol="symbol" />
+        <pocket-convert v-if="pocket.name.startsWith('Convert')" :symbol="symbol" />
 
         <!-- REPOS -->
-        <pocket-repos v-if="pocket.id === 6" :coin="coin" :symbol="symbol" />
+        <pocket-repos v-if="pocket.name === 'Repositories'" :coin="coin" :symbol="symbol" />
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -68,12 +91,13 @@ export default {
     },
     pockets () {
       return [
-        { id: 1, name: 'Coins', color: 'primary', front: this.coinSumFormat, back: this.coinSumAmount },
-        { id: 2, name: 'Price', color: 'accent', front: this.coinPriceCurrency, back: this.coinPriceAmount },
-        { id: 3, name: 'Value', color: 'secondary', front: this.coinValueCurrency, back: this.coinValueAmount },
-        { id: 5, name: 'History', color: 'accent', front: null, back: null },
-        { id: 4, name: `Convert ${this.symbol}`, color: 'green darken-4', front: null, back: null },
-        { id: 6, name: 'Repositories', color: 'blank', front: null, back: null },
+        { name: 'Coins', color: 'primary', front: this.coinSumFormat, back: this.coinSumAmount },
+        { name: 'Price', color: 'accent', front: this.coinPriceCurrency, back: this.coinPriceAmount },
+        { name: 'Value', color: 'secondary', front: this.coinValueCurrency, back: this.coinValueAmount },
+        { name: 'Transactions', color: 'green darken-3', front: null, back: null },
+        { name: 'History', color: 'accent', front: null, back: null },
+        { name: `Convert ${this.symbol}`, color: 'brown darken-4', front: null, back: null },
+        { name: 'Repositories', color: 'black', front: null, back: null },
       ]
     },
     coin () {
@@ -100,7 +124,31 @@ export default {
     coinValueCurrency () {
       return formatCurrency(this.coinValueAmount)
     },
+    trans () {
+      let balance = 0
+      return this.$store.$db()
+        .model('transactions')
+        .query()
+        .where('coinId', this.coin.id)
+        .orderBy('timestamp')
+        .get()
+        .map(tran => Object.assign({}, tran, { balance: (balance += tran.quantity) }))
+        .sort((a, b) => b.timestamp - a.timestamp)
+    },
+  },
+
+  /*
+  ** METHODS
+  */
+  methods: {
+    formatAmount (value) {
+      return formatAmount(value)
+    },
+    formatCurrency (value) {
+      return formatCurrency(value)
+    },
   },
 
 }
+
 </script>

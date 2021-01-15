@@ -39,6 +39,10 @@ function exportTranSymbols (repo) {
       symbols = CoinbasePro.mapTransactionSymbols(repo.trans)
       break
 
+    case 'uniswap':
+      symbols = UniSwap.mapTransactionSymbols(repo.trans)
+      break
+
     default:
       symbols = repo.trans?.map(tran => tran.symbol) || []
   }

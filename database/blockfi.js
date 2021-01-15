@@ -20,9 +20,8 @@ export function insertTransactions (repoId, trans) {
         date: tran.date,
         type: tran.type,
         coinId: coin.id,
-        symbol: tran.symbol,
+        note: `${tran.type} ${tran.amount} ${tran.symbol} with BlockFi on ${tran.date}`,
         quantity: tran.amount,
-        currency: tran.currency,
         timestamp: getTransTimestamp(tran.date),
       }
     })
