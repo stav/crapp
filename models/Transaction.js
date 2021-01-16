@@ -26,6 +26,7 @@ export default class Transaction extends Model {
       date: this.string(''),
       type: this.string(''),
       note: this.string(''),
+      price: this.number(0.0),
       repoId: this.attr(null),
       coinId: this.attr(null),
       symbol: this.string(''),

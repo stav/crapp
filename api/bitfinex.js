@@ -28,7 +28,8 @@ function config (url) {
       const symbol = _url.searchParams.get('symbol')
       const pair = symbol + 'USD'
       const params = {
-        // limit: 3,
+        limit: _url.searchParams.get('limit'),
+        end: _url.searchParams.get('time'),
       }
       requests.push({
         key: 'candles',
@@ -53,7 +54,8 @@ async function resolve (requests) {
       const response = await axios(request.config)
       data[request.key] = response.data
     } catch (error) {
-      data.error.push(error)
+      console.error('API Error: Bitfinex', error)
+      data.error.push(error.toString())
     }
   }
   if (data.error.length === 0) {
