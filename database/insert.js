@@ -98,13 +98,13 @@ function insertStatements (repo) {
 **
 ** Insert the given repository into the db
 */
-function insertRepository (repo) {
+async function insertRepository (repo) {
   insertCoins(exportCoinSymbols(repo))
   const coins = repo.coins?.map(_ => ({
     coinId: Coin.query().where('symbol', _.symbol).first().id,
     quantity: _.quantity,
   })) || []
-  Repository.insert({
+  return await Repository.insert({
     data: {
       coins,
       active: repo.active,
@@ -117,23 +117,31 @@ function insertRepository (repo) {
 ** insertRepositorys
 **
 ** Insert all the given repositories into the db
+**
+** data:
+**   {"repocoins": [
+**      {"id": "$uid867", "coinId": "$uid735", "repoId": "$uid866", "quantity": 2.6888},
+**      {"id": "$uid870", "coinId": "$uid734", "repoId": "$uid866", "quantity": 0.03}
+**    ],
+**    "repositorys": [
+**      {"id": "$uid866", "name": "Kraken", "active": true}
+**  ] }
 */
-function insertRepositorys (inputs) {
+async function insertRepositorys (inputs) {
   for (const input of inputs) {
-    insertRepository(input)
-    const repoId = Repository.query().where('name', input.name).first().id
-    insertTransactions({
-      id: repoId,
-      name: input.name,
-      slug: input.slug,
-      trans: input.transactions,
-    })
-    insertStatements({
-      id: repoId,
-      name: input.name,
-      slug: input.slug,
-      stmts: input.statements,
-    })
+    const data = await insertRepository(input)
+    if (data.repositorys?.length === 1) {
+      const jugg = {
+        slug: input.slug,
+        stmts: input.statements,
+        trans: input.transactions,
+      }
+      const repo = Object.assign({}, data.repositorys[0], jugg)
+      insertTransactions(repo)
+      insertStatements(repo)
+    } else {
+      console.error('Should be exactly one repo, found', data.repositorys?.length)
+    }
   }
 }
 
@@ -148,5 +156,5 @@ export async function loadRepositorys () {
   Statement.deleteAll()
   Transaction.deleteAll()
   Repository.deleteAll()
-  insertRepositorys(await repositorys())
+  await insertRepositorys(await repositorys())
 }
