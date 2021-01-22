@@ -1,4 +1,5 @@
 import { Model } from '@vuex-orm/core'
+import Repository from './Repository'
 
 /*
 ** Transaction
@@ -26,6 +27,7 @@ export default class Transaction extends Model {
       date: this.string(''),
       type: this.string(''),
       note: this.string(''),
+      repo: this.belongsTo(Repository, 'repoId'),
       repoId: this.attr(null),
       coinId: this.attr(null),
       quantity: this.number(0.0),

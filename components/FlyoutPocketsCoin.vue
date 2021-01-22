@@ -36,9 +36,10 @@
             <v-list-item v-for="tran in trans" :key="tran.id" class="px-0" :title="tran.note">
               <v-list-item-content class="pa-0">
                 <v-list-item-title>
-                  {{ formatAmount(tran.balance) }}
-                  <v-icon>mdi-cash</v-icon>
+                  <span v-text="tran.repo.name.substring(0, 2)" class="text-h5" />
                   {{ formatAmount(tran.quantity) }}
+                  <v-icon>mdi-cash</v-icon>
+                  {{ formatAmount(tran.balance) }}
                 </v-list-item-title>
                 <v-list-item-subtitle v-text="tran.date" />
               </v-list-item-content>
@@ -129,6 +130,7 @@ export default {
       return this.$store.$db()
         .model('transactions')
         .query()
+        .with('repo')
         .where('coinId', this.coin.id)
         .orderBy('timestamp')
         .get()

@@ -31,6 +31,10 @@ export default {
     const repos = getters.Repositorys
     return repos.find(repoId) || {}
   },
+  // // Return single repository based on given id
+  // repository: () => (id) => {
+  //   return Repository.find(id)
+  // },
 
   /*
   ** coinPriceUSD
