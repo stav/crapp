@@ -36,15 +36,15 @@ function exportTranSymbols (repo) {
   let symbols
   switch (repo.slug) {
     case 'coinbase':
-      symbols = CoinbasePro.mapTransactionSymbols(repo.trans)
+      symbols = CoinbasePro.mapTransactionSymbols(repo.transactions)
       break
 
     case 'uniswap':
-      symbols = UniSwap.mapTransactionSymbols(repo.trans)
+      symbols = UniSwap.mapTransactionSymbols(repo.transactions)
       break
 
     default:
-      symbols = repo.trans?.map(tran => tran.symbol) || []
+      symbols = repo.transactions?.map(tran => tran.symbol) || []
   }
   return symbols
 }
@@ -71,7 +71,7 @@ function insertCoins (symbols) {
 function insertTransactions (repo) {
   if (repo.slug in translators) {
     insertCoins(exportTranSymbols(repo))
-    translators[repo.slug].insertTransactions(repo.id, repo.trans)
+    translators[repo.slug].insertTransactions(repo.id, repo.transactions)
   } else {
     // console.debug(`No transactions for repository (${repo.name})`)
   }
@@ -94,29 +94,9 @@ function insertStatements (repo) {
 }
 
 /*
-** insertRepository
+** mergeRepository
 **
-** Insert the given repository into the db
-*/
-async function insertRepository (repo) {
-  insertCoins(exportCoinSymbols(repo))
-  const coins = repo.coins?.map(_ => ({
-    coinId: Coin.query().where('symbol', _.symbol).first().id,
-    quantity: _.quantity,
-  })) || []
-  return await Repository.insert({
-    data: {
-      coins,
-      active: repo.active,
-      name: repo.name,
-    }
-  })
-}
-
-/*
-** insertRepositorys
-**
-** Insert all the given repositories into the db
+** Merge all known repository data
 **
 ** data:
 **   {"repocoins": [
@@ -127,21 +107,48 @@ async function insertRepository (repo) {
 **      {"id": "$uid866", "name": "Kraken", "active": true}
 **  ] }
 */
+function mergeRepository (input, data) {
+  if (data.repositorys?.length === 1) {
+    const jugg = {
+      statements: input.statements,
+      transactions: input.transactions,
+    }
+    return Object.assign(jugg, data.repositorys[0])
+  }
+  console.error('Should be exactly one repo, found', data)
+}
+
+/*
+** insertRepository
+**
+** Insert the given repository into the db
+*/
+async function insertRepository (input) {
+  insertCoins(exportCoinSymbols(input))
+  const coins = input.coins?.map(_ => ({
+    coinId: Coin.query().where('symbol', _.symbol).first().id,
+    quantity: _.quantity,
+  })) || []
+  const data = await Repository.insert({
+    data: {
+      coins,
+      active: input.active,
+      name: input.name,
+    }
+  })
+  return mergeRepository(input, data)
+}
+
+/*
+** insertRepositorys
+**
+** Insert all the given repositories into the db
+*/
 async function insertRepositorys (inputs) {
   for (const input of inputs) {
-    const data = await insertRepository(input)
-    if (data.repositorys?.length === 1) {
-      const jugg = {
-        slug: input.slug,
-        stmts: input.statements,
-        trans: input.transactions,
-      }
-      const repo = Object.assign({}, data.repositorys[0], jugg)
-      insertTransactions(repo)
-      insertStatements(repo)
-    } else {
-      console.error('Should be exactly one repo, found', data.repositorys?.length)
-    }
+    const repo = await insertRepository(input)
+    insertTransactions(repo)
+    insertStatements(repo)
   }
 }
 

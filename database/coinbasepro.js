@@ -82,7 +82,7 @@ class Statements {
 ** { "id": "$uid1147",
 **   "name": "Coinbase Pro",
 **   "slug": "coinbase",
-**   "stmts": [
+**   "statements": [
 **     {
 **       "portfolio": "default",
 **       "type": "match",
@@ -96,7 +96,7 @@ class Statements {
 **     },... ] }
 */
 export function insertStatements (repo) {
-  const statement = new Statements(repo.stmts)
+  const statement = new Statements(repo.statements)
   const orders = statement.getOrders()
   for (const order of orders) {
     const data = {

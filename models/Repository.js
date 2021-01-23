@@ -12,9 +12,14 @@ export default class Repository extends Model {
     return {
       id: this.uid(),
       name: this.string('[no-name]'),
-      active: this.boolean(true),
+      slug: this.string(),
       coins: this.hasMany(RepoCoin, 'repoId'),
       trans: this.hasMany(Transaction, 'repoId'),
+      active: this.boolean(true),
     }
+  }
+
+  static beforeCreate (model) {
+    model.slug = model.slug || model.name.split(/\s/)[0].toLowerCase()
   }
 }

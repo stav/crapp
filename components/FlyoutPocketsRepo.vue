@@ -16,7 +16,7 @@
         Transactions
       </v-expansion-panel-header>
       <v-expansion-panel-content color="secondary">
-        <pocket-trans :trans="repository.trans" />
+        <pocket-trans :trans="repository.transactions" />
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
