@@ -126,16 +126,7 @@ export default {
       return formatCurrency(this.coinValueAmount)
     },
     trans () {
-      let balance = 0
-      return this.$store.$db()
-        .model('transactions')
-        .query()
-        .with('repo')
-        .where('coinId', this.coin.id)
-        .orderBy('timestamp')
-        .get()
-        .map(tran => Object.assign({}, tran, { balance: (balance += tran.quantity) }))
-        .sort((a, b) => b.timestamp - a.timestamp)
+      return this.$store.getters.coinTransactions(this.coin.id)
     },
   },
 

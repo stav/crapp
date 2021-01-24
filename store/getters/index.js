@@ -13,6 +13,11 @@ import {
   sortedUniqueHighSymbols,
 } from './coin'
 
+import {
+  transactions,
+  coinTransactions,
+} from './transaction'
+
 export default {
 
   repositorys,
@@ -25,6 +30,9 @@ export default {
   coinsUnlisted,
   sortedUniqueSymbols,
   sortedUniqueHighSymbols,
+
+  coinTransactions,
+  transactions,
 
   /*
   ** sparkLines

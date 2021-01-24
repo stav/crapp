@@ -68,6 +68,11 @@ export default {
           icon: 'mdi-script-text-outline',
           to: '/statements'
         },
+        {
+          title: 'Transactions',
+          icon: 'mdi-script-text-outline',
+          to: '/transactions'
+        },
       ],
     }
   },

@@ -1,12 +1,6 @@
 import Repository from '~/models/Repository'
 
-/*
-** repositorys
-**
-** Database data
-**
-** Return an array of unvalued repositories
-*/
+// Return an array of unvalued repositories
 export function repositorys (_state, getters) {
   return getters.Repositorys.all()
 }
