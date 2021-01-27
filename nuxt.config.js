@@ -54,7 +54,20 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    // '~/plugins/body-parser.js',
+    { src: '~/plugins/body-parser.js', mode: 'server' },
   ],
+  extendPlugins(plugins) {
+    const pluginIndex = plugins.findIndex(
+      ({ src }) => src === '~/plugins/body-parser.js'
+    )
+    const shouldBeFirstPlugin = plugins[pluginIndex]
+
+    plugins.splice(pluginIndex, 1)
+    plugins.unshift(shouldBeFirstPlugin)
+    console.log(plugins)
+    return plugins
+  },
 
   /*
   ** Auto import components
@@ -74,6 +87,7 @@ export default {
     { path: '/api/bitfinex', handler: '~/api/bitfinex' },
     { path: '/api/binance', handler: '~/api/binance' },
     { path: '/api/kraken', handler: '~/api/kraken' },
+    // { path: '/api', handler: '~/api/index' },
   ],
 
   /*
@@ -120,6 +134,7 @@ export default {
   */
   build: {
     devtools: true,
+    transpile: ['body-parser'],
     extend(config, { isClient }) {
       if (isClient) {
         config.devtool = process.env.NODE_ENV === 'development' ? '#source-map' : ''
