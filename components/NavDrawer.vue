@@ -73,6 +73,11 @@ export default {
           icon: 'mdi-script-text-outline',
           to: '/transactions'
         },
+        {
+          title: 'Client',
+          icon: 'mdi-fruit-citrus',
+          to: '/client'
+        },
       ],
     }
   },
