@@ -133,6 +133,7 @@ async function insertRepository (input) {
     data: {
       coins,
       active: input.active,
+      pairs: input.pairs,
       name: input.name,
     }
   })

@@ -1,5 +1,6 @@
 import {
   repositorys,
+  repositoryFromSlug,
   highRepositorys,
   Repositorys,
   flyoutRepo,
@@ -23,6 +24,7 @@ export default {
   repositorys,
   Repositorys,
   highRepositorys,
+  repositoryFromSlug,
   flyoutRepo,
 
   coinSum,

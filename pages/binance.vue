@@ -10,6 +10,7 @@
       <v-btn @click="() => fetch('deposit.history')" color="secondary" title="Fetch user deposit history"> History </v-btn>
       <v-btn @click="() => fetchAccount()" color="primary" title="Fetch account information"> Account </v-btn>
       <v-btn @click="() => fetchCoins()" color="primary" title="Fetch information about user coins"> Coins </v-btn>
+      <v-btn @click="() => fetchTrades()" color="primary" title="Fetch information about user trades"> Trades </v-btn>
     </v-app-bar>
     <v-container>
       <v-row dense>
@@ -78,6 +79,30 @@
             </template>
           </v-data-table>
         </v-col>
+        <v-col cols="12" v-show="trades.length">
+          <v-data-table
+            dense
+            :headers="headersTrades"
+            :items="trades"
+            :items-per-page="100"
+            item-key="trade"
+            item-class="classes"
+            sort-by="time"
+            multi-sort
+            show-expand
+          >
+            <template v-slot:top>
+              <v-toolbar flat>
+                <v-toolbar-title> Trades </v-toolbar-title>
+              </v-toolbar>
+            </template>
+            <template v-slot:expanded-item="{ item }">
+              <td :colspan="headersTrades.length">
+                {{ item }}
+              </td>
+            </template>
+          </v-data-table>
+        </v-col>
       </v-row>
       <v-row>
         <v-col>
@@ -92,11 +117,15 @@
 </template>
 
 <script>
+import qs from 'qs'
 import { JSONView } from 'vue-json-component'
 import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
 
-async function getJson (resource) {
-  const response = await fetch('/api/binance/' + resource)
+async function getJson (resource, params = {}) {
+  const querystring = qs.stringify(params)
+  console.log('params', params, querystring)
+  const url = `/api/binance/${resource}?${querystring}`
+  const response = await fetch(url)
   const result = (response.status === 200 ? await response.json() : { status: response.status })
   const _ = Array.from(result)
   const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
@@ -108,17 +137,18 @@ export default {
   components: { 'json-view': JSONView },
   fetchOnServer: true,
 
-  async fetch () {
-    const { prices } = await getJson('prices')
-    for (const _ of prices) {
-      this.symbolMapPrice[_.symbol] = parseFloat(_.price)
-    }
-    // this.$store.commit('setPricesMap', this.symbolMapPrice)
-  },
+  // async fetch () {
+  //   const { prices } = await getJson('prices')
+  //   for (const _ of prices) {
+  //     this.symbolMapPrice[_.symbol] = parseFloat(_.price)
+  //   }
+  //   // this.$store.commit('setPricesMap', this.symbolMapPrice)
+  // },
 
   data () {
     return {
       coins: [],
+      trades: [],
       result: null,
       balances: null,
       search: '',
@@ -133,10 +163,14 @@ export default {
         { text: 'Locked', value: 'locked', filterable: false },
         { text: 'Networks', value: 'networks', filterable: false },
       ],
+      headersTrades: [
+        { text: 'qty', value: 'qty', filterable: true },
+        { text: 'price', value: 'price', filterable: true },
+        { text: 'symbol', value: 'symbol', filterable: false },
+        { text: 'time', value: 'time', filterable: false },
+        { text: 'commissionAsset', value: 'commissionAsset', filterable: false },
+      ],
     }
-  },
-
-  computed: {
   },
 
   methods: {
@@ -154,7 +188,7 @@ export default {
     },
     async fetchPrice (balance) {
       this.loading = true
-      this.result = await getJson('price/' + balance.asset)
+      this.result = await getJson('price', { asset: balance.asset })
       const _ = this.result.data
       const price = parseFloat(_.price)
       // Update local data
@@ -214,8 +248,59 @@ export default {
       this.result = { coins: coins.length }
       this.loading = false
     },
+    async fetchTrades () {
+      this.loading = true
+      const repo = this.$store.getters.repositoryFromSlug('binance')
+      const pairs = repo?.pairs
+      const trades = await postData('trades', { pairs })
+      console.log('trades', trades)
+      this.trades.length = 0
+      for (const pair in trades) {
+        console.log('pair', pair)
+        for (const trade of trades[pair]) {
+          console.log('trade', trade)
+          this.trades.push(trade)
+        }
+      }
+      // this.$store.dispatch('loadBinanceTrades', () => { this.loading = false })
+      this.loading = false
+    },
   },
 }
+
+// async function postJson (resource, params = {}) {
+//   const querystring = qs.stringify(params)
+//   console.log('params', params, querystring)
+//   const url = `/api/binance/${resource}?${querystring}`
+//   const response = await fetch(url)
+//   const result = (response.status === 200 ? await response.json() : { status: response.status })
+//   const _ = Array.from(result)
+//   const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
+//   return __._ || __
+// }
+
+async function postData(resource = '', data = {}) {
+  const url = `/api/binance/${resource}`
+  console.log('postData', url, typeof data, data)
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    // mode: 'no-cors', // no-cors, *cors, same-origin
+    // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'content-type': 'application/json'
+      // 'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+    // body: data,
+  })
+  return response.json() // parses JSON response into native JavaScript objects
+}
+
 </script>
 
 <style lang="scss">
