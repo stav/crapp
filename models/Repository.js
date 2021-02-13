@@ -13,8 +13,8 @@ export default class Repository extends Model {
       id: this.uid(),
       name: this.string('[no-name]'),
       slug: this.string(),
+      pairs: this.attr(null),
       coins: this.hasMany(RepoCoin, 'repoId'),
-      trans: this.hasMany(Transaction, 'repoId'),
       active: this.boolean(true),
     }
   }

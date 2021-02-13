@@ -25,6 +25,11 @@ export function flyoutRepo (state, getters) {
   return repos.find(repoId) || {}
 }
 
+// Return single repository based on given name
+export function repositoryFromSlug (_state, getters) {
+  return slug => getters.Repositorys.where('slug', slug).first()
+}
+
 // // Return single repository based on given id
 // repository: () => (id) => {
 //   return Repository.find(id)

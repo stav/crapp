@@ -20,6 +20,9 @@ export default {
   setStatementBalances (state, value) {
     state.statementBalances = value
   },
+  setBinanceTrades (state, value) {
+    state.binanceTrades = value
+  },
   setStatement (state, value) {
     state.statement = value
     if (!state.flyoutPanels.includes(stmtPanelIndex)) {

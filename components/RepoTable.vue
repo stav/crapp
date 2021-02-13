@@ -84,9 +84,6 @@
 import { formatAmount, formatCurrency } from '@/utils'
 
 export default {
-
-  fetchOnServer: true,
-
   /*
   ** PROPS
   */

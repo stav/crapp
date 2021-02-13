@@ -7,9 +7,16 @@ import axios from 'axios'
 ** https://binance-docs.github.io/apidocs/spot/en/#general-info
 ** https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
 */
+// eslint-disable-next-line require-await
 export default async function (req, res) {
+  req.body = ''
+  req.on('data', (chunk) => { req.body += chunk.toString() })
+  req.on('end', async () => { await binance(req, res) })
+}
+
+async function binance (req, res) {
   // Configure the requests
-  const requests = configRequests(req.url)
+  const requests = configRequests(req)
 
   // Make the reqeuest to the host(s)
   let data = await resolveRequests(requests)
@@ -18,6 +25,13 @@ export default async function (req, res) {
   data = postProcess(data)
 
   // Send the response to the client
+  if (data.error) {
+    const error = data.error.map(e => e.message).join(', ')
+    res.statusMessage = error || 'Server error'
+    res.statusCode = 422
+  } else {
+    res.statusCode = 200
+  }
   res.end(JSON.stringify(data))
 }
 
@@ -45,50 +59,57 @@ function postProcess (data) {
 /*
 ** API request helper to configure requests based on the URL
 */
-function configRequests (url) {
+function configRequests (req) {
   const requests = []
-  const urlParts = url.split('/')
-  let symbol
-  if (urlParts.length > 2) {
-    const asset = urlParts[2]
-    symbol = asset + 'USDT'
-  }
+  const url = new URL('http://example.com' + req.url)
+  console.log('buttercup', url, typeof req.body, req.body)
+  const symbol = url.searchParams.has('asset') ? url.searchParams.get('asset') + 'USDT' : null
+  const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
 
   // Configure the requests
-  switch (urlParts[1]) {
-    case 'balances':
+  switch (url.pathname) {
+    case '/balances':
       requests.push({ key: 'balances', config: configSignedRequest('/api/v3/account') })
       break
 
-    case 'account':
+    case '/account':
       requests.push({ key: 'account', config: configSignedRequest('/api/v3/account') })
       requests.push({ key: 'trading', config: configSignedRequest('/wapi/v3/apiTradingStatus.html') })
       requests.push({ key: 'status', config: configSignedRequest('/wapi/v3/accountStatus.html') })
       break
 
-    case 'system.status':
+    case '/system.status':
       requests.push({ key: '_', config: configRequest('/wapi/v3/systemStatus.html') })
       break
 
-    case 'time':
+    case '/time':
       requests.push({ key: '_', config: configRequest('/api/v3/time') })
       break
 
-    case 'coins':
+    case '/coins':
       requests.push({ key: '_', config: configSignedRequest('/sapi/v1/capital/config/getall') })
       break
 
-    case 'deposit.history':
+    case '/deposit.history':
       requests.push({ key: 'deposits', config: configSignedRequest('/wapi/v3/depositHistory.html') })
       requests.push({ key: 'support', config: configSignedRequest('/sapi/v1/capital/deposit/hisrec') })
       break
 
-    case 'prices':
+    case '/prices':
       requests.push({ key: 'prices', config: configRequest('/api/v3/ticker/price') })
       break
 
-    case 'price':
+    case '/price':
       requests.push({ key: 'data', config: configRequest('/api/v3/ticker/price', { symbol }) })
+      break
+
+    case '/trades':
+      for (const pair of pairs) {
+        requests.push({
+          key: pair,
+          config: configSignedRequest('/api/v3/myTrades', { symbol: pair, recvWindow: 15000 }),
+        })
+      }
       break
 
     default:
@@ -103,11 +124,17 @@ function configRequests (url) {
 async function resolveRequests (requests) {
   const data = { error: [] }
   for (const request of requests) {
+    console.log('request', request)
     try {
       const response = await axios(request.config)
       data[request.key] = response.data
     } catch (error) {
-      data.error.push(error)
+      if (error.response?.data?.msg) {
+        error.response.data.request = request.config
+        data.error.push(error.response.data)
+      } else {
+        data.error.push(error)
+      }
     }
   }
   if (data.error.length === 0) {
@@ -139,12 +166,14 @@ function configRequest (path, params = {}) {
 **
 ** See nuxt.config.js for privateRuntimeConfig
 */
-function configSignedRequest (path) {
+function configSignedRequest (path, params = {}) {
   // Create the URL
   const url = new URL('https://api.binance.com/')
   url.pathname = path
   url.searchParams.append('timestamp', Date.now())
-  // url.searchParams.append('recvWindow', 5000)
+  for (const param in params) {
+    url.searchParams.append(param, params[param])
+  }
   const search = url.search.slice(1)
 
   // Create the signature hash from the URL using the secret
