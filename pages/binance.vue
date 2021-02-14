@@ -84,7 +84,7 @@
             dense
             :headers="headersTrades"
             :items="trades"
-            :items-per-page="100"
+            :items-per-page="200"
             item-key="trade"
             item-class="classes"
             sort-by="time"
@@ -95,6 +95,15 @@
               <v-toolbar flat>
                 <v-toolbar-title> Trades </v-toolbar-title>
               </v-toolbar>
+            </template>
+            <template v-slot:item.time="{ item }">
+              {{ new Date(item.time) }}
+            </template>
+            <template v-slot:item.qty="{ item }">
+              {{ formatAmount(item.qty) }}
+            </template>
+            <template v-slot:item.price="{ item }">
+              {{ formatAmount(item.price) }}
             </template>
             <template v-slot:expanded-item="{ item }">
               <td :colspan="headersTrades.length">
@@ -120,6 +129,7 @@
 import qs from 'qs'
 import { JSONView } from 'vue-json-component'
 import binanceImageIcon from '@/assets/logos-download.com/Binance_logo_coin.png'
+import { formatAmount } from '@/utils'
 
 async function getJson (resource, params = {}) {
   const querystring = qs.stringify(params)
@@ -164,9 +174,9 @@ export default {
         { text: 'Networks', value: 'networks', filterable: false },
       ],
       headersTrades: [
-        { text: 'qty', value: 'qty', filterable: true },
-        { text: 'price', value: 'price', filterable: true },
-        { text: 'symbol', value: 'symbol', filterable: false },
+        { text: 'qty', value: 'qty', filterable: true, align: 'end' },
+        { text: 'price', value: 'price', filterable: true, align: 'end' },
+        { text: 'symbol', value: 'symbol', filterable: false, align: 'center' },
         { text: 'time', value: 'time', filterable: false },
         { text: 'commissionAsset', value: 'commissionAsset', filterable: false },
       ],
@@ -185,6 +195,9 @@ export default {
     },
     currency (value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
+    },
+    formatAmount (value) {
+      return formatAmount(value)
     },
     async fetchPrice (balance) {
       this.loading = true

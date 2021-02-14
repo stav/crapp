@@ -129,12 +129,12 @@ async function resolveRequests (requests) {
       const response = await axios(request.config)
       data[request.key] = response.data
     } catch (error) {
-      // for (const key in error) {
-      //   console.error(key, error[key])
-      // }
-      // console.error('toJSON', error.toJSON())
-      error.response?.data?.msg && data.error.push(error.response.data)
-      data.error.push(error)
+      if (error.response?.data?.msg) {
+        error.response.data.request = request.config
+        data.error.push(error.response.data)
+      } else {
+        data.error.push(error)
+      }
     }
   }
   if (data.error.length === 0) {
