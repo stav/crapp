@@ -84,10 +84,10 @@
             dense
             :headers="headersTrades"
             :items="trades"
-            :items-per-page="200"
             item-key="trade"
             item-class="classes"
             sort-by="time"
+            :sort-desc="true"
             multi-sort
             show-expand
           >
@@ -263,6 +263,10 @@ export default {
     },
     async fetchTrades () {
       this.loading = true
+      if (this.$store.getters.repositorys.length === 0) {
+        await this.$store.dispatch('loadRepositorys')
+        console.info('Loading repositories')
+      }
       const repo = this.$store.getters.repositoryFromSlug('binance')
       const pairs = repo?.pairs
       const trades = await postData('trades', { pairs })
