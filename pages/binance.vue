@@ -13,6 +13,7 @@
       <v-btn @click="() => fetchTrades()" color="primary" title="Fetch information about user trades"> Trades </v-btn>
     </v-app-bar>
     <v-container>
+      <!-- DISPLAY COMPONENTS -->
       <v-row dense>
         <v-col cols="12" v-show="heading" v-text="heading" />
         <v-col v-for="balance in balances" :key="balance.asset">
@@ -23,12 +24,13 @@
                 :title="'Press to fetch the current price for ' + balance.asset"
                 @click="() => fetchPrice(balance)"
               >
-                <v-card-subtitle class="mx-0 px-0" v-text="balance.free" />
+                <v-card-subtitle class="mx-0 px-0" v-text="formatAmount(balance.free)" title="free" />
                 <v-card-title class="headline mx-0 pl-1" v-text="balance.asset" />
                 <v-card-subtitle
+                  title="locked"
                   class="mx-0 pa-0"
                   v-if="balance.locked"
-                  v-text="`${balance.locked} locked`"
+                  v-text="formatAmount(balance.locked)"
                 />
                 <v-card-subtitle class="ma-0 pa-0" v-text="balance.currency" />
               </v-btn>
@@ -38,7 +40,7 @@
         <v-col cols="12" v-show="coins.length">
           <v-data-table
             dense
-            :headers="headers"
+            :headers="headersCoins"
             :search="search"
             :items="coins"
             item-key="coin"
@@ -65,7 +67,7 @@
               </v-toolbar>
             </template>
             <template v-slot:expanded-item="{ item }">
-              <td :colspan="headers.length">
+              <td :colspan="headersCoins.length">
                 <ul>
                   <li v-for="(network, i) in item.networkList" :key="i">
                     {{ network.network }}
@@ -113,6 +115,8 @@
           </v-data-table>
         </v-col>
       </v-row>
+
+      <!-- JSON DATA -->
       <v-row>
         <v-col>
           <json-view :data="result" root-key="result" v-show="result" />
@@ -142,18 +146,29 @@ async function getJson (resource, params = {}) {
   return __._ || __
 }
 
+async function postData(resource = '', data = {}) {
+  const url = `/api/binance/${resource}`
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    // mode: 'no-cors', // no-cors, *cors, same-origin
+    // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'content-type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  })
+  return response.json() // parses JSON response into native JavaScript objects
+}
+
 export default {
 
   components: { 'json-view': JSONView },
   fetchOnServer: true,
-
-  // async fetch () {
-  //   const { prices } = await getJson('prices')
-  //   for (const _ of prices) {
-  //     this.symbolMapPrice[_.symbol] = parseFloat(_.price)
-  //   }
-  //   // this.$store.commit('setPricesMap', this.symbolMapPrice)
-  // },
 
   data () {
     return {
@@ -166,7 +181,7 @@ export default {
       loading: false,
       symbolMapPrice: {},
       binanceImageIcon,
-      headers: [
+      headersCoins: [
         { text: 'Coin', value: 'coin', filterable: true },
         { text: 'Name', value: 'name', filterable: true },
         { text: 'Free', value: 'free', filterable: false },
@@ -284,40 +299,6 @@ export default {
     },
   },
 }
-
-// async function postJson (resource, params = {}) {
-//   const querystring = qs.stringify(params)
-//   console.log('params', params, querystring)
-//   const url = `/api/binance/${resource}?${querystring}`
-//   const response = await fetch(url)
-//   const result = (response.status === 200 ? await response.json() : { status: response.status })
-//   const _ = Array.from(result)
-//   const __ = _.length === 0 ? result : _.length === 1 ? _[0] : _
-//   return __._ || __
-// }
-
-async function postData(resource = '', data = {}) {
-  const url = `/api/binance/${resource}`
-  console.log('postData', url, typeof data, data)
-  // Default options are marked with *
-  const response = await fetch(url, {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    // mode: 'no-cors', // no-cors, *cors, same-origin
-    // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      'content-type': 'application/json'
-      // 'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: JSON.stringify(data), // body data type must match "Content-Type" header
-    // body: data,
-  })
-  return response.json() // parses JSON response into native JavaScript objects
-}
-
 </script>
 
 <style lang="scss">
