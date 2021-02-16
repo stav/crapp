@@ -168,36 +168,52 @@ async function postData(resource = '', data = {}) {
 export default {
 
   components: { 'json-view': JSONView },
-  fetchOnServer: true,
 
-  data () {
-    return {
-      coins: [],
-      trades: [],
-      result: null,
-      balances: null,
-      search: '',
-      heading: '',
-      loading: false,
-      symbolMapPrice: {},
-      binanceImageIcon,
-      headersCoins: [
-        { text: 'Coin', value: 'coin', filterable: true },
-        { text: 'Name', value: 'name', filterable: true },
-        { text: 'Free', value: 'free', filterable: false },
-        { text: 'Locked', value: 'locked', filterable: false },
-        { text: 'Networks', value: 'networks', filterable: false },
-      ],
-      headersTrades: [
-        { text: 'qty', value: 'qty', filterable: true, align: 'end' },
-        { text: 'price', value: 'price', filterable: true, align: 'end' },
-        { text: 'symbol', value: 'symbol', filterable: false, align: 'center' },
-        { text: 'time', value: 'time', filterable: false },
-        { text: 'commissionAsset', value: 'commissionAsset', filterable: false },
-      ],
-    }
+  /*
+  ** DATA
+  */
+  data: () => ({
+    coins: [],
+    result: null,
+    balances: null,
+    search: '',
+    heading: '',
+    loading: false,
+    symbolMapPrice: {},
+    binanceImageIcon,
+    headersCoins: [
+      { text: 'Coin', value: 'coin', filterable: true },
+      { text: 'Name', value: 'name', filterable: true },
+      { text: 'Free', value: 'free', filterable: false },
+      { text: 'Locked', value: 'locked', filterable: false },
+      { text: 'Networks', value: 'networks', filterable: false },
+    ],
+    headersTrades: [
+      { text: 'qty', value: 'qty', filterable: true, align: 'end' },
+      { text: 'price', value: 'price', filterable: true, align: 'end' },
+      { text: 'symbol', value: 'symbol', filterable: false, align: 'center' },
+      { text: 'time', value: 'time', filterable: false },
+      { text: 'commissionAsset', value: 'commissionAsset', filterable: false },
+    ],
+  }),
+
+  /*
+  ** COMPUTED
+  */
+  computed: {
+    trades: {
+      get () {
+        return this.$store.state.binanceTrades
+      },
+      set (value) {
+        this.$store.commit('setBinanceTrades', value)
+      }
+    },
   },
 
+  /*
+  ** METHODS
+  */
   methods: {
     clear () {
       this.coins = []
@@ -286,15 +302,15 @@ export default {
       const pairs = repo?.pairs
       const trades = await postData('trades', { pairs })
       console.log('trades', trades)
-      this.trades.length = 0
+      const _trades = []
       for (const pair in trades) {
         console.log('pair', pair)
         for (const trade of trades[pair]) {
           console.log('trade', trade)
-          this.trades.push(trade)
+          _trades.push(trade)
         }
       }
-      // this.$store.dispatch('loadBinanceTrades', () => { this.loading = false })
+      this.trades = _trades
       this.loading = false
     },
   },

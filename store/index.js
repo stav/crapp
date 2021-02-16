@@ -31,4 +31,5 @@ export const state = () => ({
   snackbarText: '',
   sparkPair: {},
   sparks: {},
+  binanceTrades: [],
 })
