@@ -186,10 +186,15 @@ export default {
     */
     valuedRepositorys () {
       const repos = this.repositorys
-        .map(this.repoValuation)
-        .filter(repo => repo.value)
-      // console.warn('valuedRepositorys', repos)
-      return repos
+      console.log('valuedRepositorys: repos', repos)
+
+      const valuedRepos = repos.map(this.repoValuation)
+      console.log('valuedRepositorys: valuedRepos', valuedRepos)
+
+      const filteredRepos = valuedRepos.filter(repo => repo.value)
+      console.log('valuedRepositorys: filteredRepos', filteredRepos)
+
+      return filteredRepos
     },
     switchAmountValue () {
       return this.$store.state.switchAmountValue

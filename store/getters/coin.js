@@ -3,7 +3,7 @@
 */
 export const coinPriceUSD = state => (symbol) => {
   try {
-    return state.Coin.find(coin => coin.symbol === symbol).price
+    return state.Coin.find(coin => coin.symbol === symbol)?.price
   } catch (error) {
     console.error('symbol', symbol, error)
   }

@@ -1,6 +1,5 @@
 import {
   loadRepositorys,
-  loadBinanceBalances,
   loadCoinbaseAccounts,
   loadCoinbaseProAccounts,
 } from '@/database'
@@ -9,10 +8,16 @@ import fetchPrices from './fetchPrices'
 
 export default {
 
-  async loadBinanceBalances (_context, done) {
+  // nuxtServerInit (store, context) {
+  //   for (const key in context) {
+  //     console.log(key, typeof context[key] == 'object' ? Object.keys(context[key]) : context[key])
+  //   }
+  // },
+
+  async loadBinanceBalances (context, done) {
     const response = await fetch('/api/binance/balances')
     const { balances } = response.status === 200 ? await response.json() : { status: response.status }
-    loadBinanceBalances(balances)
+    context.commit('setBinanceBalances', balances)
     if (done) {
       done(`${balances.length} balances retrieved and loading into Binance`)
     }

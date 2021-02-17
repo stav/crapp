@@ -95,13 +95,46 @@ export default {
   },
 
   addRepository (state, repo) {
-    Object.freeze(repo)
+    // Object.freeze(repo)
     state.Repository.push(repo)
   },
 
   setCoinPrice (state, { symbol, price }) {
     const coin = state.Coin.find(coin => coin.symbol === symbol)
     coin.price = price
+  },
+
+  setBinanceBalances (state, balances) {
+    const binance = state.Repository.find(repo => repo.name === 'Binance')
+    if (!binance) {
+      console.error('No Binance repository for balances', balances)
+      return
+    }
+
+    // First update the repo in the db with all the balances we received
+    for (const balance of balances) {
+      const free = parseFloat(balance.free || 0)
+      const locked = parseFloat(balance.locked || 0)
+      const symbol = balance.asset
+      const quantity = free + locked
+      let coin = binance.coins.find(coin => coin.symbol === symbol)
+      if (coin) {
+        coin.quantity = quantity
+      } else {
+        // TODO Need many-to-many RepoCoin
+        state.Coin.push({ symbol })
+        coin = { symbol, quantity }
+        binance.coins.push(coin)
+      }
+    }
+
+    // Secondly remove any coins from repo in the db not in the balances
+    for (const coin of binance.coins) {
+      if (!balances.find(balance => balance.asset === coin.symbol)) {
+        // TODO Remove coin
+        console.warn('setBinanceBalances: remove', coin)
+      }
+    }
   },
 
 }
