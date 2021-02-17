@@ -32,4 +32,7 @@ export const state = () => ({
   sparkPair: {},
   sparks: {},
   binanceTrades: [],
+
+  Coin: [],
+  Repository: [],
 })

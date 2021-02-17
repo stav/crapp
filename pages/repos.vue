@@ -24,6 +24,7 @@ export default {
   */
   fetch () {
     this.$store.dispatch('loadRepositorys')
+    // this.$store.dispatch('loadPrices')
   },
 
   /*
@@ -46,7 +47,8 @@ export default {
     ** [ "BTC", "ETH", "LINK", … ]
     */
     symbols () {
-      return this.$store.getters.sortedUniqueHighSymbols
+      // return this.$store.getters.sortedUniqueHighSymbols
+      return this.$store.getters.sortedUniqueSymbols
     },
   },
 

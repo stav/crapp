@@ -120,10 +120,10 @@ export default {
     loadRepositorys () {
       this.active = true
       this.$store.dispatch('loadRepositorys', { force: true, done: this.done })
-      this.getCoinbaseProAccountsData()
-      this.getCoinbaseAccountsData()
-      this.getBinanceAccountsData()
-      this.$store.dispatch('fetchPrices', this.done)
+      // this.getCoinbaseProAccountsData()
+      // this.getCoinbaseAccountsData()
+      // this.getBinanceAccountsData()
+      // this.$store.dispatch('fetchPrices', this.done)
     },
   },
 

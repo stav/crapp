@@ -16,7 +16,7 @@
     <v-card :loading="loading" v-if="weHaveCoins">
       <v-card-actions>
         <v-btn
-          @click="fetchPrices"
+          @click="loadPrices"
           title="Press to fetch latest prices"
           small class="accent"
         >
@@ -71,7 +71,7 @@ export default {
   ** METHODS
   */
   methods: {
-    fetchPrices () {
+    loadPrices () {
       this.loading = 'accent'
       this.$store.dispatch('fetchPrices', this.done)
     },

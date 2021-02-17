@@ -32,6 +32,7 @@
 ** coinsUnlisted = [ "USD" ]
 */
 async function getPrices (coinsUnlisted, symbols) {
+  console.log('actions getPrices: in', coinsUnlisted, symbols)
   const coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
   if (coinsListed.length === 0) {
     throw new Error(`No listed coins ${coinsUnlisted}`)
@@ -40,6 +41,7 @@ async function getPrices (coinsUnlisted, symbols) {
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)
   const result = await response.json()
+  console.log('actions getPrices: result', result)
 
   if (result.error) {
     throw new Error(result.error)
@@ -48,6 +50,7 @@ async function getPrices (coinsUnlisted, symbols) {
 }
 
 export default async function fetchPrices (ctx, symbols) {
+  console.log('actions fetchPrices:', symbols)
   const coinsUnlisted = ctx.getters.coinsUnlisted
   let data
   try {
@@ -57,13 +60,13 @@ export default async function fetchPrices (ctx, symbols) {
     return e.message
   }
   for (const symbol of Object.keys(data)) {
-    ctx.dispatch('setCoin', {
+    ctx.commit('setCoinPrice', {
       symbol,
       price: data[symbol].USD,
     })
   }
   if (symbols.includes('USD')) {
-    ctx.dispatch('setCoin', { symbol: 'USD', price: 1 })
+    ctx.commit('setCoinPrice', { symbol: 'USD', price: 1 })
   }
   if (symbols.length === 1) {
     return 'Loaded price for ' + symbols[0].toString()

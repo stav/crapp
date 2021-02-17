@@ -1,5 +1,3 @@
-import Coin from '~/models/Coin'
-
 const coinPanelIndex = 0
 const repoPanelIndex = 1
 const stmtPanelIndex = 2
@@ -57,7 +55,7 @@ export default {
     state.repoPockets = value
   },
   setFlyoutCoin (state, { symbol }) {
-    state.flyoutCoin = Coin.query().where('symbol', symbol).first()
+    state.flyoutCoin = state.Coin.find(coin => coin.symbol === symbol)
   },
   setFlyoutRepo (state, repo) {
     state.flyoutRepoId = repo.id
@@ -90,4 +88,20 @@ export default {
     state.snackbarText = message
     state.snackbarModel = true
   },
+
+  addCoin (state, coin) {
+    // Object.freeze(coin)
+    state.Coin.push(coin)
+  },
+
+  addRepository (state, repo) {
+    Object.freeze(repo)
+    state.Repository.push(repo)
+  },
+
+  setCoinPrice (state, { symbol, price }) {
+    const coin = state.Coin.find(coin => coin.symbol === symbol)
+    coin.price = price
+  },
+
 }

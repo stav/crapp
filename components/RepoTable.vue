@@ -162,6 +162,7 @@ export default {
           sort,
         })
       }
+      console.log('headers', headers)
       return headers
     },
     fHeaders () {
@@ -184,9 +185,11 @@ export default {
     **  },...]
     */
     valuedRepositorys () {
-      return this.repositorys
+      const repos = this.repositorys
         .map(this.repoValuation)
         .filter(repo => repo.value)
+      // console.warn('valuedRepositorys', repos)
+      return repos
     },
     switchAmountValue () {
       return this.$store.state.switchAmountValue
@@ -222,15 +225,18 @@ export default {
     ** valued == { "valuation": "$1,100.00", "value": 1100, "cls": "meat" }
     */
     repoValuation (repo) {
+      // console.log()
+      // console.log('repoValuation', repo)
       const coins = {}
       let repoValue = 0
       // First we sum the coins[symbol] values/quantities using only numeric data
       for (const coin of repo.coins) {
-        const symbol = coin.coin.symbol
+        const symbol = coin.symbol
         const value = coin.quantity * this.coinPrice(symbol)
         repoValue += value
         symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
         coins[symbol] += this.switchAmountValue ? value : coin.quantity
+        // console.log('repoValuation: coins', coin, repoValue, coins)
       }
       // Then we format these coins[symbol] as formatted text for display
       for (const symbol in coins) {
@@ -245,6 +251,7 @@ export default {
         value: repoValue,
         cls: 'meat',
       }
+      // console.log('repoValuation: coins valued', coins, valued)
       return Object.assign({}, repo, coins, valued)
     },
     sparks (symbol) {

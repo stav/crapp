@@ -6,7 +6,6 @@ import {
 } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
 import fetchPrices from './fetchPrices'
-import Coin from '~/models/Coin'
 
 export default {
 
@@ -62,15 +61,6 @@ export default {
     context.commit('setFlyoutCoin', { symbol })
   },
 
-  setCoin (_context, coin) {
-    Coin.insertOrUpdate({
-      data: {
-        id: Coin.query().where('symbol', coin.symbol).first()?.id,
-        ...coin,
-      }
-    })
-  },
-
   async fetchPrice (context, done) {
     const symbols = [context.state.flyoutCoin.symbol]
     const message = await fetchPrices(context, symbols)
@@ -93,7 +83,7 @@ export default {
   async loadRepositorys (context, { force, done } = {}) {
     // const { force = false, done = undefined } = ref
     if (context.getters.repositorys.length === 0 || force) {
-      await loadRepositorys()
+      await loadRepositorys(context)
       const activeRepos = context.getters.repositorys.filter(_ => _.active)
       context.commit('setSelectedRepos', activeRepos)
     }
