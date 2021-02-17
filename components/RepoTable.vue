@@ -281,7 +281,7 @@ export default {
       return this.$store.getters.coinSum(symbol)
     },
     coinPrice (symbol) {
-      return this.$store.getters.coinPriceUSD(symbol)
+      return this.$store.getters.coinPriceUSD(symbol) || 0
     },
     coinTotalUSD (symbol) {
       const amount = this.coinSum(symbol)

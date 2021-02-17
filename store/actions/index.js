@@ -1,7 +1,4 @@
-import {
-  loadRepositorys,
-  loadCoinbaseProAccounts,
-} from '@/database'
+import { loadRepositorys } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
 import fetchPrices from './fetchPrices'
 
@@ -32,11 +29,11 @@ export default {
     }
   },
 
-  async loadCoinbaseProAccounts (_context, done) {
+  async loadCoinbaseProAccounts (context, done) {
     const response = await fetch('/api/coinbasepro/accounts')
     let accounts = response.status === 200 ? await response.json() : { status: response.status }
     accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
-    loadCoinbaseProAccounts(accounts)
+    context.commit('setCoinbaseProAccounts', accounts)
     if (done) {
       done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
     }

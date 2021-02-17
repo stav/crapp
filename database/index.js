@@ -1,6 +1,5 @@
 import { Database } from '@vuex-orm/core'
 import { loadRepositorys } from './insert'
-import { loadCoinbaseProAccounts } from './coinbase'
 import Statement from '~/models/Statement'
 import Transaction from '~/models/Transaction'
 import Repository from '~/models/Repository'
@@ -18,6 +17,5 @@ database.register(Coin)
 export default database
 
 export {
-  loadCoinbaseProAccounts,
   loadRepositorys,
 }

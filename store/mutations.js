@@ -122,7 +122,9 @@ export default {
         coin.quantity = quantity
       } else {
         // TODO Need many-to-many RepoCoin
-        state.Coin.push({ symbol })
+        if (!state.Coin.find(coin => coin.symbol === symbol)) {
+          state.Coin.push({ symbol })
+        }
         coin = { symbol, quantity }
         binance.coins.push(coin)
       }
@@ -139,9 +141,7 @@ export default {
 
   setCoinbaseAccounts (state, accounts) {
     const coinbase = state.Repository.find(repo => repo.name === 'Coinbase')
-    console.log('setCoinbaseAccounts: repo', coinbase)
     if (!coinbase) {
-      console.error('No Coinbase repository for accounts', accounts)
       return
     }
 
@@ -152,19 +152,52 @@ export default {
       let coin = coinbase.coins.find(coin => coin.symbol === symbol)
       if (coin) {
         coin.quantity = quantity
-        console.log('setCoinbaseAccounts: update', coin)
       } else {
         // TODO Need many-to-many RepoCoin
-        state.Coin.push({ symbol })
+        if (!state.Coin.find(coin => coin.symbol === symbol)) {
+          state.Coin.push({ symbol })
+        }
         coin = { symbol, quantity }
         coinbase.coins.push(coin)
-        console.log('setCoinbaseAccounts: add', coin)
       }
     }
 
     // TODO
     // // Secondly remove any coins from repo in the db not in the accounts
     // for (const coin of coinbase.coins) {
+    //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
+    //     coin.$delete()
+    //   }
+    // }
+  },
+
+  setCoinbaseProAccounts (state, accounts) {
+    const coinbasepro = state.Repository.find(repo => repo.name === 'Coinbase Pro')
+    if (!coinbasepro) {
+      console.error('No Coinbase Pro repository for accounts', accounts)
+      return
+    }
+
+    // First update the repo in the db with all the accounts we received
+    for (const account of accounts) {
+      const symbol = account.currency
+      const quantity = parseFloat(account?.balance) || 0
+      let coin = coinbasepro.coins.find(coin => coin.symbol === symbol)
+      if (coin) {
+        coin.quantity = quantity
+      } else {
+        // TODO Need many-to-many RepoCoin
+        if (!state.Coin.find(coin => coin.symbol === symbol)) {
+          state.Coin.push({ symbol })
+        }
+        coin = { symbol, quantity }
+        coinbasepro.coins.push(coin)
+      }
+    }
+
+    // TODO
+    // // Secondly remove any coins from repo in the db not in the accounts
+    // for (const coin of coinbasepro.coins) {
     //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
     //     coin.$delete()
     //   }
