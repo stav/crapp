@@ -122,8 +122,8 @@ export default {
       await this.$store.dispatch('loadRepositorys', { force: true, done: this.done })
       await Promise.all([
         // this.getCoinbaseProAccountsData(),
-        // this.getCoinbaseAccountsData(),
-        this.$store.dispatch('loadBinanceBalances')
+        this.$store.dispatch('loadCoinbaseAccounts'),
+        this.$store.dispatch('loadBinanceBalances'),
       ])
       this.$store.dispatch('fetchPrices', this.done)
     },

@@ -137,4 +137,38 @@ export default {
     }
   },
 
+  setCoinbaseAccounts (state, accounts) {
+    const coinbase = state.Repository.find(repo => repo.name === 'Coinbase')
+    console.log('setCoinbaseAccounts: repo', coinbase)
+    if (!coinbase) {
+      console.error('No Coinbase repository for accounts', accounts)
+      return
+    }
+
+    // First update the repo in the db with all the accounts we received
+    for (const account of accounts) {
+      const symbol = account.currency
+      const quantity = parseFloat(account?.balance?.amount) || 0
+      let coin = coinbase.coins.find(coin => coin.symbol === symbol)
+      if (coin) {
+        coin.quantity = quantity
+        console.log('setCoinbaseAccounts: update', coin)
+      } else {
+        // TODO Need many-to-many RepoCoin
+        state.Coin.push({ symbol })
+        coin = { symbol, quantity }
+        coinbase.coins.push(coin)
+        console.log('setCoinbaseAccounts: add', coin)
+      }
+    }
+
+    // TODO
+    // // Secondly remove any coins from repo in the db not in the accounts
+    // for (const coin of coinbase.coins) {
+    //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
+    //     coin.$delete()
+    //   }
+    // }
+  },
+
 }

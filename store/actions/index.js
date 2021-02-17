@@ -1,6 +1,5 @@
 import {
   loadRepositorys,
-  loadCoinbaseAccounts,
   loadCoinbaseProAccounts,
 } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
@@ -23,11 +22,11 @@ export default {
     }
   },
 
-  async loadCoinbaseAccounts (_context, done) {
+  async loadCoinbaseAccounts (context, done) {
     const response = await fetch('/api/coinbase/v2/accounts')
     let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
     accounts = accounts.filter(account => parseFloat(account.balance.amount))
-    loadCoinbaseAccounts(accounts)
+    context.commit('setCoinbaseAccounts', accounts)
     if (done) {
       done(`${accounts.length} accounts retrieved and loading into Coinbase`)
     }
