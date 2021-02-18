@@ -32,32 +32,10 @@ export default {
     'repo-pockets': repoPockets,
   },
 
+  /*
+  ** COMPUTED
+  */
   computed: {
-    /*
-    ** repository
-    **
-    ** {
-    **   "$id": "$uid22",
-    **   "id": "$uid22",
-    **   "name": "Coinbase Pro",
-    **   "active": true,
-    **   "coins": [{
-    **     "$id": "$uid74",
-    **     "id": "$uid74",
-    **     "coinId": "$uid2",
-    **     "repoId": "$uid22",
-    **     "quantity": 0.998093,
-    **     "coin": {
-    **       "$id": "$uid2",
-    **       "id": "$uid2",
-    **       "name": "Ethereum",
-    **       "slug": "ethereum",
-    **       "price": 506.33756,
-    **       "symbol": "ETH"
-    **     }
-    **   }]
-    ** }
-    */
     repository () {
       return this.$store.getters.flyoutRepo
     },

@@ -51,18 +51,11 @@ export default {
     /*
     ** repos
     **
-    ** Returns an Array of repositories that cointain at least one flyout coin.
-    ** Furthermore, each repo.coins contains only flyout coins.
+    ** Returns an Array of repositories that cointain at least one flyout coin
     */
     repos () {
-      const model = this.$store.getters.Repositorys
-      const query = model.with('coins', (query) => {
-        query.where('coinId', this.coin?.id)
-      })
-      return query
-        .has('coins') // this doesnt really work so we'll need to .filter
-        .get() // Renders JavaScript Array
-        .filter(repo => repo.coins.length) // why doesnt .has do this?
+      return this.$store.getters.repositorys
+        .filter(repo => repo.coins.filter(coin => coin.symbol === this.coin.symbol).length)
         .sort((a, b) => this.coinSumForRepo(b) - this.coinSumForRepo(a))
     },
   },
@@ -75,7 +68,9 @@ export default {
       this.$store.dispatch('flyRepository', repo)
     },
     coinSumForRepo (repo) {
-      return repo.coins?.reduce((total, coin) => total + coin.quantity, 0)
+      return repo.coins
+        .filter(coin => coin.symbol === this.coin.symbol)
+        .reduce((total, coin) => total + coin.quantity, 0)
     },
     coinSumForRepoFormat (repo) {
       return formatAmount(this.coinSumForRepo(repo))
