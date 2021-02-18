@@ -18,7 +18,6 @@
 
 <script>
 import HistoryChart from '@/graphs/history'
-import Transaction from '~/models/Transaction'
 
 export default {
 
@@ -91,33 +90,33 @@ export default {
       await this.loadInterval()
     },
 
-    addTransactions (data) {
-      function sort (a, b) {
-        if (a.timestamp > b.timestamp) { return 1 }
-        if (a.timestamp < b.timestamp) { return -1 }
-        return 0
-      }
-      // const coin = Coin.query().where('symbol', this.symbol).first()
-      const query = Transaction.query().where('symbol', this.symbol)
-      const trans = query.get().sort(sort)
-      if (trans.length) {
-        let t = 0
-        for (let d = 0; d < data.length; d++) {
-          const { date: chartDate } = data[d]
-          const chartTimestamp = chartDate.getTime()
-          const transTimestamp = trans[t].timestamp
-          if (transTimestamp < chartTimestamp) {
-            data[d].units = trans[t].quantity
-            data[d].type = trans[t].type
-            data[d].repo = trans[t].repo
-            data[d].quantity = trans[t].quantity
-            data[d].color = trans[t].quantity > 0 ? 'green' : 'red'
-            if (++t >= trans.length) { break }
-            // data.splice(d, 0, { date: new Date(transTimestamp), units: Math.abs(value) })
-          }
-        }
-      }
-    },
+    // addTransactions (data) {
+    //   function sort (a, b) {
+    //     if (a.timestamp > b.timestamp) { return 1 }
+    //     if (a.timestamp < b.timestamp) { return -1 }
+    //     return 0
+    //   }
+    //   // const coin = Coin.query().where('symbol', this.symbol).first()
+    //   const query = Transaction.query().where('symbol', this.symbol)
+    //   const trans = query.get().sort(sort)
+    //   if (trans.length) {
+    //     let t = 0
+    //     for (let d = 0; d < data.length; d++) {
+    //       const { date: chartDate } = data[d]
+    //       const chartTimestamp = chartDate.getTime()
+    //       const transTimestamp = trans[t].timestamp
+    //       if (transTimestamp < chartTimestamp) {
+    //         data[d].units = trans[t].quantity
+    //         data[d].type = trans[t].type
+    //         data[d].repo = trans[t].repo
+    //         data[d].quantity = trans[t].quantity
+    //         data[d].color = trans[t].quantity > 0 ? 'green' : 'red'
+    //         if (++t >= trans.length) { break }
+    //         // data.splice(d, 0, { date: new Date(transTimestamp), units: Math.abs(value) })
+    //       }
+    //     }
+    //   }
+    // },
 
     async series () {
       const series = this.$store.getters.getKrakenHistorySeries
@@ -132,7 +131,7 @@ export default {
     async loadInterval () {
       this.$store.dispatch('flyCoin', this.symbol)
       const data = await this.series()
-      this.addTransactions(data)
+      // this.addTransactions(data)
       this.chart.data = data
     },
 
