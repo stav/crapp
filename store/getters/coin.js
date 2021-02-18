@@ -24,14 +24,6 @@ export const coinSum = state => (symbol) => {
 /*
 ** sortedUniqueSymbols
 **
-** Coin.all() == [{
-**   "id": "$uid1",
-**   "name": "Bitcoin",
-**   "slug": "bitcoin",
-**   "price": 15298,
-**   "symbol": "BTC"
-** },…]
-**
 ** return [ "BTC", … ]
 */
 export function sortedUniqueSymbols (state) {
