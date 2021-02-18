@@ -28,7 +28,6 @@ function insertCoins (symbols) {
         price: null,
         symbol,
       }
-      // console.log('insertCoins', symbol, coin)
       CTX.commit('addCoin', coin)
     }
   }
@@ -56,7 +55,6 @@ function insertRepository (input) {
   }
   CTX.commit('addRepository', repo)
   return repo
-  // const data = await Repository.insert({ data: repo })
   // return mergeRepository(input, data)
 }
 
@@ -81,13 +79,16 @@ function insertRepositorys (inputs) {
 */
 export async function loadRepositorys (ctx) {
   CTX = ctx
-  // CTX.state.Coin.length = 0
-  CTX.state.Repository.length = 0
   // Coin.deleteAll()
+  // CTX.state.Coin.length = 0
+
   // RepoCoin.deleteAll()
+
   // Statement.deleteAll()
+
   // Transaction.deleteAll()
+
   // Repository.deleteAll()
+  CTX.state.Repository.length = 0
   insertRepositorys(await repositorys())
-  console.warn('loadRepositorys FINISHED')
 }

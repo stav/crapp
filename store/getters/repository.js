@@ -1,5 +1,3 @@
-import Repository from '~/models/Repository'
-
 // Return an array of unvalued repositories
 export function repositorys (state) {
   return state.Repository
@@ -13,16 +11,11 @@ export function highRepositorys (_state, getters) {
   })
 }
 
-// Return a Repository model
-export function Repositorys () {
-  return Repository.query().with(['coins', 'coins.coin', 'trans'])
-}
-
 // Return the flyout repository
 export function flyoutRepo (state, getters) {
   const repoId = state.flyoutRepoId
-  const repos = getters.Repositorys
-  return repos.find(repoId) || {}
+  const repo = getters.repositorys.find(repo => repo.id === repoId)
+  return repo || {}
 }
 
 // Return single repository based on given name

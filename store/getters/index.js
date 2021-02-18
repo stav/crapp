@@ -2,7 +2,6 @@ import {
   repositorys,
   repositoryFromSlug,
   highRepositorys,
-  Repositorys,
   flyoutRepo,
 } from './repository'
 
@@ -22,7 +21,6 @@ import {
 export default {
 
   repositorys,
-  Repositorys,
   highRepositorys,
   repositoryFromSlug,
   flyoutRepo,
