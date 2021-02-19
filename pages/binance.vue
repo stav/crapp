@@ -137,7 +137,6 @@ import { formatAmount } from '@/utils'
 
 async function getJson (resource, params = {}) {
   const querystring = qs.stringify(params)
-  console.log('params', params, querystring)
   const url = `/api/binance/${resource}?${querystring}`
   const response = await fetch(url)
   const result = (response.status === 200 ? await response.json() : { status: response.status })

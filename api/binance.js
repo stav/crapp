@@ -62,7 +62,7 @@ function postProcess (data) {
 function configRequests (req) {
   const requests = []
   const url = new URL('http://example.com' + req.url)
-  console.log('buttercup', url, typeof req.body, req.body)
+  console.log('api/binance/configRequests', url, typeof req.body, req.body)
   const symbol = url.searchParams.has('asset') ? url.searchParams.get('asset') + 'USDT' : null
   const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
 
