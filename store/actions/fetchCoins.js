@@ -10,7 +10,6 @@ async function getCoins (coinsUnlisted, symbols) {
   const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
   const response = await fetch(priceFetcherUrl)
   const result = await response.json()
-  console.log('quotes', result)
 
   if (result.error) {
     throw new Error(result.error)
@@ -28,7 +27,6 @@ export default async function fetchCoins (ctx) {
     console.warn(`Error in fetchCoins: ${e.message}`)
     return e.message
   }
-  console.log('data', data)
   for (const symbol of Object.keys(data)) {
     ctx.commit('setCoinData', data[symbol])
   }

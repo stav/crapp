@@ -99,6 +99,11 @@ export default {
     state.Repository.push(repo)
   },
 
+  addStatement (state, statement) {
+    Object.freeze(statement)
+    state.Statement.push(statement)
+  },
+
   setCoinPrice (state, { symbol, price }) {
     const coin = state.Coin.find(coin => coin.symbol === symbol)
     coin.price = price

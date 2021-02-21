@@ -30,4 +30,5 @@ export const state = () => ({
 
   Coin: [],
   Repository: [],
+  Statement: [],
 })

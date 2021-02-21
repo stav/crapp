@@ -1,3 +1,4 @@
+import * as CoinbasePro from './coinbase.ts'
 import repositorys from '~/data/repositorys'
 import { Coin, Repository } from '~/models'
 
@@ -26,11 +27,28 @@ function insertCoins (symbols) {
 }
 
 /*
+** insertStatements
+**
+** Insert all given statements
+*/
+function insertStatements (repo) {
+  switch (repo.slug) {
+    case 'coinbase-pro':
+      CoinbasePro.insertStatements(CTX, repo)
+      break
+
+    default:
+      // console.debug(`No statements for repository (${repo.name})`)
+  }
+}
+
+/*
 ** insertRepository
 **
 ** Insert the given repository into the db
 */
 function insertRepository (input) {
+  Object.freeze(input.statements)
   insertCoins(exportCoinSymbols(input))
   const coins = input.coins?.map(_ => (
     Object.assign(
@@ -46,6 +64,7 @@ function insertRepository (input) {
     name: input.name,
     pairs: input.pairs,
     coins,
+    statements: input.statements,
   })
   CTX.commit('addRepository', repo)
   return repo
@@ -62,7 +81,7 @@ function insertRepositorys (inputs) {
     const repo = insertRepository(input)
     console.log('insertRepositorys', repo)
     // insertTransactions(repo)
-    // insertStatements(repo)
+    insertStatements(repo)
   }
 }
 
@@ -73,16 +92,8 @@ function insertRepositorys (inputs) {
 */
 export async function loadRepositorys (ctx) {
   CTX = ctx
-  // Coin.deleteAll()
-  // CTX.state.Coin.length = 0
-
-  // RepoCoin.deleteAll()
-
-  // Statement.deleteAll()
-
+  CTX.state.Statement.length = 0
   // Transaction.deleteAll()
-
-  // Repository.deleteAll()
   CTX.state.Repository.length = 0
   insertRepositorys(await repositorys())
 }

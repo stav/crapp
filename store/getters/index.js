@@ -92,4 +92,10 @@ export default {
     }
   },
 
+  /*
+  ** statements
+  */
+  statements: state => state.Statement,
+
+
 }
