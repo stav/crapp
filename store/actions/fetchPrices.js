@@ -47,7 +47,8 @@ async function getPrices (coinsUnlisted, symbols) {
   return result.prices
 }
 
-export default async function fetchPrices (ctx, symbols) {
+export default async function fetchPrices (ctx) {
+  const symbols = ctx.getters.sortedUniqueSymbols
   const coinsUnlisted = ctx.getters.coinsUnlisted
   let data
   try {

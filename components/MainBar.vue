@@ -22,6 +22,13 @@
         >
           Prices
         </v-btn>
+        <v-btn
+          @click="loadCoinsData"
+          title="Press to fetch general coin data"
+          small class="accent"
+        >
+          Coins
+        </v-btn>
       </v-card-actions>
     </v-card>
     <v-spacer />
@@ -74,6 +81,10 @@ export default {
     loadPrices () {
       this.loading = 'accent'
       this.$store.dispatch('fetchPrices', this.done)
+    },
+    loadCoinsData () {
+      this.loading = 'accent'
+      this.$store.dispatch('fetchCoins', this.done)
     },
     toggleFooterAbsolute () {
       this.$store.commit('toggleFooterAbsolute')

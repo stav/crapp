@@ -104,6 +104,11 @@ export default {
     coin.price = price
   },
 
+  setCoinData (state, data) {
+    const coin = state.Coin.find(coin => coin.symbol === data.symbol)
+    Object.assign(coin, data)
+  },
+
   setBinanceBalances (state, balances) {
     const binance = state.Repository.find(repo => repo.name === 'Binance')
     if (!binance) {

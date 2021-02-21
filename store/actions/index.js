@@ -1,6 +1,7 @@
 import { loadRepositorys } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
 import fetchPrices from './fetchPrices'
+import fetchCoins from './fetchCoins'
 
 export default {
 
@@ -69,8 +70,12 @@ export default {
   },
 
   async fetchPrices (context, done) {
-    const symbols = context.getters.sortedUniqueSymbols
-    const message = await fetchPrices(context, symbols)
+    const message = await fetchPrices(context)
+    done && done(message)
+  },
+
+  async fetchCoins (context, done) {
+    const message = await fetchCoins(context)
     done && done(message)
   },
 
