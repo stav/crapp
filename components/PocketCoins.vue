@@ -4,15 +4,15 @@
       <v-list dense v-if="coins" class="px-1">
         <v-list-item
           v-for="coin of coins" :key="coin.id"
-          @click="() => flyCoin(coin.coin.symbol)"
+          @click="() => flyCoin(coin.symbol)"
           class="px-0 pb-4 accent"
-          :title="`${coin.coin.name} (${coin.coin.symbol})`"
+          :title="`${coin.name} (${coin.symbol})`"
         >
           <v-list-item-icon class="mr-4">
-            <coin-logo :symbol="coin.coin.symbol" :quantity="formatAmount(coin.quantity)" />
+            <coin-logo :symbol="coin.symbol" :quantity="formatAmount(coin.quantity)" />
           </v-list-item-icon>
           <v-list-item-content class="pa-0">
-            <v-list-item-title v-text="coin.coin.name" />
+            <v-list-item-title v-text="coin.name" />
           </v-list-item-content>
         </v-list-item>
       </v-list>

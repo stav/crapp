@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid'
 import repositorys from '~/data/repositorys'
+import { Coin, Repository } from '~/models'
 
 let CTX = null
 
@@ -19,16 +19,8 @@ function exportCoinSymbols (repo) {
 */
 function insertCoins (symbols) {
   for (const symbol of symbols || []) {
-    let coin = CTX.state.Coin.find(coin => coin.symbol === symbol)
-    if (!coin) {
-      coin = {
-        id: uuidv4(),
-        name: symbol,
-        slug: symbol.toUpperCase(),
-        price: null,
-        symbol,
-      }
-      CTX.commit('addCoin', coin)
+    if (!CTX.state.Coin.find(coin => coin.symbol === symbol)) {
+      CTX.commit('addCoin', new Coin({ symbol }))
     }
   }
 }
@@ -40,19 +32,21 @@ function insertCoins (symbols) {
 */
 function insertRepository (input) {
   insertCoins(exportCoinSymbols(input))
-  const coins = input.coins?.map(_ => ({
-    id: CTX.state.Coin.find(coin => coin.symbol === _.symbol).id,
-    quantity: _.quantity,
-    symbol: _.symbol,
-  })) || []
-  const repo = {
-    id: uuidv4(),
+  const coins = input.coins?.map(_ => (
+    Object.assign(
+      {},
+      CTX.state.Coin.find(coin => coin.symbol === _.symbol),
+      {
+        quantity: _.quantity,
+        symbol: _.symbol,
+      }
+    )
+  ))
+  const repo = new Repository({
     name: input.name,
-    slug: input.name.toLowerCase().replace(/\s/g, '-').replace(/[.()]/g, ''),
     pairs: input.pairs,
-    active: true,
     coins,
-  }
+  })
   CTX.commit('addRepository', repo)
   return repo
   // return mergeRepository(input, data)

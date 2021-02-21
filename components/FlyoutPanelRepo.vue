@@ -42,7 +42,7 @@ export default {
     sumCoins () {
       const coins = this.repository.coins || []
       const total = coins.reduce(
-        (total, coin) => total + coin.quantity * coin.coin.price,
+        (total, coin) => total + coin.quantity * this.$store.getters.coinPriceUSD(coin.symbol),
         0 // Initialize sum at zero
       )
       return formatCurrency(total)
