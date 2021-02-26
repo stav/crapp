@@ -3,6 +3,29 @@ import loadKrakenSparks from './loadKrakenSparks'
 import fetchPrices from './fetchPrices'
 import fetchCoins from './fetchCoins'
 
+async function loadCoinbaseGeneralAccounts(repoName, url, action, filter, context, done) {
+  const response = await fetch(url)
+  let accounts = response.status === 200 ? await response.json() : { status: response.status }
+  accounts = accounts.data || accounts // Use data if available (Coinbase)
+  accounts = accounts.filter(filter)
+
+  // Make sure all the coins are in the store
+  for (const account of accounts) {
+    const symbol = account.currency
+    const coin = context.state.Coin.find(coin => coin.symbol === symbol)
+    if (!coin) {
+      context.commit('addCoin', { symbol })
+    }
+  }
+
+  // Commit the accounts data
+  context.commit(action, accounts)
+
+  // We're done
+  done = done || (() => {}) // make sure done is defined
+  done(`${accounts.length} accounts retrieved and loading into ${repoName}`)
+}
+
 export default {
 
   // nuxtServerInit (store, context) {
@@ -20,24 +43,26 @@ export default {
     }
   },
 
-  async loadCoinbaseAccounts (context, done) {
-    const response = await fetch('/api/coinbase/v2/accounts')
-    let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
-    accounts = accounts.filter(account => parseFloat(account.balance.amount))
-    context.commit('setCoinbaseAccounts', accounts)
-    if (done) {
-      done(`${accounts.length} accounts retrieved and loading into Coinbase`)
-    }
+  async loadCoinbaseAmateurAccounts (context, done) {
+    await loadCoinbaseGeneralAccounts(
+      'Coinbase',
+      '/api/coinbase/v2/accounts',
+      'setCoinbaseAmateurAccounts',
+      account => parseFloat(account.balance.amount),
+      context,
+      done,
+    )
   },
 
   async loadCoinbaseProAccounts (context, done) {
-    const response = await fetch('/api/coinbasepro/accounts')
-    let accounts = response.status === 200 ? await response.json() : { status: response.status }
-    accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
-    context.commit('setCoinbaseProAccounts', accounts)
-    if (done) {
-      done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
-    }
+    await loadCoinbaseGeneralAccounts(
+      'Coinbase Pro',
+      '/api/coinbasepro/accounts',
+      'setCoinbaseProAccounts',
+      account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold),
+      context,
+      done,
+    )
   },
 
   async loadKraken (context, { symbols, done }) {

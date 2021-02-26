@@ -1,3 +1,5 @@
+import { Coin } from '~/models'
+
 const coinPanelIndex = 0
 const repoPanelIndex = 1
 const stmtPanelIndex = 2
@@ -91,7 +93,7 @@ export default {
 
   addCoin (state, coin) {
     // Object.freeze(coin)
-    state.Coin.push(coin)
+    state.Coin.push(new Coin(coin))
   },
 
   addRepository (state, repo) {
@@ -111,6 +113,7 @@ export default {
 
   setCoinData (state, data) {
     const coin = state.Coin.find(coin => coin.symbol === data.symbol)
+    delete data.id
     Object.assign(coin, data)
   },
 
@@ -149,69 +152,47 @@ export default {
     }
   },
 
-  setCoinbaseAccounts (state, accounts) {
-    const coinbase = state.Repository.find(repo => repo.name === 'Coinbase')
-    if (!coinbase) {
-      return
-    }
-
-    // First update the repo in the db with all the accounts we received
-    for (const account of accounts) {
-      const symbol = account.currency
-      const quantity = parseFloat(account?.balance?.amount) || 0
-      let coin = coinbase.coins.find(coin => coin.symbol === symbol)
-      if (coin) {
-        coin.quantity = quantity
-      } else {
-        // TODO Need many-to-many RepoCoin
-        if (!state.Coin.find(coin => coin.symbol === symbol)) {
-          state.Coin.push({ symbol })
-        }
-        coin = { symbol, quantity }
-        coinbase.coins.push(coin)
-      }
-    }
-
-    // TODO
-    // // Secondly remove any coins from repo in the db not in the accounts
-    // for (const coin of coinbase.coins) {
-    //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
-    //     coin.$delete()
-    //   }
-    // }
+  // Update the repo in the store with all the accounts we received
+  setCoinbaseAmateurAccounts (state, accounts) {
+    setCoinbaseGeneralAccounts(
+      state.Repository.find(repo => repo.name === 'Coinbase'),
+      accounts.map(account => ({
+        symbol: account.currency,
+        quantity: parseFloat(account?.balance?.amount) || 0,
+      }))
+    )
   },
 
+  // Update the repo in the store with all the accounts we received
   setCoinbaseProAccounts (state, accounts) {
-    const coinbasepro = state.Repository.find(repo => repo.name === 'Coinbase Pro')
-    if (!coinbasepro) {
-      console.error('No Coinbase Pro repository for accounts', accounts)
-      return
-    }
-
-    // First update the repo in the db with all the accounts we received
-    for (const account of accounts) {
-      const symbol = account.currency
-      const quantity = parseFloat(account?.balance) || 0
-      let coin = coinbasepro.coins.find(coin => coin.symbol === symbol)
-      if (coin) {
-        coin.quantity = quantity
-      } else {
-        // TODO Need many-to-many RepoCoin
-        if (!state.Coin.find(coin => coin.symbol === symbol)) {
-          state.Coin.push({ symbol })
-        }
-        coin = { symbol, quantity }
-        coinbasepro.coins.push(coin)
-      }
-    }
-
-    // TODO
-    // // Secondly remove any coins from repo in the db not in the accounts
-    // for (const coin of coinbasepro.coins) {
-    //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
-    //     coin.$delete()
-    //   }
-    // }
+    setCoinbaseGeneralAccounts(
+      state.Repository.find(repo => repo.name === 'Coinbase Pro'),
+      accounts.map(account => ({
+        symbol: account.currency,
+        quantity: parseFloat(account?.balance) || 0,
+      }))
+    )
   },
 
+}
+
+// Update the repo in the store with all the account coins
+function setCoinbaseGeneralAccounts (repo, accountCoins) {
+  // For each account find the store coin and set the quantity
+  for (const accountCoin of accountCoins) {
+    const repoCoin = repo.coins.find(coin => coin.symbol === accountCoin.symbol)
+    if (repoCoin) {
+      repoCoin.quantity = accountCoin.quantity
+    } else {
+      repo.coins.push(accountCoin)
+    }
+  }
+
+  // TODO
+  // // Secondly remove any coins from repo in the db not in the accounts
+  // for (const coin of coinbasepro.coins) {
+  //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
+  //     coin.$delete()
+  //   }
+  // }
 }

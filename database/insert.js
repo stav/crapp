@@ -1,6 +1,6 @@
 import * as CoinbasePro from './coinbase.ts'
 import repositorys from '~/data/repositorys'
-import { Coin, Repository } from '~/models'
+import { Repository } from '~/models'
 
 let CTX = null
 
@@ -21,7 +21,7 @@ function exportCoinSymbols (repo) {
 function insertCoins (symbols) {
   for (const symbol of symbols || []) {
     if (!CTX.state.Coin.find(coin => coin.symbol === symbol)) {
-      CTX.commit('addCoin', new Coin({ symbol }))
+      CTX.commit('addCoin', { symbol })
     }
   }
 }
@@ -50,16 +50,10 @@ function insertStatements (repo) {
 function insertRepository (input) {
   Object.freeze(input.statements)
   insertCoins(exportCoinSymbols(input))
-  const coins = input.coins?.map(_ => (
-    Object.assign(
-      {},
-      CTX.state.Coin.find(coin => coin.symbol === _.symbol),
-      {
-        quantity: _.quantity,
-        symbol: _.symbol,
-      }
-    )
-  ))
+  const coins = input.coins?.map(_ => ({
+    quantity: _.quantity,
+    symbol: _.symbol,
+  }))
   const repo = new Repository({
     name: input.name,
     pairs: input.pairs,

@@ -104,7 +104,7 @@ export default {
     },
     getCoinbaseAccountsData () {
       this.loading = 'green'
-      this.$store.dispatch('loadCoinbaseAccounts', this.done)
+      this.$store.dispatch('loadCoinbaseAmateurAccounts', this.done)
     },
     async getBinanceAccountsData () {
       this.loading = 'yellow'
@@ -122,7 +122,7 @@ export default {
       await this.$store.dispatch('loadRepositorys', { force: true, done: this.done })
       await Promise.all([
         this.$store.dispatch('loadBinanceBalances'),
-        this.$store.dispatch('loadCoinbaseAccounts'),
+        this.$store.dispatch('loadCoinbaseAmateurAccounts'),
         this.$store.dispatch('loadCoinbaseProAccounts'),
       ])
       this.$store.dispatch('fetchPrices', this.done)
