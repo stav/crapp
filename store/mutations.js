@@ -118,43 +118,18 @@ export default {
   },
 
   setBinanceBalances (state, balances) {
-    const binance = state.Repository.find(repo => repo.name === 'Binance')
-    if (!binance) {
-      console.error('No Binance repository for balances', balances)
-      return
-    }
-
-    // First update the repo in the db with all the balances we received
-    for (const balance of balances) {
-      const free = parseFloat(balance.free || 0)
-      const locked = parseFloat(balance.locked || 0)
-      const symbol = balance.asset
-      const quantity = free + locked
-      let coin = binance.coins.find(coin => coin.symbol === symbol)
-      if (coin) {
-        coin.quantity = quantity
-      } else {
-        // TODO Need many-to-many RepoCoin
-        if (!state.Coin.find(coin => coin.symbol === symbol)) {
-          state.Coin.push({ symbol })
-        }
-        coin = { symbol, quantity }
-        binance.coins.push(coin)
-      }
-    }
-
-    // Secondly remove any coins from repo in the db not in the balances
-    for (const coin of binance.coins) {
-      if (!balances.find(balance => balance.asset === coin.symbol)) {
-        // TODO Remove coin
-        console.warn('setBinanceBalances: remove', coin)
-      }
-    }
+    setGeneralAccounts(
+      state.Repository.find(repo => repo.name === 'Binance'),
+      balances.map(balance => ({
+        symbol: balance.asset,
+        quantity: parseFloat(balance.free || 0) + parseFloat(balance.locked || 0),
+      }))
+    )
   },
 
   // Update the repo in the store with all the accounts we received
   setCoinbaseAmateurAccounts (state, accounts) {
-    setCoinbaseGeneralAccounts(
+    setGeneralAccounts(
       state.Repository.find(repo => repo.name === 'Coinbase'),
       accounts.map(account => ({
         symbol: account.currency,
@@ -165,7 +140,7 @@ export default {
 
   // Update the repo in the store with all the accounts we received
   setCoinbaseProAccounts (state, accounts) {
-    setCoinbaseGeneralAccounts(
+    setGeneralAccounts(
       state.Repository.find(repo => repo.name === 'Coinbase Pro'),
       accounts.map(account => ({
         symbol: account.currency,
@@ -177,7 +152,7 @@ export default {
 }
 
 // Update the repo in the store with all the account coins
-function setCoinbaseGeneralAccounts (repo, accountCoins) {
+function setGeneralAccounts (repo, accountCoins) {
   // For each account find the store coin and set the quantity
   for (const accountCoin of accountCoins) {
     const repoCoin = repo.coins.find(coin => coin.symbol === accountCoin.symbol)
@@ -190,7 +165,7 @@ function setCoinbaseGeneralAccounts (repo, accountCoins) {
 
   // TODO
   // // Secondly remove any coins from repo in the db not in the accounts
-  // for (const coin of coinbasepro.coins) {
+  // for (const coin of repo.coins) {
   //   if (!accounts.find(account => account.currency === coin.coin.symbol)) {
   //     coin.$delete()
   //   }
