@@ -1,7 +1,18 @@
 import * as CoinbasePro from './coinbase.ts'
-import repositorys from '~/data/repositorys'
+import * as CryptoDotCom from './cdc'
+// import * as BlockFi from './blockfi'
+// import * as UniSwap from './uniswap'
+// import * as Kraken from './kraken'
 import { Repository } from '~/models'
+import repositorys from '~/data/repositorys'
 
+const translators = {
+  // kraken: Kraken,
+  // blockfi: BlockFi,
+  // uniswap: UniSwap,
+  'coinbase-pro': CoinbasePro,
+  'crypto.com': CryptoDotCom,
+}
 let CTX = null
 
 /*
@@ -14,6 +25,28 @@ function exportCoinSymbols (repo) {
 }
 
 /*
+** exportTranSymbols
+**
+** Return a list of transaction symbols
+*/
+function exportTranSymbols (repo) {
+  let symbols
+  switch (repo.slug) {
+    case 'coinbase-pro':
+      symbols = CoinbasePro.mapTransactionSymbols(repo.transactions)
+      break
+
+    // case 'uniswap':
+    //   symbols = UniSwap.mapTransactionSymbols(repo.transactions)
+    //   break
+
+    default:
+      symbols = repo.transactions?.map(tran => tran.symbol) || []
+  }
+  return symbols
+}
+
+/*
 ** insertCoins
 **
 ** Insert all given coins if doesn't exist, otherwise if it does then ignore
@@ -23,6 +56,20 @@ function insertCoins (symbols) {
     if (!CTX.state.Coin.find(coin => coin.symbol === symbol)) {
       CTX.commit('addCoin', { symbol })
     }
+  }
+}
+
+/*
+** insertTransactions
+**
+** Insert all of the repo's transactions
+*/
+function insertTransactions (repo) {
+  if (repo.slug in translators) {
+    insertCoins(exportTranSymbols(repo))
+    translators[repo.slug].insertTransactions(CTX, repo)
+  } else {
+    // console.debug(`No transactions for repository (${repo.name})`)
   }
 }
 
@@ -59,6 +106,7 @@ function insertRepository (input) {
     pairs: input.pairs,
     coins,
     statements: input.statements,
+    transactions: input.transactions,
   })
   CTX.commit('addRepository', repo)
   return repo
@@ -74,7 +122,7 @@ function insertRepositorys (inputs) {
   for (const input of inputs) {
     const repo = insertRepository(input)
     console.log('insertRepositorys', repo)
-    // insertTransactions(repo)
+    insertTransactions(repo)
     insertStatements(repo)
   }
 }
@@ -87,7 +135,7 @@ function insertRepositorys (inputs) {
 export async function loadRepositorys (ctx) {
   CTX = ctx
   CTX.state.Statement.length = 0
-  // Transaction.deleteAll()
   CTX.state.Repository.length = 0
+  CTX.state.Transaction.length = 0
   insertRepositorys(await repositorys())
 }

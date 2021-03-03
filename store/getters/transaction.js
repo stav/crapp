@@ -1,12 +1,12 @@
-// Return a Transaction model
-export function Transactions () {
-  // return Transaction.query().with(['coin', 'repo'])
-  return []
-}
+// // Return a Transaction model
+// export function Transactions () {
+//   // return Transaction.query().with(['coin', 'repo'])
+//   return []
+// }
 
 // Return an array of all transactions
-export function transactions (_state, _getters) {
-  return Transactions().all()
+export function transactions (state, _getters) {
+  return state.Transaction
 }
 
 // Return a choronological array of transactions for a given coin id

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-interface IRepository {
+export interface IRepository {
   id: string
   name: string
   slug: string
@@ -8,6 +8,7 @@ interface IRepository {
   coins: object[]
   active: boolean
   statements: object[]
+  transactions: any[]
 }
 
 interface ICoin {
@@ -26,6 +27,7 @@ export class Repository implements IRepository {
   coins = []
   pairs = []
   statements = []
+  transactions = []
   active = true
 
   constructor (options: IRepository) {
@@ -36,6 +38,7 @@ export class Repository implements IRepository {
     this.pairs = this.pairs || [] // can't be nullish
     this.coins = this.coins || [] // can't be nullish
     this.statements = this.statements || [] // can't be nullish
+    this.transactions = this.transactions || [] // can't be nullish
   }
 
 }
@@ -53,6 +56,26 @@ export class Coin implements ICoin {
       name: options.symbol,
       slug: options.symbol.toUpperCase(),
     }, options)
+  }
+
+}
+
+export class Transaction {
+
+  id = uuidv4()
+  date: string = ''
+  type: string = ''
+  note: string = ''
+  repoId: string = ''
+  coinId: string = ''
+  quantity: number = 0
+  timestamp: number = 0
+
+  constructor (options: Transaction) {
+    const defaults = {
+      timestamp: (new Date(options.date)).getTime(),
+    }
+    Object.assign(this, defaults, options)
   }
 
 }

@@ -16,7 +16,7 @@
         Transactions
       </v-expansion-panel-header>
       <v-expansion-panel-content color="secondary">
-        <pocket-trans :trans="repository.transactions" />
+        <pocket-trans :trans="transactions" />
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -60,6 +60,11 @@ export default {
       set (value) {
         this.$store.commit('setRepoPockets', value)
       }
+    },
+    transactions () {
+      const trans = this.$store.state.Transaction.filter(trans => trans.repoId === this.repository.id)
+      console.log('transactions', this.repository.id, trans)
+      return trans
     },
   },
 

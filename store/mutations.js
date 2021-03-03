@@ -1,4 +1,4 @@
-import { Coin } from '~/models'
+import { Coin, Transaction } from '~/models'
 
 const coinPanelIndex = 0
 const repoPanelIndex = 1
@@ -104,6 +104,11 @@ export default {
   addStatement (state, statement) {
     Object.freeze(statement)
     state.Statement.push(statement)
+  },
+
+  addTransaction (state, transaction) {
+    Object.freeze(transaction)
+    state.Transaction.push(new Transaction(transaction))
   },
 
   setCoinPrice (state, { symbol, price }) {
