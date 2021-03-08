@@ -24,6 +24,7 @@ export default {
   */
   fetch () {
     this.$store.dispatch('loadRepositorys')
+    // this.$store.dispatch('loadPrices')
   },
 
   /*

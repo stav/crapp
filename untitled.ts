@@ -1,49 +1,49 @@
 /*
 ** Coinbase Pro data assist
 */
-import Transaction from '~/models/Transaction'
-import Statement from '~/models/Statement'
-import Coin from '~/models/Coin'
+// import Transaction from '~/models/Transaction'
+// import Coin from '~/models/Coin'
+import { Repository, Statement } from '~/models'
 
-/*
-** insertTransactions
-**
-** Insert all given transactions
-*/
-export function insertTransactions (repoId, trans) {
-  for (const tran of trans || []) {
-    const symbol = tran['size unit']
-    const date = tran['created at']
-    const size = parseFloat(tran.size)
-    const coin = Coin.query().where('symbol', symbol).first()
-    const data = {
-      repoId,
-      date,
-      fee: parseFloat(tran.fee),
-      type: tran.side,
-      note: `${tran.side} ${tran.size} ${symbol} for ${tran.price} each with CoinbasePro on ${date}`,
-      coinId: coin.id,
-      quantity: tran.side.toUpperCase() === 'SELL' ? size * -1 : size,
-      timestamp: (new Date(date)).getTime(),
-    }
-    Transaction.insert({ data })
-  }
-}
+// /*
+// ** insertTransactions
+// **
+// ** Insert all given transactions
+// */
+// export function insertTransactions (repoId, trans) {
+//   for (const tran of trans || []) {
+//     const symbol = tran['size unit']
+//     const date = tran['created at']
+//     const size = parseFloat(tran.size)
+//     const coin = Coin.query().where('symbol', symbol).first()
+//     const data = {
+//       repoId,
+//       date,
+//       fee: parseFloat(tran.fee),
+//       type: tran.side,
+//       note: `${tran.side} ${tran.size} ${symbol} for ${tran.price} each with CoinbasePro on ${date}`,
+//       coinId: coin.id,
+//       quantity: tran.side.toUpperCase() === 'SELL' ? size * -1 : size,
+//       timestamp: (new Date(date)).getTime(),
+//     }
+//     Transaction.insert({ data })
+//   }
+// }
 
 /*
 ** Statements
 */
 class Statements {
-  #orders = {}
-  #depositId = 0
+  #orders: any = {}
+  #depositId: number = 0
 
-  constructor(stmts) {
+  constructor(stmts: object[]) {
     for (const stmt of stmts || []) {
-      this.add(stmt)
+      this.add(Object.assign({}, stmt))
     }
   }
 
-  add (statement) {
+  add (statement: any) {
     const oId = statement['order id']
     if (!oId) {
       statement['order id'] = ++this.#depositId
@@ -51,7 +51,7 @@ class Statements {
     this.order(statement)
   }
 
-  order (statement) {
+  order (statement: any) {
     const oId = statement['order id']
     const order = this.#orders[oId] || {}
     order.date = new Date(statement.time)
@@ -95,7 +95,8 @@ class Statements {
 **       "order id": "295a7f6c-c1ea-499a-8ac1-f0e2e84fe1e8"
 **     },... ] }
 */
-export function insertStatements (repo) {
+export function insertStatements (CTX: any, repo: Repository) {
+  console.log('coinbase insertStatements', CTX, repo)
   const statement = new Statements(repo.statements)
   const orders = statement.getOrders()
   for (const order of orders) {
@@ -107,15 +108,16 @@ export function insertStatements (repo) {
       withdrawal: order.withdrawal,
       timestamp: order.date.getTime(),
     }
-    Statement.insert({ data })
+    // Statement.insert({ data })
+    CTX.commit('addStatement', new Statement(data))
   }
 }
 
-/*
-** mapTransactionSymbols
-**
-** Map a list of the transactions symbols
-*/
-export function mapTransactionSymbols (trans) {
-  return trans?.map(tran => tran['size unit']) || []
-}
+// /*
+// ** mapTransactionSymbols
+// **
+// ** Map a list of the transactions symbols
+// */
+// export function mapTransactionSymbols (trans) {
+//   return trans?.map(tran => tran['size unit']) || []
+// }

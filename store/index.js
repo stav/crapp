@@ -1,13 +1,8 @@
-import VuexORM from '@vuex-orm/core'
-import database from '@/database'
 import Getters from './getters'
 import Actions from './actions'
 import Mutations from './mutations'
 import unCoins from '~/data/uncoins'
 
-export const plugins = [
-  VuexORM.install(database)
-]
 export const getters = Getters
 export const actions = Actions
 export const mutations = Mutations
@@ -32,4 +27,9 @@ export const state = () => ({
   sparkPair: {},
   sparks: {},
   binanceTrades: [],
+
+  Transaction: [],
+  Repository: [],
+  Statement: [],
+  Coin: [],
 })

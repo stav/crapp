@@ -1,45 +1,33 @@
-import RepoCoin from '~/models/RepoCoin'
-import Coin from '~/models/Coin'
-
 /*
 ** coinPriceUSD
 */
-export const coinPriceUSD = () => (symbol) => {
-  return Coin.query().where('symbol', symbol).first()?.price
+export const coinPriceUSD = state => (symbol) => {
+  try {
+    return state.Coin.find(coin => coin.symbol === symbol)?.price
+  } catch (error) {
+    console.error('symbol', symbol, error)
+  }
 }
 
 /*
 ** coinSum
 */
 export const coinSum = state => (symbol) => {
-  return RepoCoin
-    .query()
-    .with('coin') // Somehow this doesn't work...
-    .where((repocoin) => {
-      const coin = Coin.find(repocoin.coinId) // ...so we need to do this
-      const selectedRepoIds = state.selectedRepos.map(_ => _.id)
-      const included = selectedRepoIds.includes(repocoin.repoId)
-      return included && coin.symbol === symbol
-    })
-    .get()
+  const selectedRepoIds = state.selectedRepos.map(_ => _.id)
+  return state.Repository
+    .filter(repo => selectedRepoIds.includes(repo.id))
+    .map(repo => repo.coins.filter(coin => coin.symbol === symbol))
+    .flat()
     .reduce((total, coin) => total + coin.quantity, 0)
 }
 
 /*
 ** sortedUniqueSymbols
 **
-** Coin.all() == [{
-**   "id": "$uid1",
-**   "name": "Bitcoin",
-**   "slug": "bitcoin",
-**   "price": 15298,
-**   "symbol": "BTC"
-** },…]
-**
 ** return [ "BTC", … ]
 */
-export function sortedUniqueSymbols () {
-  const uniqueSymbols = new Set(Coin.all().map(coin => coin.symbol))
+export function sortedUniqueSymbols (state) {
+  const uniqueSymbols = new Set(state.Coin.map(coin => coin.symbol))
   return Array.from(uniqueSymbols).sort()
 }
 

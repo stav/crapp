@@ -184,9 +184,16 @@ export default {
     **  },...]
     */
     valuedRepositorys () {
-      return this.repositorys
-        .map(this.repoValuation)
-        .filter(repo => repo.value)
+      const repos = this.repositorys
+      // console.log('valuedRepositorys: repos', repos)
+
+      const valuedRepos = repos.map(this.repoValuation)
+      // console.log('valuedRepositorys: valuedRepos', valuedRepos)
+
+      const filteredRepos = valuedRepos.filter(repo => repo.value)
+      // console.log('valuedRepositorys: filteredRepos', filteredRepos)
+
+      return filteredRepos
     },
     switchAmountValue () {
       return this.$store.state.switchAmountValue
@@ -226,7 +233,7 @@ export default {
       let repoValue = 0
       // First we sum the coins[symbol] values/quantities using only numeric data
       for (const coin of repo.coins) {
-        const symbol = coin.coin.symbol
+        const symbol = coin.symbol
         const value = coin.quantity * this.coinPrice(symbol)
         repoValue += value
         symbol in coins || (coins[symbol] = 0) // Init new coin counter to zero
@@ -269,7 +276,7 @@ export default {
       return this.$store.getters.coinSum(symbol)
     },
     coinPrice (symbol) {
-      return this.$store.getters.coinPriceUSD(symbol)
+      return this.$store.getters.coinPriceUSD(symbol) || 0
     },
     coinTotalUSD (symbol) {
       const amount = this.coinSum(symbol)

@@ -96,6 +96,10 @@ export default {
     },
   },
 
+  mounted() {
+    setTimeout(() => { this.navDrawer = false }, 1000)
+  },
+
 }
 </script>
 

@@ -104,11 +104,11 @@ export default {
     },
     getCoinbaseAccountsData () {
       this.loading = 'green'
-      this.$store.dispatch('loadCoinbaseAccounts', this.done)
+      this.$store.dispatch('loadCoinbaseAmateurAccounts', this.done)
     },
-    getBinanceAccountsData () {
+    async getBinanceAccountsData () {
       this.loading = 'yellow'
-      this.$store.dispatch('loadBinanceBalances', this.done)
+      await this.$store.dispatch('loadBinanceBalances', this.done)
     },
     done (message) {
       if (message) {
@@ -117,12 +117,14 @@ export default {
       this.active = false
       this.loading = false
     },
-    loadRepositorys () {
+    async loadRepositorys () {
       this.active = true
-      this.$store.dispatch('loadRepositorys', { force: true, done: this.done })
-      this.getCoinbaseProAccountsData()
-      this.getCoinbaseAccountsData()
-      this.getBinanceAccountsData()
+      await this.$store.dispatch('loadRepositorys', { force: true, done: this.done })
+      await Promise.all([
+        this.$store.dispatch('loadBinanceBalances'),
+        this.$store.dispatch('loadCoinbaseAmateurAccounts'),
+        this.$store.dispatch('loadCoinbaseProAccounts'),
+      ])
       this.$store.dispatch('fetchPrices', this.done)
     },
   },

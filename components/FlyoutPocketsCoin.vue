@@ -126,7 +126,7 @@ export default {
       return formatCurrency(this.coinValueAmount)
     },
     trans () {
-      return this.$store.getters.coinTransactions(this.coin.id)
+      return this.$store.getters.coinTransactions(this.coin?.id)
     },
   },
 

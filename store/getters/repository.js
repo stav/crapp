@@ -1,36 +1,24 @@
-import Repository from '~/models/Repository'
-
 // Return an array of unvalued repositories
-export function repositorys (_state, getters) {
-  return getters.Repositorys.all()
+export function repositorys (state) {
+  return state.Repository
 }
 
 // Return an array of unvalued repositories with a high coin
 export function highRepositorys (_state, getters) {
   const symbols = getters.sortedUniqueHighSymbols
   return getters.repositorys.filter((repo) => {
-    return repo.coins.filter(coin => symbols.includes(coin.coin.symbol)).length
+    return repo.coins.filter(coin => symbols.includes(coin.symbol) && coin.quantity > 0).length
   })
-}
-
-// Return a Repository model
-export function Repositorys () {
-  return Repository.query().with(['coins', 'coins.coin', 'trans'])
 }
 
 // Return the flyout repository
 export function flyoutRepo (state, getters) {
   const repoId = state.flyoutRepoId
-  const repos = getters.Repositorys
-  return repos.find(repoId) || {}
+  const repo = getters.repositorys.find(repo => repo.id === repoId)
+  return repo || {}
 }
 
 // Return single repository based on given name
 export function repositoryFromSlug (_state, getters) {
-  return slug => getters.Repositorys.where('slug', slug).first()
+  return slug => getters.repositorys.find(repo => repo.slug === slug)
 }
-
-// // Return single repository based on given id
-// repository: () => (id) => {
-//   return Repository.find(id)
-// },

@@ -57,6 +57,7 @@ export default {
   */
   computed: {
     localTransactions () {
+      console.log('local', this.trans)
       return [...this.trans]
         .map(tran => Object.assign({}, tran, { age: this.age(tran) })) // add age
         .sort((a, b) => a.timestamp - b.timestamp) // sort by timestamp

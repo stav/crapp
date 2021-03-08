@@ -1,22 +1,19 @@
+import * as CoinbasePro from './coinbase.ts'
 import * as CryptoDotCom from './cdc'
-import * as CoinbasePro from './coinbasepro'
-import * as BlockFi from './blockfi'
-import * as UniSwap from './uniswap'
-import * as Kraken from './kraken'
+// import * as BlockFi from './blockfi'
+// import * as UniSwap from './uniswap'
+// import * as Kraken from './kraken'
+import { Repository } from '~/models'
 import repositorys from '~/data/repositorys'
-import Statement from '~/models/Statement'
-import Transaction from '~/models/Transaction'
-import Repository from '~/models/Repository'
-import RepoCoin from '~/models/RepoCoin'
-import Coin from '~/models/Coin'
 
 const translators = {
-  kraken: Kraken,
-  blockfi: BlockFi,
-  uniswap: UniSwap,
-  coinbase: CoinbasePro,
+  // kraken: Kraken,
+  // blockfi: BlockFi,
+  // uniswap: UniSwap,
+  'coinbase-pro': CoinbasePro,
   'crypto.com': CryptoDotCom,
 }
+let CTX = null
 
 /*
 ** exportCoinSymbols
@@ -35,13 +32,13 @@ function exportCoinSymbols (repo) {
 function exportTranSymbols (repo) {
   let symbols
   switch (repo.slug) {
-    case 'coinbase':
+    case 'coinbase-pro':
       symbols = CoinbasePro.mapTransactionSymbols(repo.transactions)
       break
 
-    case 'uniswap':
-      symbols = UniSwap.mapTransactionSymbols(repo.transactions)
-      break
+    // case 'uniswap':
+    //   symbols = UniSwap.mapTransactionSymbols(repo.transactions)
+    //   break
 
     default:
       symbols = repo.transactions?.map(tran => tran.symbol) || []
@@ -56,9 +53,8 @@ function exportTranSymbols (repo) {
 */
 function insertCoins (symbols) {
   for (const symbol of symbols || []) {
-    const _coin = Coin.query().where('symbol', symbol).first()
-    if (!_coin) {
-      Coin.insert({ data: { symbol } })
+    if (!CTX.state.Coin.find(coin => coin.symbol === symbol)) {
+      CTX.commit('addCoin', { symbol })
     }
   }
 }
@@ -71,7 +67,7 @@ function insertCoins (symbols) {
 function insertTransactions (repo) {
   if (repo.slug in translators) {
     insertCoins(exportTranSymbols(repo))
-    translators[repo.slug].insertTransactions(repo.id, repo.transactions)
+    translators[repo.slug].insertTransactions(CTX, repo)
   } else {
     // console.debug(`No transactions for repository (${repo.name})`)
   }
@@ -84,8 +80,8 @@ function insertTransactions (repo) {
 */
 function insertStatements (repo) {
   switch (repo.slug) {
-    case 'coinbase':
-      CoinbasePro.insertStatements(repo)
+    case 'coinbase-pro':
+      CoinbasePro.insertStatements(CTX, repo)
       break
 
     default:
@@ -94,50 +90,27 @@ function insertStatements (repo) {
 }
 
 /*
-** mergeRepository
-**
-** Merge all known repository data
-**
-** data:
-**   {"repocoins": [
-**      {"id": "$uid867", "coinId": "$uid735", "repoId": "$uid866", "quantity": 2.6888},
-**      {"id": "$uid870", "coinId": "$uid734", "repoId": "$uid866", "quantity": 0.03}
-**    ],
-**    "repositorys": [
-**      {"id": "$uid866", "name": "Kraken", "active": true}
-**  ] }
-*/
-function mergeRepository (input, data) {
-  if (data.repositorys?.length === 1) {
-    const jugg = {
-      statements: input.statements,
-      transactions: input.transactions,
-    }
-    return Object.assign(jugg, data.repositorys[0])
-  }
-  console.error('Should be exactly one repo, found', data)
-}
-
-/*
 ** insertRepository
 **
 ** Insert the given repository into the db
 */
-async function insertRepository (input) {
+function insertRepository (input) {
+  Object.freeze(input.statements)
   insertCoins(exportCoinSymbols(input))
   const coins = input.coins?.map(_ => ({
-    coinId: Coin.query().where('symbol', _.symbol).first().id,
     quantity: _.quantity,
-  })) || []
-  const data = await Repository.insert({
-    data: {
-      coins,
-      active: input.active,
-      pairs: input.pairs,
-      name: input.name,
-    }
+    symbol: _.symbol,
+  }))
+  const repo = new Repository({
+    name: input.name,
+    pairs: input.pairs,
+    coins,
+    statements: input.statements,
+    transactions: input.transactions,
   })
-  return mergeRepository(input, data)
+  CTX.commit('addRepository', repo)
+  return repo
+  // return mergeRepository(input, data)
 }
 
 /*
@@ -145,9 +118,10 @@ async function insertRepository (input) {
 **
 ** Insert all the given repositories into the db
 */
-async function insertRepositorys (inputs) {
+function insertRepositorys (inputs) {
   for (const input of inputs) {
-    const repo = await insertRepository(input)
+    const repo = insertRepository(input)
+    console.log('insertRepositorys', repo)
     insertTransactions(repo)
     insertStatements(repo)
   }
@@ -158,11 +132,10 @@ async function insertRepositorys (inputs) {
 **
 ** Read the list of repository data from input file and load up the db
 */
-export async function loadRepositorys () {
-  Coin.deleteAll()
-  RepoCoin.deleteAll()
-  Statement.deleteAll()
-  Transaction.deleteAll()
-  Repository.deleteAll()
-  await insertRepositorys(await repositorys())
+export async function loadRepositorys (ctx) {
+  CTX = ctx
+  CTX.state.Statement.length = 0
+  CTX.state.Repository.length = 0
+  CTX.state.Transaction.length = 0
+  insertRepositorys(await repositorys())
 }

@@ -1,42 +1,53 @@
-import {
-  loadRepositorys,
-  loadBinanceBalances,
-  loadCoinbaseAccounts,
-  loadCoinbaseProAccounts,
-} from '@/database'
+import { loadRepositorys } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
 import fetchPrices from './fetchPrices'
-import Coin from '~/models/Coin'
+import fetchCoins from './fetchCoins'
 
 export default {
 
-  async loadBinanceBalances (_context, done) {
-    const response = await fetch('/api/binance/balances')
-    const { balances } = response.status === 200 ? await response.json() : { status: response.status }
-    loadBinanceBalances(balances)
-    if (done) {
-      done(`${balances.length} balances retrieved and loading into Binance`)
-    }
+  // nuxtServerInit (store, context) {
+  //   for (const key in context) {
+  //     console.log(key, typeof context[key] == 'object' ? Object.keys(context[key]) : context[key])
+  //   }
+  // },
+
+  async loadBinanceBalances (context, done) {
+    await loadGeneralAccounts(
+      'Binance',
+      'balances',
+      'asset',
+      '/api/binance/balances',
+      'setBinanceBalances',
+      () => true,
+      context,
+      done,
+    )
   },
 
-  async loadCoinbaseAccounts (_context, done) {
-    const response = await fetch('/api/coinbase/v2/accounts')
-    let { data: accounts } = response.status === 200 ? await response.json() : { status: response.status }
-    accounts = accounts.filter(account => parseFloat(account.balance.amount))
-    loadCoinbaseAccounts(accounts)
-    if (done) {
-      done(`${accounts.length} accounts retrieved and loading into Coinbase`)
-    }
+  async loadCoinbaseAmateurAccounts (context, done) {
+    await loadGeneralAccounts(
+      'Coinbase',
+      'data',
+      'currency',
+      '/api/coinbase/v2/accounts',
+      'setCoinbaseAmateurAccounts',
+      account => parseFloat(account.balance.amount),
+      context,
+      done,
+    )
   },
 
-  async loadCoinbaseProAccounts (_context, done) {
-    const response = await fetch('/api/coinbasepro/accounts')
-    let accounts = response.status === 200 ? await response.json() : { status: response.status }
-    accounts = accounts.filter(account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold))
-    loadCoinbaseProAccounts(accounts)
-    if (done) {
-      done(`${accounts.length} accounts retrieved and loading into Coinbase Pro`)
-    }
+  async loadCoinbaseProAccounts (context, done) {
+    await loadGeneralAccounts(
+      'Coinbase Pro',
+      null,
+      'currency',
+      '/api/coinbasepro/accounts',
+      'setCoinbaseProAccounts',
+      account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold),
+      context,
+      done,
+    )
   },
 
   async loadKraken (context, { symbols, done }) {
@@ -62,15 +73,6 @@ export default {
     context.commit('setFlyoutCoin', { symbol })
   },
 
-  setCoin (_context, coin) {
-    Coin.insertOrUpdate({
-      data: {
-        id: Coin.query().where('symbol', coin.symbol).first()?.id,
-        ...coin,
-      }
-    })
-  },
-
   async fetchPrice (context, done) {
     const symbols = [context.state.flyoutCoin.symbol]
     const message = await fetchPrices(context, symbols)
@@ -78,8 +80,12 @@ export default {
   },
 
   async fetchPrices (context, done) {
-    const symbols = context.getters.sortedUniqueSymbols
-    const message = await fetchPrices(context, symbols)
+    const message = await fetchPrices(context)
+    done && done(message)
+  },
+
+  async fetchCoins (context, done) {
+    const message = await fetchCoins(context)
     done && done(message)
   },
 
@@ -93,7 +99,7 @@ export default {
   async loadRepositorys (context, { force, done } = {}) {
     // const { force = false, done = undefined } = ref
     if (context.getters.repositorys.length === 0 || force) {
-      await loadRepositorys()
+      await loadRepositorys(context)
       const activeRepos = context.getters.repositorys.filter(_ => _.active)
       context.commit('setSelectedRepos', activeRepos)
     }
@@ -102,4 +108,27 @@ export default {
     done && done(message)
   },
 
+}
+
+async function loadGeneralAccounts(repoName, dataProp, symbolProp, url, action, filter, context, done) {
+  const response = await fetch(url)
+  let accounts = response.status === 200 ? await response.json() : { status: response.status }
+  accounts = dataProp ? accounts[dataProp] : accounts
+  accounts = accounts.filter(filter)
+
+  // Make sure all the coins are in the store
+  for (const account of accounts) {
+    const symbol = account[symbolProp]
+    const coin = context.state.Coin.find(coin => coin.symbol === symbol)
+    if (!coin) {
+      context.commit('addCoin', { symbol })
+    }
+  }
+
+  // Commit the accounts data
+  context.commit(action, accounts)
+
+  // We're done
+  done = done || (() => {}) // make sure done is defined
+  done(`${accounts.length} accounts retrieved and loading into ${repoName}`)
 }

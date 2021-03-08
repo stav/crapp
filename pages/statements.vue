@@ -73,8 +73,7 @@ export default {
   */
   computed: {
     statements () {
-      const statements = this.$store.$db().model('statements')
-      return statements.all()
+      return this.$store.getters.statements
     },
     symbols () {
       // [["USDC"], ["USD"], ["USD", "USD", "BTC"],…]
