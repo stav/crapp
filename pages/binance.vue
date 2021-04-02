@@ -41,10 +41,10 @@
           <v-data-table
             dense
             :headers="headersCoins"
-            :search="search"
+            :search="searchCoins"
             :items="coins"
             item-key="coin"
-            item-class="classes"
+            item-class="classesc"
             multi-sort
             :sort-by="['free', 'locked']"
             :sort-desc="[true, false]"
@@ -56,10 +56,10 @@
                 <v-toolbar-title> Coins </v-toolbar-title>
                 <v-spacer />
                 <v-text-field
-                  v-model="search"
+                  v-model="searchCoins"
                   prepend-icon="mdi-magnify"
                   append-icon="mdi-close"
-                  @click:append="search=''"
+                  @click:append="searchCoins=''"
                   label="Search"
                   single-line
                   hide-details
@@ -68,7 +68,7 @@
             </template>
             <template v-slot:expanded-item="{ item }">
               <td :colspan="headersCoins.length">
-                <ul>
+                <ul class="pa-0">
                   <li v-for="(network, i) in item.networkList" :key="i">
                     {{ network.network }}
                     {{ network.name }}
@@ -77,6 +77,9 @@
                     {{ network.specialTips }}
                   </li>
                 </ul>
+                <p class="ma-4">
+                  {{ item }}
+                </p>
               </td>
             </template>
           </v-data-table>
@@ -85,9 +88,11 @@
           <v-data-table
             dense
             :headers="headersTrades"
+            :search="searchTrades"
             :items="trades"
-            item-key="trade"
-            item-class="classes"
+            item-key="id"
+            item-class="classest"
+            :items-per-page="-1"
             sort-by="time"
             :sort-desc="true"
             multi-sort
@@ -96,6 +101,16 @@
             <template v-slot:top>
               <v-toolbar flat>
                 <v-toolbar-title> Trades </v-toolbar-title>
+                <v-spacer />
+                <v-text-field
+                  v-model="searchTrades"
+                  prepend-icon="mdi-magnify"
+                  append-icon="mdi-close"
+                  @click:append="searchTrades=''"
+                  label="Search"
+                  single-line
+                  hide-details
+                />
               </v-toolbar>
             </template>
             <template v-slot:item.time="{ item }">
@@ -175,7 +190,8 @@ export default {
     coins: [],
     result: null,
     balances: null,
-    search: '',
+    searchCoins: '',
+    searchTrades: '',
     heading: '',
     loading: false,
     symbolMapPrice: {},
@@ -188,11 +204,13 @@ export default {
       { text: 'Networks', value: 'networks', filterable: false },
     ],
     headersTrades: [
-      { text: 'qty', value: 'qty', filterable: true, align: 'end' },
-      { text: 'price', value: 'price', filterable: true, align: 'end' },
-      { text: 'symbol', value: 'symbol', filterable: false, align: 'center' },
-      { text: 'time', value: 'time', filterable: false },
-      { text: 'commissionAsset', value: 'commissionAsset', filterable: false },
+      { text: 'buyer', value: 'isBuyer', filterable: false, align: 'center' },
+      { text: 'maker', value: 'isMaker', filterable: false, align: 'center' },
+      { text: 'qty', value: 'qty', filterable: false, align: 'end' },
+      { text: 'price', value: 'price', filterable: false, align: 'end' },
+      { text: 'symbol', value: 'symbol', filterable: true, align: 'center' },
+      { text: 'time', value: 'time', filterable: true },
+      { text: 'commissionAsset', value: 'commissionAsset', filterable: true },
     ],
   }),
 
@@ -216,6 +234,7 @@ export default {
   methods: {
     clear () {
       this.coins = []
+      this.trades = []
       this.result = null
       this.balances = null
       this.heading = ''
@@ -284,7 +303,7 @@ export default {
         Object.assign(
           {},
           coin,
-          { classes: 'clickable-row' },
+          { classesc: 'clickable-row' },
           { networks: coin.networkList.map(net => net.network) }
         )
       )
@@ -298,15 +317,17 @@ export default {
         console.info('Loading repositories')
       }
       const repo = this.$store.getters.repositoryFromSlug('binance')
-      const pairs = repo?.pairs
+      const pairs = repo?.pairs //.slice(0, 4)
       const trades = await postData('trades', { pairs })
       console.log('trades', trades)
       const _trades = []
       for (const pair in trades) {
         console.log('pair', pair)
         for (const trade of trades[pair]) {
-          console.log('trade', trade)
-          _trades.push(trade)
+          const classes = { classest: trade.isBuyer ? 'green darken-4' : 'red darken-4' }
+          const _trade = Object.assign({}, trade, classes)
+          console.log('trade', _trade)
+          _trades.push(_trade)
         }
       }
       this.trades = _trades
