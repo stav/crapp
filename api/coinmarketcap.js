@@ -41,9 +41,9 @@ function configRequests (url) {
       requests.push({
         key: 'quotes',
         config: configRequest(
-          '/v1/cryptocurrency/quotes/latest' + _url.search
-          // { symbol: 'BTC', search: _url.search }
-        )
+          '/v1/cryptocurrency/quotes/latest' + _url.search,
+          { skip_invalid: true },
+        ),
       })
       break
 

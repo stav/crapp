@@ -1,13 +1,13 @@
 import Getters from './getters'
 import Actions from './actions'
 import Mutations from './mutations'
-import unCoins from '~/data/uncoins'
+import unSymbols from '~/data/unsymbols'
 
 export const getters = Getters
 export const actions = Actions
 export const mutations = Mutations
 export const state = () => ({
-  coinMarketCapUnlisted: unCoins,
+  symbolsUnlisted: unSymbols,
   statementBalances: false,
   statement: {},
   coinPockets: [],

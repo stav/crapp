@@ -117,8 +117,9 @@ export default {
   },
 
   setCoinData (state, data) {
-    const coin = state.Coin.find(coin => coin.symbol === data.symbol)
+    const coin = state.Coin.find(coin => coin.symbol === data.symbol.toUpperCase())
     delete data.id
+    delete data.symbol
     Object.assign(coin, data)
   },
 

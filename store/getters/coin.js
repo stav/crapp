@@ -42,6 +42,6 @@ export function sortedUniqueHighSymbols (state, getters) {
 }
 
 /*
-** coinsUnlisted
+** symbolsUnlisted
 */
-export const coinsUnlisted = state => state.coinMarketCapUnlisted
+export const symbolsUnlisted = state => state.symbolsUnlisted

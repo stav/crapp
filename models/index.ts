@@ -54,7 +54,8 @@ export class Coin implements ICoin {
   constructor (options: ICoin) {
     Object.assign(this, {
       name: options.symbol,
-      slug: options.symbol.toUpperCase(),
+      slug: options.symbol.toLowerCase(),
+      symbol: options.symbol.toUpperCase(),
     }, options)
   }
 

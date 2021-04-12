@@ -29,15 +29,12 @@
 **
 ** unlisted = [ "CGLD", "USD" ]
 **
-** coinsUnlisted = [ "USD" ]
+** symbolsUnlisted = [ "USD" ]
 */
-async function getPrices (coinsUnlisted, symbols) {
-  const coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
-  if (coinsListed.length === 0) {
-    throw new Error(`No listed coins ${coinsUnlisted}`)
-  }
+
+async function getPrices (symbols) {
   const priceFetcherPath = '/api/cryptocompare/prices?symbols='
-  const priceFetcherUrl = priceFetcherPath + coinsListed.join(',')
+  const priceFetcherUrl = priceFetcherPath + symbols.join(',')
   const response = await fetch(priceFetcherUrl)
   const result = await response.json()
 
@@ -49,15 +46,22 @@ async function getPrices (coinsUnlisted, symbols) {
 
 export default async function fetchPrices (ctx) {
   const symbols = ctx.getters.sortedUniqueSymbols
-  const coinsUnlisted = ctx.getters.coinsUnlisted
+  const symbolsUnlisted = ctx.getters.symbolsUnlisted
+  const symbolsListed = symbols.filter(symbol => !symbolsUnlisted.includes(symbol))
+  if (symbolsListed.length === 0) {
+    const message = `No coins: listed ${symbols}; unlisted ${symbolsUnlisted}`
+    console.warn(message)
+    return message
+  }
+
   let data
   try {
-    data = await getPrices(coinsUnlisted, symbols)
+    data = await getPrices(symbolsListed)
   } catch (e) {
     console.warn(`Error in fetchPrices: ${e.message}`)
     return e.message
   }
-  for (const symbol of Object.keys(data)) {
+  for (const symbol in data) {
     ctx.commit('setCoinPrice', {
       symbol,
       price: data[symbol].USD,
@@ -69,7 +73,7 @@ export default async function fetchPrices (ctx) {
   if (symbols.length === 1) {
     return 'Loaded price for ' + symbols[0].toString()
   } else {
-    const exceptions = coinsUnlisted.length ? `(except ${coinsUnlisted})` : ''
+    const exceptions = symbolsUnlisted.length ? `(except ${symbolsUnlisted})` : ''
     return `Loaded prices ${exceptions}`
   }
 }

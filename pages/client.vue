@@ -232,15 +232,15 @@ export default {
     async testCryptoComparePrices () {
       this.loadingCryptoCompare = true
       const symbols = this.$store.getters.sortedUniqueSymbols.filter(_ => _)
-      const coinsUnlisted = this.$store.getters.coinsUnlisted
-      let coinsListed = symbols.filter(coin => !coinsUnlisted.includes(coin))
-      if (coinsListed.length === 0) {
+      const symbolsUnlisted = this.$store.getters.symbolsUnlisted
+      let symbolsListed = symbols.filter(coin => !symbolsUnlisted.includes(coin))
+      if (symbolsListed.length === 0) {
         console.warn('No coins, try viewing the repositories page first.')
-        coinsListed = ['BTC', 'ETH']
+        symbolsListed = ['BTC', 'ETH']
       }
       const params = {
         tsyms: 'USD',
-        fsyms: coinsListed.join(','),
+        fsyms: symbolsListed.join(','),
         extraParams: 'CrApp',
       }
       const url = 'https://min-api.cryptocompare.com/data/pricemulti'

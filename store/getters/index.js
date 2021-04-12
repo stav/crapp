@@ -8,7 +8,7 @@ import {
 import {
   coinPriceUSD,
   coinSum,
-  coinsUnlisted,
+  symbolsUnlisted,
   sortedUniqueSymbols,
   sortedUniqueHighSymbols,
 } from './coin'
@@ -27,7 +27,7 @@ export default {
 
   coinSum,
   coinPriceUSD,
-  coinsUnlisted,
+  symbolsUnlisted,
   sortedUniqueSymbols,
   sortedUniqueHighSymbols,
 
