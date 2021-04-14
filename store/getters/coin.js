@@ -31,13 +31,13 @@ export function sortedUniqueSymbols (state) {
   return Array.from(uniqueSymbols).sort()
 }
 
-export function sortedUniqueHighSymbols (state, getters) {
+export function sortedUniqueRangedSymbols (state, getters) {
   return getters.sortedUniqueSymbols.filter((symbol) => {
     const amount = getters.coinSum(symbol)
     const price = getters.coinPriceUSD(symbol)
     const value = amount * price
-    const floor = state.repoCoinValueFloor
-    return value >= floor
+    const range = state.repoCoinValueRange
+    return (range[0] < value) && (value < range[1])
   })
 }
 

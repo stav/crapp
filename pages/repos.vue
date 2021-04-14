@@ -37,17 +37,17 @@ export default {
     ** An array of unvalued repositories
     */
     repositorys () {
-      return this.$store.getters.highRepositorys
+      return this.$store.getters.rangedRepositorys
     },
     /*
     ** symbols
     **
-    ** An array of symbols with values higher than the floor
+    ** An array of symbols
     **
     ** [ "BTC", "ETH", "LINK", … ]
     */
     symbols () {
-      return this.$store.getters.sortedUniqueHighSymbols
+      return this.$store.getters.sortedUniqueRangedSymbols
     },
   },
 

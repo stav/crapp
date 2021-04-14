@@ -206,9 +206,6 @@ export default {
         this.$store.commit('setSelectedRepos', value)
       }
     },
-    floor () {
-      return this.$store.state.repoCoinValueFloor
-    },
   },
 
   /*

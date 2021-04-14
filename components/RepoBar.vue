@@ -13,18 +13,7 @@
       </v-card-actions>
     </v-card>
     <v-spacer />
-    <v-input hide-details class="floor">
-      <v-text-field
-        v-model="floor"
-        title="The minimum coin value to display"
-        :rules="[rules.numeric]"
-        placeholder="1000"
-        hide-details
-        clearable
-        outlined
-        dense
-      />
-    </v-input>
+    <ranger />
     <v-spacer />
     <span @click="switchAmountValue=false" class="clickable text--secondary"> amount </span>
     <v-switch
@@ -39,7 +28,16 @@
 </template>
 
 <script>
+import ranger from './Ranger.vue'
+
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    ranger,
+  },
 
   /*
   ** PROPS
@@ -67,9 +65,6 @@ export default {
   data: () => ({
     active: false,
     loading: false,
-    rules: {
-      numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
-    },
   }),
 
   /*
@@ -82,14 +77,6 @@ export default {
       },
       set (value) {
         this.$store.commit('setRepoCoinValue', value)
-      }
-    },
-    floor: {
-      get () {
-        return this.$store.state.repoCoinValueFloor
-      },
-      set (value) {
-        this.$store.commit('setRepoCoinValueFloor', value)
       }
     },
   },
@@ -135,8 +122,5 @@ export default {
 <style lang="scss" scoped>
 .clickable {
   cursor: pointer;
-}
-.floor {
-  max-width: 120px;
 }
 </style>

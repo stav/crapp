@@ -1,7 +1,7 @@
 import {
   repositorys,
   repositoryFromSlug,
-  highRepositorys,
+  rangedRepositorys,
   flyoutRepo,
 } from './repository'
 
@@ -10,7 +10,7 @@ import {
   coinSum,
   symbolsUnlisted,
   sortedUniqueSymbols,
-  sortedUniqueHighSymbols,
+  sortedUniqueRangedSymbols,
 } from './coin'
 
 import {
@@ -21,7 +21,7 @@ import {
 export default {
 
   repositorys,
-  highRepositorys,
+  rangedRepositorys,
   repositoryFromSlug,
   flyoutRepo,
 
@@ -29,7 +29,7 @@ export default {
   coinPriceUSD,
   symbolsUnlisted,
   sortedUniqueSymbols,
-  sortedUniqueHighSymbols,
+  sortedUniqueRangedSymbols,
 
   coinTransactions,
   transactions,
@@ -96,6 +96,5 @@ export default {
   ** statements
   */
   statements: state => state.Statement,
-
 
 }
