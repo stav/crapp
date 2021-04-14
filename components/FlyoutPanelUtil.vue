@@ -14,7 +14,7 @@
         <v-card-text class="accent"> flyoutRepoId:       {{ flyoutRepoId }}       </v-card-text>
         <v-card-text class="accent"> statementBalances:  {{ statementBalances }}  </v-card-text>
         <v-card-text class="accent"> statement:          {{ statement }}          </v-card-text>
-        <v-card-text class="accent"> repoCoinValueFloor: {{ repoCoinValueFloor }} </v-card-text>
+        <v-card-text class="accent"> repoCoinValueRange: {{ repoCoinValueRange }} </v-card-text>
       </v-card>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -32,8 +32,8 @@ export default {
     switchAmountValue () {
       return this.$store.state.switchAmountValue
     },
-    repoCoinValueFloor () {
-      return this.$store.state.repoCoinValueFloor
+    repoCoinValueRange () {
+      return this.$store.state.repoCoinValueRange
     },
     flyoutPanels () {
       return this.$store.state.flyoutPanels

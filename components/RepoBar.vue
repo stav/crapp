@@ -1,30 +1,11 @@
 <template>
   <v-app-bar color="indigo">
     <v-icon class="mr-2">mdi-bitcoin</v-icon>
-    <v-btn @click="loadRepositorys" color="primary"> Repositories </v-btn>
+    <v-btn @click="loadRepositorys" icon title="Reload repositories (including remotes)"><v-icon>mdi-reload</v-icon></v-btn>
     <v-spacer />
     {{ symbols.length }} coins in {{ repositorys.length }} repos
     <v-spacer />
-    <v-card class="indigo darken-1 mx-auto" :loading="loading">
-      <v-card-actions v-if="repositorys.length">
-        <v-btn small @click="getBinanceAccountsData"> Binance </v-btn>
-        <v-btn small @click="getCoinbaseAccountsData"> Coinbase </v-btn>
-        <v-btn small @click="getCoinbaseProAccountsData"> Coinbase Pro </v-btn>
-      </v-card-actions>
-    </v-card>
-    <v-spacer />
-    <v-input hide-details class="floor">
-      <v-text-field
-        v-model="floor"
-        title="The minimum coin value to display"
-        :rules="[rules.numeric]"
-        placeholder="1000"
-        hide-details
-        clearable
-        outlined
-        dense
-      />
-    </v-input>
+    <ranger />
     <v-spacer />
     <span @click="switchAmountValue=false" class="clickable text--secondary"> amount </span>
     <v-switch
@@ -39,7 +20,16 @@
 </template>
 
 <script>
+import ranger from './Ranger.vue'
+
 export default {
+
+  /*
+  ** COMPONENTS
+  */
+  components: {
+    ranger,
+  },
 
   /*
   ** PROPS
@@ -67,9 +57,6 @@ export default {
   data: () => ({
     active: false,
     loading: false,
-    rules: {
-      numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
-    },
   }),
 
   /*
@@ -84,32 +71,12 @@ export default {
         this.$store.commit('setRepoCoinValue', value)
       }
     },
-    floor: {
-      get () {
-        return this.$store.state.repoCoinValueFloor
-      },
-      set (value) {
-        this.$store.commit('setRepoCoinValueFloor', value)
-      }
-    },
   },
 
   /*
   ** METHODS
   */
   methods: {
-    getCoinbaseProAccountsData () {
-      this.loading = 'blue'
-      this.$store.dispatch('loadCoinbaseProAccounts', this.done)
-    },
-    getCoinbaseAccountsData () {
-      this.loading = 'green'
-      this.$store.dispatch('loadCoinbaseAmateurAccounts', this.done)
-    },
-    async getBinanceAccountsData () {
-      this.loading = 'yellow'
-      await this.$store.dispatch('loadBinanceBalances', this.done)
-    },
     done (message) {
       if (message) {
         this.$store.commit('snackMessage', message)
@@ -135,8 +102,5 @@ export default {
 <style lang="scss" scoped>
 .clickable {
   cursor: pointer;
-}
-.floor {
-  max-width: 120px;
 }
 </style>

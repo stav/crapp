@@ -68,8 +68,8 @@ export default {
   setRepoCoinValue (state, value) {
     state.switchAmountValue = value
   },
-  setRepoCoinValueFloor (state, value) {
-    state.repoCoinValueFloor = value
+  setRepoCoinValueRange (state, value) {
+    state.repoCoinValueRange = value
   },
   setSparks (state, { symbol, data }) {
     symbol = symbol || state.flyoutCoin.symbol

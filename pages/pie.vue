@@ -3,18 +3,7 @@
     <v-app-bar color="green darken-4">
       <v-icon class="mr-2">mdi-chart-pie</v-icon> I like Pie
       <v-spacer />
-      <v-input hide-details class="floor">
-        <v-text-field
-          v-model="floor"
-          @input="apply"
-          :rules="[rules.numeric]"
-          placeholder="1000"
-          hide-details
-          clearable
-          outlined
-          dense
-        />
-      </v-input>
+      <ranger />
     </v-app-bar>
     <div class="pie-chart" ref="chartdiv" />
   </v-card>
@@ -25,6 +14,7 @@ import * as am4core from '@amcharts/amcharts4/core'
 import * as am4charts from '@amcharts/amcharts4/charts'
 import darkTheme from '@amcharts/amcharts4/themes/dark'
 import animatedTheme from '@amcharts/amcharts4/themes/animated'
+import ranger from '~/components/Ranger.vue'
 
 am4core.useTheme(animatedTheme)
 am4core.useTheme(darkTheme)
@@ -32,22 +22,18 @@ am4core.useTheme(darkTheme)
 export default {
 
   /*
+  ** COMPONENTS
+  */
+  components: {
+    ranger,
+  },
+
+  /*
   ** FETCH
   */
   async fetch () {
     await this.$store.dispatch('loadRepositorys')
-    this.chart.data = this.data
-  },
-
-  /*
-  ** DATA
-  */
-  data () {
-    return {
-      rules: {
-        numeric: n => `${n}`.length > 0 || (!isNaN(parseFloat(n)) && isFinite(n)),
-      },
-    }
+    this.apply()
   },
 
   /*
@@ -65,10 +51,10 @@ export default {
     /*
     ** filteredSymbols
     **
-    ** Only symbols where we have more than `floor` coins
+    ** Only symbols where we have `ranged` coins
     */
     filteredSymbols () {
-      return this.symbols.filter(symbol => this.coinValueAmount(symbol) > this.floor)
+      return this.symbols.filter(this.filterSymbol)
     },
     /*
     ** data
@@ -84,14 +70,25 @@ export default {
         amount: this.coinValueAmount(symbol),
       }))
     },
-    floor: {
-      get () {
-        return this.$store.state.repoCoinValueFloor
-      },
-      set (value) {
-        this.$store.commit('setRepoCoinValueFloor', value)
-      }
+    /*
+    ** range
+    **
+    ** The min/max values for coin valuations to display
+    **
+    ** [ 100, 9000 ]
+    */
+    range () {
+      return this.$store.state.repoCoinValueRange
     },
+  },
+
+  /*
+  ** WATCH
+  */
+  watch: {
+    range (_newRange, _oldRange) {
+      this.apply()
+    }
   },
 
   /*
@@ -143,7 +140,11 @@ export default {
     },
     apply () {
       this.chart.data = this.data
-    }
+    },
+    filterSymbol (symbol) {
+      const amount = this.coinValueAmount(symbol)
+      return (this.range[0] < amount) && (amount < this.range[1])
+    },
   },
 
 }
@@ -153,8 +154,5 @@ export default {
 .pie-chart {
   width: 100%;
   height: 500px;
-}
-.floor {
-  max-width: 200px;
 }
 </style>

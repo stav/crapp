@@ -4,8 +4,8 @@ export function repositorys (state) {
 }
 
 // Return an array of unvalued repositories with a high coin
-export function highRepositorys (_state, getters) {
-  const symbols = getters.sortedUniqueHighSymbols
+export function rangedRepositorys (_state, getters) {
+  const symbols = getters.sortedUniqueRangedSymbols
   return getters.repositorys.filter((repo) => {
     return repo.coins.filter(coin => symbols.includes(coin.symbol) && coin.quantity > 0).length
   })
