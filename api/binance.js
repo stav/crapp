@@ -43,7 +43,7 @@ function postProcess (data) {
   if ('balances' in data) {
     return {
       balances:
-        (data?.balances?.balances || []) // Optional Chaining https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html
+        (data.balances.balances || [])
           .map(balance => ({
             asset: balance.asset,
             free: parseFloat(balance.free),
@@ -63,8 +63,6 @@ function configRequests (req) {
   const requests = []
   const url = new URL('http://example.com' + req.url)
   console.log('api/binance/configRequests', url, typeof req.body, req.body)
-  const symbol = url.searchParams.has('asset') ? url.searchParams.get('asset') + 'USDT' : null
-  const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
 
   // Configure the requests
   switch (url.pathname) {
@@ -99,11 +97,14 @@ function configRequests (req) {
       requests.push({ key: 'prices', config: configRequest('/api/v3/ticker/price') })
       break
 
-    case '/price':
+    case '/price': {
+      const symbol = url.searchParams.has('asset') ? url.searchParams.get('asset') + 'USDT' : null
       requests.push({ key: 'data', config: configRequest('/api/v3/ticker/price', { symbol }) })
       break
+    }
 
-    case '/trades':
+    case '/trades': {
+      const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
       for (const pair of pairs) {
         requests.push({
           key: pair,
@@ -111,6 +112,7 @@ function configRequests (req) {
         })
       }
       break
+    }
 
     default:
       console.error(url)

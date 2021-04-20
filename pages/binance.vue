@@ -356,8 +356,8 @@ export default {
     async fetchTrades () {
       this.loading = true
       if (this.$store.getters.repositorys.length === 0) {
-        await this.$store.dispatch('loadRepositorys')
         console.info('Loading repositories')
+        await this.$store.dispatch('loadRepositorys')
       }
       const repo = this.$store.getters.repositoryFromSlug('binance')
       const pairs = repo?.pairs // .slice(0, 4)
