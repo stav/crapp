@@ -36,27 +36,6 @@ async function binance (req, res) {
 }
 
 /*
-** API request helper to massage the data
-*/
-function postProcess (data) {
-  // If we are processing a balances request then just pull out the balances
-  if ('balances' in data) {
-    return {
-      balances:
-        (data.balances.balances || [])
-          .map(balance => ({
-            asset: balance.asset,
-            free: parseFloat(balance.free),
-            locked: parseFloat(balance.locked),
-          }))
-          .filter(balance => balance.free || balance.locked)
-    }
-  }
-  // Otherwise just return the data untouched
-  return data
-}
-
-/*
 ** API request helper to configure requests based on the URL
 */
 function configRequests (req) {
@@ -126,7 +105,7 @@ function configRequests (req) {
 async function resolveRequests (requests) {
   const data = { error: [] }
   for (const request of requests) {
-    console.log('request', request)
+    console.log('api.binance resolveRequests', request)
     try {
       const response = await axios(request.config)
       data[request.key] = response.data
@@ -142,6 +121,27 @@ async function resolveRequests (requests) {
   if (data.error.length === 0) {
     delete data.error
   }
+  return data
+}
+
+/*
+** API request helper to massage the data
+*/
+function postProcess (data) {
+  // If we are processing a balances request then just pull out the balances
+  if ('balances' in data) {
+    return {
+      balances:
+        (data.balances.balances || [])
+          .map(balance => ({
+            asset: balance.asset,
+            free: parseFloat(balance.free),
+            locked: parseFloat(balance.locked),
+          }))
+          .filter(balance => balance.free || balance.locked)
+    }
+  }
+  // Otherwise just return the data untouched
   return data
 }
 
