@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import axios from 'axios'
+import { tradesProcessor } from './binance.process'
 
 /*
 ** Binance API Server Middleware
@@ -146,9 +147,7 @@ function postProcess (data) {
     }
   }
   if (data.type === 'trades') {
-    console.log('api.binance postProcess 2:', data)
-    delete data.type
-    return data
+    return tradesProcessor(data)
   }
   // Otherwise just return the data untouched
   return data

@@ -246,14 +246,13 @@ export default {
       { text: 'Networks', value: 'networks', filterable: false },
     ],
     headersTrades: [
-      { text: 'time', value: 'time', filterable: false, groupable: false },
-      { text: 'symbol', value: 'symbol', filterable: true, align: 'center' },
-      { text: 'order#', value: 'orderId', filterable: false, align: 'center' },
-      { text: 'qty', value: 'qty', filterable: false, groupable: false, align: 'end' },
-      { text: 'price', value: 'price', filterable: false, groupable: false, align: 'end' },
-      { text: 'buyer', value: 'isBuyer', filterable: false, align: 'center' },
-      { text: 'maker', value: 'isMaker', filterable: false, align: 'center' },
-      { text: 'commission', value: 'commissionAsset', filterable: true },
+      { text: 'Time', value: 'time', filterable: false, groupable: false },
+      { text: 'Pair', value: 'pair', filterable: true, align: 'center' },
+      { text: 'Order#', value: 'order', filterable: false, align: 'center' },
+      { text: 'Quantity', value: 'qty', filterable: false, groupable: false, align: 'end' },
+      { text: 'Price', value: 'price', filterable: false, groupable: false, align: 'end' },
+      { text: 'Buyer', value: 'isBuyer', filterable: false, align: 'center' },
+      { text: 'Maker', value: 'isMaker', filterable: false, align: 'center' },
     ],
   }),
 
@@ -364,14 +363,11 @@ export default {
       const trades = await postData('trades', { pairs })
       console.log('fetchTrades', trades)
       const _trades = []
-      for (const pair in trades) {
-        console.log('pair', pair)
-        for (const trade of trades[pair]) {
-          const classes = { classest: trade.isBuyer ? 'green darken-4' : 'red darken-4' }
-          const _trade = Object.assign({}, trade, classes)
-          console.log('trade', _trade)
-          _trades.push(_trade)
-        }
+      for (const trade of trades) {
+        const classes = { classest: trade.isBuyer ? 'green darken-4' : 'red darken-4' }
+        const _trade = Object.assign({}, trade, classes)
+        console.log('trade', _trade)
+        _trades.push(_trade)
       }
       this.trades = _trades
       this.loading = false
