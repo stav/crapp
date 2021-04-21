@@ -16,10 +16,10 @@ export default async function (req, res) {
 
 async function binance (req, res) {
   // Configure the requests
-  const requests = configRequests(req)
+  const recourse = configRequests(req)
 
-  // Make the reqeuest to the host(s)
-  let data = await resolveRequests(requests)
+  // Make the requests
+  let data = await resolveRequests(recourse)
 
   // Process the data
   data = postProcess(data)
@@ -39,6 +39,7 @@ async function binance (req, res) {
 ** API request helper to configure requests based on the URL
 */
 function configRequests (req) {
+  let type
   const requests = []
   const url = new URL('http://example.com' + req.url)
   console.log('api/binance/configRequests', url, typeof req.body, req.body)
@@ -46,6 +47,7 @@ function configRequests (req) {
   // Configure the requests
   switch (url.pathname) {
     case '/balances':
+      type = 'balances'
       requests.push({ key: 'balances', config: configSignedRequest('/api/v3/account') })
       break
 
@@ -83,6 +85,7 @@ function configRequests (req) {
     }
 
     case '/trades': {
+      type = 'trades'
       const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
       for (const pair of pairs) {
         requests.push({
@@ -96,15 +99,15 @@ function configRequests (req) {
     default:
       console.error(url)
   }
-  return requests
+  return { type, requests }
 }
 
 /*
 ** API request helper to make the configured requests
 */
-async function resolveRequests (requests) {
-  const data = { error: [] }
-  for (const request of requests) {
+async function resolveRequests (recourse) {
+  const data = { type: recourse.type, error: [] }
+  for (const request of recourse.requests) {
     console.log('api.binance resolveRequests', request)
     try {
       const response = await axios(request.config)
@@ -128,8 +131,9 @@ async function resolveRequests (requests) {
 ** API request helper to massage the data
 */
 function postProcess (data) {
+  console.log('api.binance postProcess 1:', data)
   // If we are processing a balances request then just pull out the balances
-  if ('balances' in data) {
+  if (data.type === 'balances') {
     return {
       balances:
         (data.balances.balances || [])
@@ -140,6 +144,11 @@ function postProcess (data) {
           }))
           .filter(balance => balance.free || balance.locked)
     }
+  }
+  if (data.type === 'trades') {
+    console.log('api.binance postProcess 2:', data)
+    delete data.type
+    return data
   }
   // Otherwise just return the data untouched
   return data

@@ -362,7 +362,7 @@ export default {
       const repo = this.$store.getters.repositoryFromSlug('binance')
       const pairs = repo?.pairs // .slice(0, 4)
       const trades = await postData('trades', { pairs })
-      console.log('trades', trades)
+      console.log('fetchTrades', trades)
       const _trades = []
       for (const pair in trades) {
         console.log('pair', pair)
