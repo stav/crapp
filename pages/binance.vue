@@ -85,9 +85,6 @@
           </v-data-table>
         </v-col>
         <v-col cols="12" v-show="trades.length">
-          <v-btn color="primary" icon @click="toggleAll" title="Toggle all groups"><v-icon>mdi-plus-minus-variant</v-icon></v-btn>
-          <v-btn color="primary" icon @click="closeAll" title="Close all groups"><v-icon>mdi-minus</v-icon></v-btn>
-          <v-btn color="primary" icon @click="openAll" title="Open all groups"><v-icon>mdi-plus</v-icon></v-btn>
           <v-data-table
             dense
             :headers="headersTrades"
@@ -98,9 +95,6 @@
             :items-per-page="-1"
             sort-by="time"
             :sort-desc="true"
-            multi-sort
-            group-by="orderId"
-            show-group-by
             show-expand
           >
             <template v-slot:top>
@@ -131,25 +125,6 @@
               <td :colspan="headersTrades.length">
                 {{ item }}
               </td>
-            </template>
-
-            <template v-slot:group.header="{ group, groupBy, headers, items, toggle, isOpen, remove }">
-              <th>
-                <v-btn small icon :ref="group" @click="toggle" :data-open="isOpen">
-                  <v-icon v-if="isOpen" title="Collapse group">mdi-minus</v-icon>
-                  <v-icon v-else title="Expand group">mdi-plus</v-icon>
-                </v-btn>
-                <v-btn icon small @click="remove" title="Remove all groups">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-                {{ groupBy[0] }}: {{ group }}
-              </th>
-              <th
-                v-for="header of headers.filter(h => h.value !== 'data-table-expand')" :key="header.value"
-                :class="'font-weight-black font-italic ' + (items[0].classest) + ' ' + (header.align ? `text-${header.align}` : '')"
-              >
-                {{ getGroupHeader(header, items) }}
-              </th>
             </template>
           </v-data-table>
         </v-col>
@@ -203,24 +178,6 @@ async function postData(resource = '', data = {}) {
   return response.json() // parses JSON response into native JavaScript objects
 }
 
-function sumItemQuantity (items) {
-  return items.reduce(
-    (total, item) => total + parseFloat(item.qty),
-    0 // Initialize sum at zero
-  )
-}
-
-function weightedPrice (items) {
-  return items.reduce(
-    (total, item) => total + parseFloat(item.qty) * parseFloat(item.price),
-    0 // Initialize sum at zero
-  )
-}
-
-function weightedAveragePrice (items) {
-  return weightedPrice(items) / sumItemQuantity(items)
-}
-
 export default {
 
   components: { 'json-view': JSONView },
@@ -246,11 +203,11 @@ export default {
       { text: 'Networks', value: 'networks', filterable: false },
     ],
     headersTrades: [
-      { text: 'Time', value: 'time', filterable: false, groupable: false },
+      { text: 'Time', value: 'time', filterable: false },
       { text: 'Pair', value: 'pair', filterable: true, align: 'center' },
       { text: 'Order#', value: 'order', filterable: false, align: 'center' },
-      { text: 'Quantity', value: 'qty', filterable: false, groupable: false, align: 'end' },
-      { text: 'Price', value: 'price', filterable: false, groupable: false, align: 'end' },
+      { text: 'Quantity', value: 'qty', filterable: false, align: 'end' },
+      { text: 'Price', value: 'price', filterable: false, align: 'end' },
       { text: 'Buyer', value: 'isBuyer', filterable: false, align: 'center' },
       { text: 'Maker', value: 'isMaker', filterable: false, align: 'center' },
     ],
@@ -371,53 +328,6 @@ export default {
       }
       this.trades = _trades
       this.loading = false
-    },
-    getGroupHeader (header, items) {
-      // console.log(props)
-      switch (header.value) {
-        case 'time':
-          return new Date(items[0].time)
-
-        case 'qty':
-          return formatAmount(sumItemQuantity(items), 8)
-
-        case 'price': {
-          return formatAmount(weightedAveragePrice(items), 6)
-        }
-
-        default:
-          return items[0][header.value]
-      }
-    },
-    toggleAll () {
-      for (const ref in this.$refs) {
-        if (Object.prototype.hasOwnProperty.call(this.$refs, ref)) {
-          const group = this.$refs[ref]
-          if (group) {
-            group.$el.click()
-          }
-        }
-      }
-    },
-    closeAll () {
-      for (const ref in this.$refs) {
-        if (Object.prototype.hasOwnProperty.call(this.$refs, ref)) {
-          const group = this.$refs[ref]
-          if (group && group.$attrs['data-open']) {
-            group.$el.click()
-          }
-        }
-      }
-    },
-    openAll () {
-      for (const ref in this.$refs) {
-        if (Object.prototype.hasOwnProperty.call(this.$refs, ref)) {
-          const group = this.$refs[ref]
-          if (group && !group.$attrs['data-open']) {
-            group.$el.click()
-          }
-        }
-      }
     },
   },
 }
