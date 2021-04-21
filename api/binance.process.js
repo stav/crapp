@@ -32,12 +32,11 @@ function weightedAveragePrice (partials) {
 }
 
 export function tradesProcessor (data) {
-  console.log('api.binance postProcess 2:', data)
   delete data.type
   const orders = []
   for (const pair in data) {
-    console.log('pair', pair)
     const partials = {}
+    // Group all partials by order id
     for (const partial of data[pair]) {
       if (partial.orderId in partials) {
         partials[partial.orderId].push(partial)
@@ -45,11 +44,12 @@ export function tradesProcessor (data) {
         partials[partial.orderId] = [partial]
       }
     }
-    console.log('Partials:', partials)
+    // Aggregate partials into single orders
     for (const orderId in partials) {
       const pgroup = partials[orderId]
-      console.log(orderId, pgroup)
       const pairs = Array.from(new Set(pgroup.map(p => p.symbol)))
+      const buyer = Array.from(new Set(pgroup.map(p => p.isBuyer)))
+      const maker = Array.from(new Set(pgroup.map(p => p.isMaker)))
       orders.push({
         pair: pairs.length === 1 ? pairs[0] : pairs,
         time: parseInt(avgPartialTime(pgroup)),
@@ -58,9 +58,10 @@ export function tradesProcessor (data) {
         qty: sumPartialQuantity(pgroup),
         price: weightedAveragePrice(pgroup),
         commissions: listPartialCommissions(pgroup),
+        buyer: buyer.length === 1 ? buyer[0] : buyer,
+        maker: maker.length === 1 ? maker[0] : maker,
       })
     }
   }
-  console.log('Orders', orders)
   return orders
 }

@@ -90,7 +90,7 @@
             :headers="headersTrades"
             :search="searchTrades"
             :items="trades"
-            item-key="id"
+            item-key="order"
             item-class="classest"
             :items-per-page="-1"
             sort-by="time"
@@ -208,8 +208,8 @@ export default {
       { text: 'Order#', value: 'order', filterable: false, align: 'center' },
       { text: 'Quantity', value: 'qty', filterable: false, align: 'end' },
       { text: 'Price', value: 'price', filterable: false, align: 'end' },
-      { text: 'Buyer', value: 'isBuyer', filterable: false, align: 'center' },
-      { text: 'Maker', value: 'isMaker', filterable: false, align: 'center' },
+      { text: 'Buyer', value: 'buyer', filterable: false, align: 'center' },
+      { text: 'Maker', value: 'maker', filterable: false, align: 'center' },
     ],
   }),
 
@@ -321,7 +321,7 @@ export default {
       console.log('fetchTrades', trades)
       const _trades = []
       for (const trade of trades) {
-        const classes = { classest: trade.isBuyer ? 'green darken-4' : 'red darken-4' }
+        const classes = { classest: trade.buyer ? 'green darken-4' : 'red darken-4' }
         const _trade = Object.assign({}, trade, classes)
         console.log('trade', _trade)
         _trades.push(_trade)
