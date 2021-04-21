@@ -1,5 +1,5 @@
-export function formatAmount (value) {
-  return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value)
+export function formatAmount (value, maximumSignificantDigits = 3) {
+  return new Intl.NumberFormat('en-US', { maximumSignificantDigits }).format(value)
 }
 
 export function formatCurrency (value) {

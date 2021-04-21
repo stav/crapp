@@ -90,12 +90,11 @@
             :headers="headersTrades"
             :search="searchTrades"
             :items="trades"
-            item-key="id"
+            item-key="order"
             item-class="classest"
             :items-per-page="-1"
             sort-by="time"
             :sort-desc="true"
-            multi-sort
             show-expand
           >
             <template v-slot:top>
@@ -204,13 +203,13 @@ export default {
       { text: 'Networks', value: 'networks', filterable: false },
     ],
     headersTrades: [
-      { text: 'buyer', value: 'isBuyer', filterable: false, align: 'center' },
-      { text: 'maker', value: 'isMaker', filterable: false, align: 'center' },
-      { text: 'qty', value: 'qty', filterable: false, align: 'end' },
-      { text: 'price', value: 'price', filterable: false, align: 'end' },
-      { text: 'symbol', value: 'symbol', filterable: true, align: 'center' },
-      { text: 'time', value: 'time', filterable: true },
-      { text: 'commissionAsset', value: 'commissionAsset', filterable: true },
+      { text: 'Time', value: 'time', filterable: false },
+      { text: 'Pair', value: 'pair', filterable: true, align: 'center' },
+      { text: 'Order#', value: 'order', filterable: false, align: 'center' },
+      { text: 'Quantity', value: 'qty', filterable: false, align: 'end' },
+      { text: 'Price', value: 'price', filterable: false, align: 'end' },
+      { text: 'Buyer', value: 'buyer', filterable: false, align: 'center' },
+      { text: 'Maker', value: 'maker', filterable: false, align: 'center' },
     ],
   }),
 
@@ -246,7 +245,7 @@ export default {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
     },
     formatAmount (value) {
-      return formatAmount(value)
+      return formatAmount(value, 6)
     },
     async fetchPrice (balance) {
       this.loading = true
@@ -313,22 +312,19 @@ export default {
     async fetchTrades () {
       this.loading = true
       if (this.$store.getters.repositorys.length === 0) {
-        await this.$store.dispatch('loadRepositorys')
         console.info('Loading repositories')
+        await this.$store.dispatch('loadRepositorys')
       }
       const repo = this.$store.getters.repositoryFromSlug('binance')
-      const pairs = repo?.pairs //.slice(0, 4)
+      const pairs = repo?.pairs // .slice(0, 4)
       const trades = await postData('trades', { pairs })
-      console.log('trades', trades)
+      console.log('fetchTrades', trades)
       const _trades = []
-      for (const pair in trades) {
-        console.log('pair', pair)
-        for (const trade of trades[pair]) {
-          const classes = { classest: trade.isBuyer ? 'green darken-4' : 'red darken-4' }
-          const _trade = Object.assign({}, trade, classes)
-          console.log('trade', _trade)
-          _trades.push(_trade)
-        }
+      for (const trade of trades) {
+        const classes = { classest: trade.buyer ? 'green darken-4' : 'red darken-4' }
+        const _trade = Object.assign({}, trade, classes)
+        console.log('trade', _trade)
+        _trades.push(_trade)
       }
       this.trades = _trades
       this.loading = false

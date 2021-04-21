@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import axios from 'axios'
+import { tradesProcessor } from './binance.process'
 
 /*
 ** Binance API Server Middleware
@@ -16,10 +17,10 @@ export default async function (req, res) {
 
 async function binance (req, res) {
   // Configure the requests
-  const requests = configRequests(req)
+  const recourse = configRequests(req)
 
-  // Make the reqeuest to the host(s)
-  let data = await resolveRequests(requests)
+  // Make the requests
+  let data = await resolveRequests(recourse)
 
   // Process the data
   data = postProcess(data)
@@ -36,39 +37,18 @@ async function binance (req, res) {
 }
 
 /*
-** API request helper to massage the data
-*/
-function postProcess (data) {
-  // If we are processing a balances request then just pull out the balances
-  if ('balances' in data) {
-    return {
-      balances:
-        (data?.balances?.balances || []) // Optional Chaining https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html
-          .map(balance => ({
-            asset: balance.asset,
-            free: parseFloat(balance.free),
-            locked: parseFloat(balance.locked),
-          }))
-          .filter(balance => balance.free || balance.locked)
-    }
-  }
-  // Otherwise just return the data untouched
-  return data
-}
-
-/*
 ** API request helper to configure requests based on the URL
 */
 function configRequests (req) {
+  let type
   const requests = []
   const url = new URL('http://example.com' + req.url)
   console.log('api/binance/configRequests', url, typeof req.body, req.body)
-  const symbol = url.searchParams.has('asset') ? url.searchParams.get('asset') + 'USDT' : null
-  const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
 
   // Configure the requests
   switch (url.pathname) {
     case '/balances':
+      type = 'balances'
       requests.push({ key: 'balances', config: configSignedRequest('/api/v3/account') })
       break
 
@@ -99,11 +79,15 @@ function configRequests (req) {
       requests.push({ key: 'prices', config: configRequest('/api/v3/ticker/price') })
       break
 
-    case '/price':
+    case '/price': {
+      const symbol = url.searchParams.has('asset') ? url.searchParams.get('asset') + 'USDT' : null
       requests.push({ key: 'data', config: configRequest('/api/v3/ticker/price', { symbol }) })
       break
+    }
 
-    case '/trades':
+    case '/trades': {
+      type = 'trades'
+      const pairs = req.method === 'POST' ? JSON.parse(req.body).pairs : []
       for (const pair of pairs) {
         requests.push({
           key: pair,
@@ -111,20 +95,21 @@ function configRequests (req) {
         })
       }
       break
+    }
 
     default:
       console.error(url)
   }
-  return requests
+  return { type, requests }
 }
 
 /*
 ** API request helper to make the configured requests
 */
-async function resolveRequests (requests) {
-  const data = { error: [] }
-  for (const request of requests) {
-    console.log('request', request)
+async function resolveRequests (recourse) {
+  const data = { type: recourse.type, error: [] }
+  for (const request of recourse.requests) {
+    console.log('api.binance resolveRequests', request)
     try {
       const response = await axios(request.config)
       data[request.key] = response.data
@@ -140,6 +125,31 @@ async function resolveRequests (requests) {
   if (data.error.length === 0) {
     delete data.error
   }
+  return data
+}
+
+/*
+** API request helper to massage the data
+*/
+function postProcess (data) {
+  console.log('api.binance postProcess 1:', data)
+  // If we are processing a balances request then just pull out the balances
+  if (data.type === 'balances') {
+    return {
+      balances:
+        (data.balances.balances || [])
+          .map(balance => ({
+            asset: balance.asset,
+            free: parseFloat(balance.free),
+            locked: parseFloat(balance.locked),
+          }))
+          .filter(balance => balance.free || balance.locked)
+    }
+  }
+  if (data.type === 'trades') {
+    return tradesProcessor(data)
+  }
+  // Otherwise just return the data untouched
   return data
 }
 
