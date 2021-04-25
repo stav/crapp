@@ -34,7 +34,7 @@ export const state = () => ({
   sparkPair: {},
   sparks: {},
   binanceTrades: [],
-
+  tradingviewSymbols: {},
   Transaction: [],
   Repository: [],
   Statement: [],

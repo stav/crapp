@@ -123,6 +123,10 @@ export default {
     Object.assign(coin, data)
   },
 
+  setTradingviewSymbol (state, data) {
+    state.tradingviewSymbols[data.symbol] = data.string
+  },
+
   setBinanceBalances (state, balances) {
     setGeneralAccounts(
       state.Repository.find(repo => repo.name === 'Binance'),
