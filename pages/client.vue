@@ -252,8 +252,6 @@ export default {
     /*
     ** fetchJson
     **
-    ** cryptocompare.com
-    **
     **   {
     **     "Response": "Error",
     **     "Message": "Path does not exist",
