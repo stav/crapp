@@ -10,7 +10,7 @@
       <v-icon>mdi-minus</v-icon>
     </v-btn>
 
-    <v-toolbar-title> CrApp </v-toolbar-title>
+    <v-toolbar-title id="crapp-title"> CrApp </v-toolbar-title>
 
     <v-card :loading="loading" v-if="weHaveCoins">
       <v-card-actions>
@@ -122,3 +122,10 @@ export default {
 
 }
 </script>
+
+<style scoped>
+  #crapp-title {
+    width: 75px;
+    margin-right: 5px;
+  }
+</style>
