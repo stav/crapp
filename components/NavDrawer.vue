@@ -69,6 +69,11 @@ export default {
           to: '/sparks'
         },
         {
+          title: 'Minis',
+          icon: 'mdi-chart-line-variant',
+          to: '/minis'
+        },
+        {
           title: 'Statements',
           icon: 'mdi-script-text-outline',
           to: '/statements'
