@@ -59,9 +59,19 @@ export default {
           to: '/history'
         },
         {
+          title: 'Chart',
+          icon: 'mdi-chart-areaspline',
+          to: '/chart'
+        },
+        {
           title: 'Sparks',
           icon: 'mdi-chart-line-variant',
           to: '/sparks'
+        },
+        {
+          title: 'Minis',
+          icon: 'mdi-chart-line-variant',
+          to: '/minis'
         },
         {
           title: 'Statements',
@@ -77,6 +87,11 @@ export default {
           title: 'Client',
           icon: 'mdi-fruit-citrus',
           to: '/client'
+        },
+        {
+          title: 'TradingView',
+          icon: 'mdi-fruit-cherries',
+          to: '/tradingview'
         },
       ],
     }

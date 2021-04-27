@@ -62,8 +62,6 @@ async function resolve (requests) {
 
 /*
 ** API request helper for general endpoints
-**
-** See nuxt.config.js for privateRuntimeConfig
 */
 function configRequest (path, params = {}) {
   // Send back the request configuration

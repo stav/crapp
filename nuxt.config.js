@@ -31,8 +31,7 @@ export default {
   ** See https://nuxtjs.org/api/configuration-head
   */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    title: 'CrApp',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -40,6 +39,9 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ],
+    script: [
+      { src: 'https://s3.tradingview.com/tv.js' } // only needed for pages/chart.vue
     ]
   },
 
@@ -70,6 +72,7 @@ export default {
     { path: '/api/coinmarketcap', handler: '~/api/coinmarketcap' },
     { path: '/api/cryptocompare', handler: '~/api/cryptocompare' },
     { path: '/api/coinbasepro', handler: '~/api/coinbasepro' },
+    { path: '/api/tradingview', handler: '~/api/tradingview' },
     { path: '/api/coinbase', handler: '~/api/coinbase' },
     { path: '/api/bitfinex', handler: '~/api/bitfinex' },
     { path: '/api/binance', handler: '~/api/binance' },

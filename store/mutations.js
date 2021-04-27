@@ -123,6 +123,18 @@ export default {
     Object.assign(coin, data)
   },
 
+  setGoing (state) {
+    state.going = true
+  },
+
+  setSymbolExchanges (state, { symbolPair, exchanges }) {
+    state.symbolExchanges[symbolPair] = exchanges
+  },
+
+  setTradingviewSymbol (state, { symbol, string }) {
+    state.tradingviewSymbols[symbol] = string
+  },
+
   setBinanceBalances (state, balances) {
     setGeneralAccounts(
       state.Repository.find(repo => repo.name === 'Binance'),

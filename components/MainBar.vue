@@ -10,28 +10,48 @@
       <v-icon>mdi-minus</v-icon>
     </v-btn>
 
-    <v-toolbar-title> CrApp </v-toolbar-title>
+    <v-toolbar-title id="crapp-title"> CrApp </v-toolbar-title>
 
-    <v-spacer />
     <v-card :loading="loading" v-if="weHaveCoins">
       <v-card-actions>
         <v-btn
           @click="loadPrices"
           title="Press to fetch latest prices"
-          small class="accent"
+          small icon class="accent"
         >
-          Prices
+          <v-icon>mdi-currency-usd</v-icon>
         </v-btn>
         <v-btn
           @click="loadCoinsData"
           title="Press to fetch general coin data"
-          small class="accent"
+          small icon class="accent"
         >
-          Coins
+          <v-icon>mdi-currency-btc</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
+
     <v-spacer />
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container" v-if="going">
+      <div class="tradingview-widget-container__widget" />
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
+        {
+        "symbols": [
+        { "proName": "BITSTAMP:BTCUSD", "title": "BTC/USD" },
+        { "proName": "BITSTAMP:ETHUSD", "title": "ETH/USD" },
+        { "description": "ETH/BTC", "proName": "COINBASE:ETHBTC" },
+        { "description": "DOT/USD", "proName": "KRAKEN:DOTUSD" },
+        { "description": "VET/USD", "proName": "BINANCE:VETUSD" }
+        ],
+        "colorTheme": "dark",
+        "isTransparent": true,
+        "showSymbolLogo": true,
+        "locale": "en"
+        }
+      </script>
+    </div>
+    <!-- TradingView Widget END -->
 
     <v-btn icon @click.stop="toggleFlyout" title="Toggle coin/repo flyout">
       <v-icon>mdi-bitcoin</v-icon>
@@ -53,6 +73,9 @@ export default {
   ** COMPUTED
   */
   computed: {
+    going () {
+      return this.$store.state.going
+    },
     navDrawer: {
       get () {
         return this.$store.state.navDrawer
@@ -102,3 +125,10 @@ export default {
 
 }
 </script>
+
+<style scoped>
+  #crapp-title {
+    width: 75px;
+    margin-right: 5px;
+  }
+</style>
