@@ -1,9 +1,15 @@
 import { loadRepositorys } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
+import { loadTradingviewExchanges } from './tradingView'
 import fetchPrices from './fetchPrices'
 import fetchCoins from './fetchCoins'
 
 export default {
+
+  async getThingsGoing ({ commit }) {
+    commit('setGoing')
+    await loadTradingviewExchanges(commit)
+  },
 
   // nuxtServerInit (store, context) {
   //   for (const key in context) {

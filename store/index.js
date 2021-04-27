@@ -38,5 +38,7 @@ export const state = () => ({
   Repository: [],
   Statement: [],
   Coin: [],
+  going: false,
+  symbolExchanges: {},
   tradingviewSymbols: {},
 })

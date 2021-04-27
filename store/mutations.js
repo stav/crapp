@@ -123,8 +123,16 @@ export default {
     Object.assign(coin, data)
   },
 
-  setTradingviewSymbol (state, data) {
-    state.tradingviewSymbols[data.symbol] = data.string
+  setGoing (state) {
+    state.going = true
+  },
+
+  setSymbolExchanges (state, { symbolPair, exchanges }) {
+    state.symbolExchanges[symbolPair] = exchanges
+  },
+
+  setTradingviewSymbol (state, { symbol, string }) {
+    state.tradingviewSymbols[symbol] = string
   },
 
   setBinanceBalances (state, balances) {

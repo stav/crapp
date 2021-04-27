@@ -2,27 +2,40 @@ import axios from 'axios'
 
 /*
 ** TradingView API Server Middleware
+**
+** Response body is received and assembled in chunks on each 'data' event.
+**
+** Calls 'tradingView()' on 'end' event.
 */
+// eslint-disable-next-line require-await
 export default async function (req, res) {
+  req.body = ''
+  req.on('data', (chunk) => { req.body += chunk.toString() })
+  req.on('end', async () => { await tradingView(req, res) })
+}
+
+/*
+** Request -> config -> resolve -> Response
+*/
+async function tradingView (req, res) {
   res.end(
     JSON.stringify(
       await resolve(
-        config(req.url))))
+        config(req))))
 }
 
 /*
 ** API request helper to configure requests based on the URL
 */
-function config (url) {
+function config (request) {
   const requests = []
-  const _url = new URL('http://example.com' + url)
+  const url = new URL('http://example.com' + request.url)
 
-  // Configure the requests
-  switch (_url.pathname) {
+  switch (url.pathname) {
     case '/search': {
       const params = {
         hl: true,
-        text: _url.searchParams.get('pair'),
+        text: url.searchParams.get('pair'),
         lang: 'en',
         type: 'crypto',
         domain: 'production',
@@ -33,22 +46,63 @@ function config (url) {
       })
       break
     }
+    case '/search/all': {
+      console.log('api all >>>', request.url, request.body)
+      const symbolpairs = JSON.parse(request.body)
+      console.log(symbolpairs)
+      for (const symbols of symbolpairs) {
+        const pair = symbols.join('')
+        const params = {
+          hl: true,
+          text: pair,
+          lang: 'en',
+          type: 'crypto',
+          domain: 'production',
+        }
+        requests.push({
+          name: 'searchall',
+          key: pair,
+          symbols,
+          config: configRequest('symbol_search/', params),
+        })
+      }
+      break
+    }
 
     default:
-      console.error(url)
+      console.error(request.url)
   }
   return requests
 }
 
 /*
 ** API request helper to make the configured requests
+**
+** Uses 'process()' function for each request/response.
+**
+**   requests = [ {
+**     name: 'searchall',
+**     key: 'BTCUSD',
+**     symbols: [
+**       'BTC',
+**       'USD'
+**     ],
+**     config: {
+**       baseURL: 'https://symbol-search.tradingview.com/',
+**       url: 'symbol_search/',
+**       method: 'GET',
+**       headers: {},
+**       params: [Object]
+**     }
+**   }, ...]
 */
 async function resolve (requests) {
   const data = { error: [] }
+  console.log('requests', requests)
   for (const request of requests) {
     try {
       const response = await axios(request.config)
-      data[request.key] = response.data
+      data[request.key] = process(request, response)
     } catch (error) {
       data.error.push(error)
     }
@@ -60,9 +114,37 @@ async function resolve (requests) {
 }
 
 /*
+** API individual response processor
+**
+** searchall:
+**
+**     { symbol: '<em>BTCUSD</em>T',
+**       description: 'Bitcoin / USD Tether',
+**       type: 'crypto',
+**       exchange: 'FTX',
+**       provider_id: 'ftx',
+**  ->   symbols: [ 'BTC', 'USD' ] },
+*/
+function process (request, response) {
+  if (request.name === 'searchall') {
+    // Add individual request symbols to response data
+    response.data = response.data.map(d => ({ ...d, symbols: request.symbols }))
+  }
+  return response.data
+}
+
+/*
 ** API request helper for general endpoints
 **
-** See nuxt.config.js for privateRuntimeConfig
+** path = 'symbol_search/'
+**
+** params = {
+**   hl: true,
+**   text: 'BTCUSD',
+**   lang: 'en',
+**   type: 'crypto',
+**   domain: 'production'
+** }
 */
 function configRequest (path, params = {}) {
   // Send back the request configuration

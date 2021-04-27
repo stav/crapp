@@ -33,7 +33,7 @@
 
     <v-spacer />
     <!-- TradingView Widget BEGIN -->
-    <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container" v-if="going">
       <div class="tradingview-widget-container__widget" />
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
         {
@@ -73,6 +73,9 @@ export default {
   ** COMPUTED
   */
   computed: {
+    going () {
+      return this.$store.state.going
+    },
     navDrawer: {
       get () {
         return this.$store.state.navDrawer
