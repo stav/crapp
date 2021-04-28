@@ -5,7 +5,7 @@
     <main-bar />
     <v-main>
       <v-container fluid>
-        <nuxt />
+        <nuxt keep-alive />
       </v-container>
     </v-main>
     <c-footer />
