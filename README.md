@@ -1,4 +1,10 @@
-# CrApp
+# CrApp - The Crypto App
+
+Keep track of your crypto portfolio with exchange APIs and local text files.
+
+![Chart](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp/chart.png)
+
+![Chart](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp/minis.png)
 
 ## Build Setup
 
