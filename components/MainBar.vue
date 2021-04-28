@@ -38,11 +38,13 @@
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
         {
         "symbols": [
-        { "proName": "BITSTAMP:BTCUSD", "title": "BTC/USD" },
-        { "proName": "BITSTAMP:ETHUSD", "title": "ETH/USD" },
-        { "description": "ETH/BTC", "proName": "COINBASE:ETHBTC" },
-        { "description": "DOT/USD", "proName": "KRAKEN:DOTUSD" },
-        { "description": "VET/USD", "proName": "BINANCE:VETUSD" }
+        { "proName": "FX_IDC:CNYEUR", "title": "元 / Euro" },
+        { "proName": "FX_IDC:EURUSD"   },
+        { "proName": "COINBASE:BTCUSD" },
+        { "proName": "COINBASE:ETHUSD" },
+        { "proName": "COINBASE:ETHBTC" },
+        { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
+        { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" }
         ],
         "colorTheme": "dark",
         "isTransparent": true,
