@@ -1,57 +1,49 @@
 <template>
   <v-card class="mx-auto">
     <v-app-bar :color="sheetColor">
-      <v-icon class="mr-2">mdi-chart-line-variant</v-icon> Minis
+      <v-icon class="mr-2">mdi-chart-line-variant</v-icon>
+      Minis
+      <v-btn icon @click="tradingView" title="Reload all mini charts"><v-icon>mdi-reload</v-icon></v-btn>
+      <v-btn
+        v-for="symbol of symbols" :key="symbol"
+        @click="() => chart(symbol)"
+        v-text="symbol"
+        :disabled="disabled(symbol)"
+        :color="color(symbol)"
+        class="mr-1"
+        x-small
+      />
     </v-app-bar>
-    <v-container>
-      <v-row>
-        <v-col cols="2">
-          <v-btn @click="tradingView" color="primary"> TradingView </v-btn>
-          <v-btn
-            v-for="symbol of symbols" :key="symbol"
-            @click="() => chart(symbol)"
-            v-text="symbol"
-            :disabled="disabled(symbol)"
-            :color="color(symbol)"
-            class="mr-1 mb-1"
-          />
-        </v-col>
-        <v-col cols="10">
-          <v-container>
-            <v-row no-gutters>
-              <v-col v-for="(exchangeSymbolPair, symbol) in sparks" :key="symbol">
-                <v-card class="ma-1" max-width="200">
-                  <v-sheet :color="sheetColor" width="200">
-                    <v-btn @click="() => flyCoin(symbol, true)" color="primary" v-text="symbol" title="Fly coin" />
-                    <!-- TradingView Widget BEGIN -->
-                    <div class="tradingview-widget-container">
-                      <div class="tradingview-widget-container__widget" />
-                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                        {
-                        "symbol": "{{ exchangeSymbolPair }}",
-                        "width": "200",
-                        "height": "180",
-                        "locale": "en",
-                        "dateRange": "6M",
-                        "colorTheme": "dark",
-                        "trendLineColor": "#37a6ef",
-                        "underLineColor": "rgba(0, 255, 255, 0.15)",
-                        "isTransparent": true,
-                        "autosize": false,
-                        "largeChartUrl": ""
-                        }
-                      </script>
-                    </div>
+    <v-card
+      v-for="(exchangeSymbolPair, symbol) in sparks" :key="symbol"
+      max-width="200"
+      class="d-inline-flex"
+    >
+      <v-sheet :color="sheetColor" width="200" class="ml-1 mt-1">
+        <v-btn @click="() => flyCoin(symbol, true)" color="primary" v-text="symbol" title="Fly coin" />
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget" />
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {
+            "symbol": "{{ exchangeSymbolPair }}",
+            "width": "200",
+            "height": "180",
+            "locale": "en",
+            "dateRange": "1M",
+            "colorTheme": "dark",
+            "trendLineColor": "#37a6ef",
+            "underLineColor": "rgba(0, 255, 255, 0.15)",
+            "isTransparent": true,
+            "autosize": false,
+            "largeChartUrl": ""
+            }
+          </script>
+        </div>
 
-                    <!-- TradingView Widget END -->
-                  </v-sheet>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-col>
-      </v-row>
-    </v-container>
+        <!-- TradingView Widget END -->
+      </v-sheet>
+    </v-card>
   </v-card>
 </template>
 
@@ -145,9 +137,9 @@ export default {
       this.$store.commit('openCoinFlyout')
     },
 
-    async tradingView () {
+    tradingView () {
       for (const symbol of this.symbols) {
-        await this.chart(symbol)
+        this.chart(symbol)
       }
     },
 

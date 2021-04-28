@@ -10,16 +10,8 @@
 <script>
 export default {
   methods: {
-    async getThingsGoing () {
+    getThingsGoing () {
       this.$store.dispatch('getThingsGoing')
-      await this.$store.dispatch('loadRepositorys', { force: true })
-      await Promise.all([
-        this.$store.dispatch('loadBinanceBalances'),
-        this.$store.dispatch('loadCoinbaseAmateurAccounts'),
-        this.$store.dispatch('loadCoinbaseProAccounts'),
-      ])
-      this.$store.dispatch('fetchPrices', this.done)
-      this.$store.dispatch('fetchCoins', this.done)
     },
   },
 }
