@@ -1,4 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
+import webpack from 'webpack'
+import { version } from './package.json'
 
 export default {
   /*
@@ -18,13 +20,14 @@ export default {
   **
   ** See https://nuxtjs.org/guide/runtime-config
   ** See https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config#using-your-config-values
+  ** See https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
   **
   ** \/ Can't figure out how to get the Nuxt context in a server middleware
-  ** ^^ context.$config.coinbaseApiSecret is what we want
+  ** ^^ context.$config.someValue is what we want
   */
-  privateRuntimeConfig: {
-    coinbaseApiSecret: process.env.COINBASE_API_SECRET
-  },
+  // privateRuntimeConfig: {
+  //   someValue: process.env.someValueNotInRepository
+  // },
 
   /*
   ** Headers of the page
@@ -127,6 +130,15 @@ export default {
       if (isClient) {
         config.devtool = process.env.NODE_ENV === 'development' ? '#source-map' : ''
       }
-    }
+    },
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env.VERSION': JSON.stringify(version),
+        // The following do not seem to work as VUE_APP_BINANCE_API_KEY, etc in .env
+        'process.env.BINANCE_API': !!process.env.BINANCE_API_KEY,
+        'process.env.COINBASE_API': !!process.env.COINBASE_API_KEY,
+        'process.env.COINBASEPRO_API': !!process.env.COINBASEPRO_API_KEY,
+      })
+    ],
   }
 }

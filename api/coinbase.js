@@ -3,9 +3,6 @@ import axios from 'axios'
 
 /*
 ** Coinbase API Middleware
-**
-** See nuxt.config.js for privateRuntimeConfig
-** https://nuxtjs.org/guides/configuration-glossary/configuration-servermiddleware
 */
 export default async function (req, res) {
   // First: Create the URL

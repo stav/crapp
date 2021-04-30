@@ -8,7 +8,7 @@ export default {
 
   async getThingsGoing (ctx) {
     ctx.commit('setGoing')
-    await ctx.dispatch('loadRepositorys', { force: true })
+    await ctx.dispatch('loadRepositorys')
     await Promise.all([
       ctx.dispatch('loadBinanceBalances'),
       ctx.dispatch('loadCoinbaseAmateurAccounts'),
@@ -26,42 +26,48 @@ export default {
   // },
 
   async loadBinanceBalances (context, done) {
-    await loadGeneralAccounts(
-      'Binance',
-      'balances',
-      'asset',
-      '/api/binance/balances',
-      'setBinanceBalances',
-      () => true,
-      context,
-      done,
-    )
+    if (process.env.BINANCE_API) {
+      await loadGeneralAccounts(
+        'Binance',
+        'balances',
+        'asset',
+        '/api/binance/balances',
+        'setBinanceBalances',
+        () => true,
+        context,
+        done,
+      )
+    }
   },
 
   async loadCoinbaseAmateurAccounts (context, done) {
-    await loadGeneralAccounts(
-      'Coinbase',
-      'data',
-      'currency',
-      '/api/coinbase/v2/accounts',
-      'setCoinbaseAmateurAccounts',
-      account => parseFloat(account.balance.amount),
-      context,
-      done,
-    )
+    if (process.env.COINBASE_API) {
+      await loadGeneralAccounts(
+        'Coinbase',
+        'data',
+        'currency',
+        '/api/coinbase/v2/accounts',
+        'setCoinbaseAmateurAccounts',
+        account => parseFloat(account.balance.amount),
+        context,
+        done,
+      )
+    }
   },
 
   async loadCoinbaseProAccounts (context, done) {
-    await loadGeneralAccounts(
-      'Coinbase Pro',
-      null,
-      'currency',
-      '/api/coinbasepro/accounts',
-      'setCoinbaseProAccounts',
-      account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold),
-      context,
-      done,
-    )
+    if (process.env.COINBASEPRO_API) {
+      await loadGeneralAccounts(
+        'Coinbase Pro',
+        null,
+        'currency',
+        '/api/coinbasepro/accounts',
+        'setCoinbaseProAccounts',
+        account => parseFloat(account.available) || parseFloat(account.balance) || parseFloat(account.hold),
+        context,
+        done,
+      )
+    }
   },
 
   async loadKraken (context, { symbols, done }) {

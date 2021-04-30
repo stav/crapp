@@ -10,12 +10,12 @@ Keep track of your crypto portfolio with exchange APIs and local text files.
 
 The install uses and assumes you have [Yarn](https://yarnpkg.com/) installed.
 
-Change directories to the project root parent, clone this repository and then proceed as below:
+Change directories to the project parent directory, clone this repository and then proceed as below:
 
 ```bash
-cp data/repositorys.json.example data/repositorys.json
+cd crapp
 yarn
-cp 
+cp data/repositorys.json.example data/repositorys.json
 yarn dev
 ```
 

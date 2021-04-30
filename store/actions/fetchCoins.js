@@ -9,7 +9,6 @@ async function getCoins (symbols) {
   const result = await response.json()
 
   if (result.error) {
-    console.warn('getCoins', result.error)
     const e = result.error
     throw new Error(`${e.message}: ${e.text}`)
   }

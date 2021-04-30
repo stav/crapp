@@ -6,7 +6,12 @@
     :clipped="true"
   >
     <v-list>
-      <v-list-item exact nuxt router :to="item.to" v-for="(item, i) in items" :key="i" :title="item.title">
+      <v-list-item
+        exact nuxt router :to="item.to"
+        v-for="(item, i) in items" :key="i"
+        :title="item.title"
+        :disabled="item.disabled"
+      >
         <v-list-item-action>
           <v-icon v-if="item.icon" v-text="item.icon" />
           <v-img :src="item.image" v-if="item.image" class="image-icon-layout" />
@@ -36,11 +41,13 @@ export default {
         {
           title: 'Coinbase',
           image: coinbaseImageIcon,
+          disabled: !process.env.COINBASE_API,
           to: '/coinbase'
         },
         {
           title: 'Binance',
           image: binanceImageIcon,
+          disabled: !process.env.BINANCE_API,
           to: '/binance'
         },
         {

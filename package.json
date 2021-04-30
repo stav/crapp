@@ -1,6 +1,6 @@
 {
   "name": "crapp",
-  "version": "0.14.0",
+  "version": "0.24.1",
   "private": true,
   "scripts": {
     "dev": "nuxt-ts",

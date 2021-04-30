@@ -16,23 +16,26 @@ export default async function (req, res) {
 }
 
 async function binance (req, res) {
-  // Configure the requests
-  const recourse = configRequests(req)
+  let data
+  // Check to make sure we have the needed API KEY
+  if (process.env.BINANCE_API_KEY) {
+    data = postProcess(
+      await resolveRequests(
+        configRequests(req)))
+  } else {
+    const error = new Error('Binance API KEY needed for this request')
+    console.warn(error)
+    data = { error: [error] }
+  }
 
-  // Make the requests
-  let data = await resolveRequests(recourse)
-
-  // Process the data
-  data = postProcess(data)
-
-  // Send the response to the client
   if (data.error) {
-    const error = data.error.map(e => e.message).join(', ')
-    res.statusMessage = error || 'Server error'
+    data.error = data.error.map(e => e.message).join(', ')
+    res.statusMessage = data.error || 'Server error'
     res.statusCode = 422
   } else {
     res.statusCode = 200
   }
+  res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(data))
 }
 

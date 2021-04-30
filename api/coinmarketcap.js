@@ -7,16 +7,25 @@ import axios from 'axios'
 ** https://coinmarketcap.com/api/documentation/v1/
 */
 export default async function (req, res) {
-  // Configure the requests
-  const requests = configRequests(req.url)
+  let data
+  // Check to make sure we have the needed API KEY
+  if (process.env.COINMARKETCAP_API_KEY) {
+    data = postProcess(
+      await resolveRequests(
+        configRequests(req.url)))
+  } else {
+    const error = new Error('CoinMarketCap API KEY needed for this request')
+    console.warn(error)
+    data = { error: [error] }
+  }
 
-  // Make the reqeuest to the host(s)
-  let data = await resolveRequests(requests)
-
-  // Process the data
-  data = postProcess(data)
-
-  // Send the response to the client
+  if (data.error) {
+    data.error = data.error.map(e => e.message).join(', ')
+    res.statusMessage = data.error || 'Server error'
+    res.statusCode = 422
+  } else {
+    res.statusCode = 200
+  }
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(data))
 }
