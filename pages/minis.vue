@@ -3,12 +3,12 @@
     <v-app-bar :color="sheetColor">
       <v-icon class="mr-2">mdi-chart-line-variant</v-icon>
       Minis
-      <v-btn icon @click="tradingView" title="Reload all mini charts"><v-icon>mdi-reload</v-icon></v-btn>
+      <v-btn icon @click="tradingViewChartAll" title="Reload all mini charts"><v-icon>mdi-reload</v-icon></v-btn>
+      <v-btn icon @click="tradingViewCloseAll" title="Close all mini charts" class="negative-margin"><v-icon>mdi-close</v-icon></v-btn>
       <v-btn
         v-for="symbol of symbols" :key="symbol"
-        @click="() => chart(symbol)"
+        @click="() => tradingViewChart(symbol)"
         v-text="symbol"
-        :disabled="disabled(symbol)"
         :color="color(symbol)"
         class="mr-1"
         x-small
@@ -16,11 +16,24 @@
     </v-app-bar>
     <v-card
       v-for="(exchangeSymbolPair, symbol) in sparks" :key="symbol"
-      max-width="200"
+      :id="exchangeSymbolPair"
       class="d-inline-flex"
+      max-width="200"
     >
       <v-sheet :color="sheetColor" width="200" class="ml-1 mt-1">
-        <v-btn @click="() => flyCoin(symbol, true)" color="primary" v-text="symbol" title="Fly coin" />
+        <v-container class="pa-0">
+          <v-row no-gutters>
+            <v-col>
+              <v-btn @click="() => flyCoin(symbol, true)" v-text="symbol" color="primary" title="Fly coin" />
+            </v-col>
+            <v-col align-self="end" class="text-right">
+              <v-btn icon @click="(e) => unSpark(symbol, e)">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+
         <!-- TradingView Widget BEGIN -->
         <div class="tradingview-widget-container">
           <div class="tradingview-widget-container__widget" />
@@ -65,7 +78,6 @@ export default {
   ** DATA
   */
   data: () => ({
-    disableds: {},
     sparks: {}, // { ADA: "COINBASE:BTCUSD" }
     colors: {},
     sheetColor: COLOR,
@@ -94,10 +106,6 @@ export default {
       return this.colors[symbol] || 'accent'
     },
 
-    disabled (symbol) {
-      return this.disableds[symbol]
-    },
-
     async getTradingViewSymbol (symbol) {
       const state = this.$store.state
       if (symbol in state.tradingviewSymbols) {
@@ -116,13 +124,14 @@ export default {
       return string
     },
 
-    async chart (symbol) {
+    async tradingViewChart (symbol) {
       this.flyCoin(symbol)
       const data = await this.getTradingViewSymbol(symbol)
       if (data.length) {
         const value = {}
         value[symbol] = data
         this.sparks = Object.assign({}, this.sparks, value)
+
         const color = {}
         color[symbol] = COLOR
         this.colors = Object.assign({}, this.colors, color)
@@ -137,10 +146,26 @@ export default {
       this.$store.commit('openCoinFlyout')
     },
 
-    tradingView () {
+    unSpark (symbol, self) {
+      console.log('unSpark', symbol, this.sparks, self)
+      const sparks = Object.assign({}, this.sparks)
+      delete sparks[symbol]
+      this.sparks = Object.assign({}, sparks)
+
+      const colors = Object.assign({}, this.colors)
+      delete colors[symbol]
+      this.colors = Object.assign({}, colors)
+    },
+
+    tradingViewChartAll () {
       for (const symbol of this.symbols) {
-        this.chart(symbol)
+        this.tradingViewChart(symbol)
       }
+    },
+
+    tradingViewCloseAll () {
+      this.sparks = Object.assign({})
+      this.colors = Object.assign({})
     },
 
     /*
@@ -190,5 +215,8 @@ export default {
 <style scoped>
   .tradingview-widget-container :hover {
     cursor: pointer;
+  }
+  .negative-margin {
+    margin-left: -10px;
   }
 </style>

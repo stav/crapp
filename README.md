@@ -2,9 +2,13 @@
 
 Keep track of your crypto portfolio with exchange APIs and local text files.
 
-![Chart](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp/chart.png)
+![Repos](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp-repos.png)
 
-![Chart](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp/minis.png)
+![Pies](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp-pie.png)
+
+![Chart](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp-chart.png)
+
+![Minis](https://raw.githubusercontent.com/stav/stav.github.io/master/images/crapp-minis.png)
 
 ## Install
 

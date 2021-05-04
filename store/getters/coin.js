@@ -37,7 +37,7 @@ export function sortedUniqueRangedSymbols (state, getters) {
     const price = getters.coinPriceUSD(symbol)
     const value = amount * price
     const range = state.repoCoinValueRange
-    return (range[0] < value) && (value < range[1])
+    return (range[0] <= value) && (value <= range[1])
   })
 }
 
