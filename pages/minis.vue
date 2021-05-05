@@ -5,14 +5,24 @@
       Minis
       <v-btn icon @click="tradingViewChartAll" title="Reload all mini charts"><v-icon>mdi-reload</v-icon></v-btn>
       <v-btn icon @click="tradingViewCloseAll" title="Close all mini charts" class="negative-margin"><v-icon>mdi-close</v-icon></v-btn>
-      <v-btn
-        v-for="symbol of symbols" :key="symbol"
-        @click="() => tradingViewChart(symbol)"
-        v-text="symbol"
-        :color="color(symbol)"
-        class="mr-1"
-        x-small
-      />
+      <v-btn icon @click="showCoins = !showCoins" title="Toggle coin buttons" class="negative-margin"><v-icon>mdi-circle-multiple-outline</v-icon></v-btn>
+      <v-btn icon @click="showScale = !showScale" title="Toggle time scales" class="negative-margin"><v-icon>mdi-calendar-clock</v-icon></v-btn>
+      <div v-if="showScale" class="scales">
+        <v-select
+          :items="tradingviewTimeScales"
+          v-model="tradingviewTimeScale"
+          dense outlined hide-details
+        />
+      </div>
+      <div v-if="showCoins">
+        <v-btn
+          v-for="symbol of symbols" :key="symbol"
+          @click="() => tradingViewChart(symbol)"
+          v-text="symbol"
+          :color="color(symbol)"
+          x-small class="mr-1"
+        />
+      </div>
     </v-app-bar>
     <v-card
       v-for="(exchangeSymbolPair, symbol) in sparks" :key="symbol"
@@ -43,7 +53,7 @@
             "width": "200",
             "height": "180",
             "locale": "en",
-            "dateRange": "1M",
+            "dateRange": "{{ tradingviewTimeScale }}",
             "colorTheme": "dark",
             "trendLineColor": "#37a6ef",
             "underLineColor": "rgba(0, 255, 255, 0.15)",
@@ -81,6 +91,10 @@ export default {
     sparks: {}, // { ADA: "COINBASE:BTCUSD" }
     colors: {},
     sheetColor: COLOR,
+    showCoins: false,
+    showScale: false,
+    tradingviewTimeScales: ['1D', '1M', '3M', '1Y', '5Y', 'All'],
+    tradingviewTimeScale: '1D',
   }),
 
   /*
@@ -218,5 +232,8 @@ export default {
   }
   .negative-margin {
     margin-left: -10px;
+  }
+  .scales {
+    width: min-content;
   }
 </style>
