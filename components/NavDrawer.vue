@@ -41,13 +41,13 @@ export default {
         {
           title: 'Coinbase',
           image: coinbaseImageIcon,
-          disabled: !process.env.COINBASE_API,
+          disabled: !this.$config.canUseCoinbaseApi,
           to: '/coinbase'
         },
         {
           title: 'Binance',
           image: binanceImageIcon,
-          disabled: !process.env.BINANCE_API,
+          disabled: !this.$config.canUseBinanceApi,
           to: '/binance'
         },
         {

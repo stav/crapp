@@ -46,7 +46,6 @@ function configRequests (req) {
   let type
   const requests = []
   const url = new URL('http://example.com' + req.url)
-  console.log('api/binance/configRequests', url, typeof req.body, req.body)
 
   // Configure the requests
   switch (url.pathname) {
@@ -112,7 +111,6 @@ function configRequests (req) {
 async function resolveRequests (recourse) {
   const data = { type: recourse.type, error: [] }
   for (const request of recourse.requests) {
-    console.log('api.binance resolveRequests', request)
     try {
       const response = await axios(request.config)
       data[request.key] = response.data
@@ -135,7 +133,6 @@ async function resolveRequests (recourse) {
 ** API request helper to massage the data
 */
 function postProcess (data) {
-  console.log('api.binance postProcess 1:', data)
   // If we are processing a balances request then just pull out the balances
   if (data.type === 'balances') {
     return {

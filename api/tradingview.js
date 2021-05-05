@@ -47,9 +47,7 @@ function config (request) {
       break
     }
     case '/search/all': {
-      console.log('api all >>>', request.url, request.body)
       const symbolpairs = JSON.parse(request.body)
-      console.log(symbolpairs)
       for (const symbols of symbolpairs) {
         const pair = symbols.join('')
         const params = {
@@ -98,7 +96,6 @@ function config (request) {
 */
 async function resolve (requests) {
   const data = { error: [] }
-  console.log('requests', requests)
   for (const request of requests) {
     try {
       const response = await axios(request.config)

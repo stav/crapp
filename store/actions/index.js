@@ -26,7 +26,7 @@ export default {
   // },
 
   async loadBinanceBalances (context, done) {
-    if (process.env.BINANCE_API) {
+    if (this.$config.canUseBinanceApi) {
       await loadGeneralAccounts(
         'Binance',
         'balances',
@@ -41,7 +41,7 @@ export default {
   },
 
   async loadCoinbaseAmateurAccounts (context, done) {
-    if (process.env.COINBASE_API) {
+    if (this.$config.canUseCoinbaseApi) {
       await loadGeneralAccounts(
         'Coinbase',
         'data',
@@ -56,7 +56,7 @@ export default {
   },
 
   async loadCoinbaseProAccounts (context, done) {
-    if (process.env.COINBASEPRO_API) {
+    if (this.$config.canUseCoinbaseProApi) {
       await loadGeneralAccounts(
         'Coinbase Pro',
         null,
