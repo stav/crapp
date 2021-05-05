@@ -12,16 +12,35 @@ Keep track of your crypto portfolio with exchange APIs and local text files.
 
 ## Install
 
-The install uses and assumes you have [Yarn](https://yarnpkg.com/) installed.
+These instructions assume you have [Yarn](https://yarnpkg.com/) installed.
 
-Change directories to the project parent directory, clone this repository and then proceed as below:
+Open a terminal in the project parent directory.
 
-```bash
-cd crapp
-yarn
-cp data/repositorys.json.example data/repositorys.json
-yarn dev
-```
+Clone this repository:
+
+    git clone git@github.com:stav/crapp.git
+
+Enter the repository directory:
+
+    cd crapp
+
+Use Yarn to install the dependencies:
+
+    yarn
+
+Copy over the example database and edit as needed:
+
+    cp data/repositorys.json.example data/repositorys.json
+
+If you have accounts at either Binance or Coinbase then copy over the environment file example and edit as needed:
+
+    cp .env.example .env
+    
+Run the server:
+
+    yarn dev
+    
+The webserver will be available at http://localhost:3000.
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
 
