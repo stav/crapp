@@ -6,17 +6,17 @@ import fetchCoins from './fetchCoins'
 
 export default {
 
-  async getThingsGoing (ctx) {
-    ctx.commit('setGoing')
-    await ctx.dispatch('loadRepositorys')
+  async getThingsGoing ({ dispatch, commit }) {
+    commit('setGoing')
+    await dispatch('loadRepositorys')
     await Promise.all([
-      ctx.dispatch('loadBinanceBalances'),
-      ctx.dispatch('loadCoinbaseAmateurAccounts'),
-      ctx.dispatch('loadCoinbaseProAccounts'),
+      dispatch('loadBinanceBalances'),
+      dispatch('loadCoinbaseAmateurAccounts'),
+      dispatch('loadCoinbaseProAccounts'),
     ])
-    ctx.dispatch('fetchPrices')
-    ctx.dispatch('fetchCoins')
-    await loadTradingviewExchanges(ctx.commit)
+    dispatch('fetchPrices')
+    dispatch('fetchCoins')
+    await loadTradingviewExchanges(commit)
   },
 
   // nuxtServerInit (store, context) {

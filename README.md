@@ -35,11 +35,11 @@ Copy over the example database and edit as needed:
 If you have accounts at either Binance or Coinbase then copy over the environment file example and edit as needed:
 
     cp .env.example .env
-    
+
 Run the server:
 
     yarn dev
-    
+
 The webserver will be available at http://localhost:3000.
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
@@ -61,6 +61,12 @@ it on the dev machine and copy the files over manually.
 	├─────┼──────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
 	│ 0   │ CrApp    │ default     │ N/A     │ fork    │ 25117    │ 0s     │ 0    │ online    │ 0%       │ 696.0kb  │ stav     │ disabled │
 	└─────┴──────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+## Notes
+
+* https://github.com/coingecko/cryptoformat
+* https://www.coingecko.com/en/faq
+* https://www.coinapi.io/
 
 ## Credits
 

@@ -71,8 +71,6 @@
 </template>
 
 <script>
-import qs from 'qs'
-
 const COLOR = 'blue darken-4'
 
 export default {
@@ -120,27 +118,9 @@ export default {
       return this.colors[symbol] || 'accent'
     },
 
-    async getTradingViewSymbol (symbol) {
-      const state = this.$store.state
-      if (symbol in state.tradingviewSymbols) {
-        return state.tradingviewSymbols[symbol]
-      }
-      const url = '/api/tradingview/search'
-      const pair = `${symbol}USD`
-      const params = { pair }
-      const data = await this.fetchJson({ url, params })
-      console.log('getTradingViewSymbol', data)
-      const result = data.search[0] || {}
-      const string = `${result.exchange}:${pair}`
-      state.tradingviewSymbols[symbol] = string
-      this.$store.commit('setTradingviewSymbol', { symbol, string })
-      // this.resultCryptoCompare = result
-      return string
-    },
-
     async tradingViewChart (symbol) {
       this.flyCoin(symbol)
-      const data = await this.getTradingViewSymbol(symbol)
+      const data = await this.$store.getters.getTradingViewSymbol(this.symbol)
       if (data.length) {
         const value = {}
         value[symbol] = data
@@ -180,45 +160,6 @@ export default {
     tradingViewCloseAll () {
       this.sparks = Object.assign({})
       this.colors = Object.assign({})
-    },
-
-    /*
-    ** fetchJson
-    **
-    **   {
-    **     "Response": "Error",
-    **     "Message": "Path does not exist",
-    **     "Type": 0,
-    **     "Data": {}
-    **   }
-    */
-    async fetchJson ({ url, params = null, headers = {}, _data = {} } = {}) {
-      let response
-      if (params) {
-        url = `${url}?${qs.stringify(params)}`
-      }
-      try {
-        response = await fetch(url, {
-          method: 'GET', // *GET, POST, PUT, DELETE, etc.
-          mode: 'cors', // no-cors, *cors, same-origin
-          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-          // credentials: 'same-origin', // include, *same-origin, omit
-          headers: Object.assign({
-            // 'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-            // 'Access-Control-Request-Method': 'POST',
-            Accept: 'application/json',
-          }, headers),
-          redirect: 'follow', // manual, *follow, error
-          referrerPolicy: 'same-origin', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-          // body: JSON.stringify(data) // body data type must match "Content-Type" header
-        })
-      } catch (error) {
-        console.error(error)
-        this.$store.commit('snackMessage', error)
-        return { error: error.message }
-      }
-      return response.json()
     },
 
   },

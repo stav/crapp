@@ -121,7 +121,6 @@ function insertRepository (input) {
 function insertRepositorys (inputs) {
   for (const input of inputs) {
     const repo = insertRepository(input)
-    console.log('insertRepositorys', repo)
     insertTransactions(repo)
     insertStatements(repo)
   }

@@ -15,9 +15,12 @@ export default async function (req, res) {
 }
 
 /*
+** tradingView
+**
 ** Request -> config -> resolve -> Response
 */
 async function tradingView (req, res) {
+  res.setHeader('Content-Type', 'application/json')
   res.end(
     JSON.stringify(
       await resolve(
@@ -25,13 +28,17 @@ async function tradingView (req, res) {
 }
 
 /*
-** API request helper to configure requests based on the URL
+** config
+**
+** API request generator to configure requests based on the URL
 */
 function config (request) {
   const requests = []
   const url = new URL('http://example.com' + request.url)
 
+  // eslint-disable-next-line padded-blocks
   switch (url.pathname) {
+
     case '/search': {
       const params = {
         hl: true,
@@ -46,6 +53,7 @@ function config (request) {
       })
       break
     }
+
     case '/search/all': {
       const symbolpairs = JSON.parse(request.body)
       for (const symbols of symbolpairs) {
@@ -74,6 +82,8 @@ function config (request) {
 }
 
 /*
+** resolve
+**
 ** API request helper to make the configured requests
 **
 ** Uses 'process()' function for each request/response.
@@ -111,6 +121,8 @@ async function resolve (requests) {
 }
 
 /*
+** process
+**
 ** API individual response processor
 **
 ** searchall:
@@ -131,6 +143,8 @@ function process (request, response) {
 }
 
 /*
+** configRequest
+**
 ** API request helper for general endpoints
 **
 ** path = 'symbol_search/'
