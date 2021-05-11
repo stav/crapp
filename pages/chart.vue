@@ -17,6 +17,13 @@
 export default {
 
   /*
+  ** FETCH
+  */
+  fetch () {
+    this.$store.dispatch('loadRepositorys')
+  },
+
+  /*
   ** COMPUTED
   */
   computed: {
