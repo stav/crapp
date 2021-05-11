@@ -62,12 +62,6 @@ it on the dev machine and copy the files over manually.
 	│ 0   │ CrApp    │ default     │ N/A     │ fork    │ 25117    │ 0s     │ 0    │ online    │ 0%       │ 696.0kb  │ stav     │ disabled │
 	└─────┴──────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
 
-## Notes
-
-* https://github.com/coingecko/cryptoformat
-* https://www.coingecko.com/en/faq
-* https://www.coinapi.io/
-
 ## Credits
 
 https://coindashboards.com/currency/uniswap
