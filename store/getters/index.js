@@ -94,21 +94,6 @@ export default {
 
   /*
   ** getTradingViewSymbol
-  **
-  ** json == {
-  **   "history": {
-  **     "error": [],
-  **     "result": {
-  **       "XXBTZUSD": [[
-  **         1595260800,      // [0] time
-  **         "9181.9",        // [1] open
-  **         "9208.0",        // [2] high
-  **         "9153.9",        // [3] low
-  **         "9163.9",        // [4] close
-  **         "9179.2",        // [5] vwap
-  **         "473.73122415",  // [6] volume
-  **         1595             // [7] count
-  **       ],… ] } } }
   */
   getTradingViewSymbol: state => async (symbol) => {
     symbol = symbol || state.flyoutCoin?.symbol
@@ -120,8 +105,6 @@ export default {
     console.log('getTradingViewSymbol', json)
     const result = json.search[0] || {}
     const string = `${result.exchange}:${pair}`
-    // state.tradingviewSymbols[symbol] = string
-    // this.$store.commit('setTradingviewSymbol', { symbol, string })
     return string
   },
 

@@ -39,6 +39,6 @@ export const state = () => ({
   Statement: [],
   Coin: [],
   going: false,
-  symbolExchanges: {},
-  tradingviewSymbols: {},
+  // symbolExchanges: {},
+  // tradingviewSymbols: {},
 })

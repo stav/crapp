@@ -16,7 +16,7 @@ export default {
     ])
     dispatch('fetchPrices')
     dispatch('fetchCoins')
-    await loadTradingviewExchanges(commit)
+    // await loadTradingviewExchanges(commit)
   },
 
   // nuxtServerInit (store, context) {
