@@ -1,3 +1,5 @@
+export { getAllCoins, getCoins, getTickers, symbolTicker } from './coingecko'
+
 /*
 ** coinPriceUSD
 */

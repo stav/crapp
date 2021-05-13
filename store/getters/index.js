@@ -11,12 +11,20 @@ import {
   symbolsUnlisted,
   sortedUniqueSymbols,
   sortedUniqueRangedSymbols,
+  symbolTicker,
+  getTickers,
+  getCoins,
+  getAllCoins,
 } from './coin'
 
 import {
   transactions,
   coinTransactions,
 } from './transaction'
+
+import {
+  getTradingViewSymbol,
+} from './tradingview'
 
 export default {
 
@@ -30,9 +38,15 @@ export default {
   symbolsUnlisted,
   sortedUniqueSymbols,
   sortedUniqueRangedSymbols,
+  symbolTicker,
+  getTickers,
+  getCoins,
+  getAllCoins,
 
   coinTransactions,
   transactions,
+
+  getTradingViewSymbol,
 
   /*
   ** sparkLines
@@ -90,22 +104,6 @@ export default {
       const data = result[pair].map(xract)
       return data
     }
-  },
-
-  /*
-  ** getTradingViewSymbol
-  */
-  getTradingViewSymbol: state => async (symbol) => {
-    symbol = symbol || state.flyoutCoin?.symbol
-    if (!symbol) { return '' }
-
-    const pair = `${symbol}USD`
-    const response = await fetch(`/api/tradingview/search?pair=${pair}`)
-    const json = response.status === 200 ? await response.json() : { status: response.status }
-    console.log('getTradingViewSymbol', json)
-    const result = json.search[0] || {}
-    const string = `${result.exchange}:${pair}`
-    return string
   },
 
   /*

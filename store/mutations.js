@@ -127,6 +127,12 @@ export default {
     state.going = true
   },
 
+  cacheFullCoinList (state, coins) {
+    if (coins.length !== state.fullCoinList.length) {
+      state.fullCoinList = coins
+    }
+  },
+
   // setSymbolExchanges (state, { symbolPair, exchanges }) {
   //   state.symbolExchanges[symbolPair] = exchanges
   // },
