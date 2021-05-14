@@ -1,16 +1,21 @@
 import {
-  repositorys,
-  repositoryFromSlug,
-  rangedRepositorys,
   flyoutRepo,
+  repositorys,
+  rangedRepositorys,
+  repositoryFromSlug,
 } from './repository'
 
 import {
   coinPriceUSD,
   coinSum,
-  symbolsUnlisted,
-  sortedUniqueSymbols,
+  getAllCoins,
+  getCoins,
+  getSymbols,
+  getTickers,
   sortedUniqueRangedSymbols,
+  sortedUniqueSymbols,
+  symbolsUnlisted,
+  symbolTicker,
 } from './coin'
 
 import {
@@ -18,21 +23,32 @@ import {
   coinTransactions,
 } from './transaction'
 
+import {
+  getTradingViewSymbol,
+} from './tradingview'
+
 export default {
 
+  flyoutRepo,
   repositorys,
   rangedRepositorys,
   repositoryFromSlug,
-  flyoutRepo,
 
-  coinSum,
   coinPriceUSD,
-  symbolsUnlisted,
-  sortedUniqueSymbols,
+  coinSum,
+  getAllCoins,
+  getCoins,
+  getSymbols,
+  getTickers,
   sortedUniqueRangedSymbols,
+  sortedUniqueSymbols,
+  symbolsUnlisted,
+  symbolTicker,
 
-  coinTransactions,
   transactions,
+  coinTransactions,
+
+  getTradingViewSymbol,
 
   /*
   ** sparkLines

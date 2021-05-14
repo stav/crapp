@@ -1,39 +1,27 @@
-/*
-** fetchCoins
-*/
-
-async function getCoins (symbols) {
-  const priceFetcherPath = '/api/coinmarketcap/quotes?symbol='
-  const priceFetcherUrl = priceFetcherPath + symbols.join(',')
-  const response = await fetch(priceFetcherUrl)
-  const result = await response.json()
-
-  if (result.error) {
-    const e = result.error
-    throw new Error(`${e.message}: ${e.text}`)
-  }
-  return result.quotes.data
-}
-
-export default async function fetchCoins (ctx) {
-  const symbols = ctx.getters.sortedUniqueSymbols
-  const symbolsUnlisted = ctx.getters.symbolsUnlisted
-  const symbolsListed = symbols.filter(symbol => !symbolsUnlisted.includes(symbol))
-  if (symbolsListed.length === 0) {
-    const message = `No coins: listed ${symbols}; unlisted ${symbolsUnlisted}`
-    console.warn(message)
-    return message
-  }
-
-  let data
+/** fetchCoins
+ **
+ ** @var symbols Array [ "BNB", "BTC", "BUSD",… ]
+ ** @var coins Array [ { "symbol":"BAKE", "id":"bakerytoken", "name":"BakerySwap" },… ]
+ ** @var data Object { "BAKE": {"name":"BakerySwap", "tickers":[{"base":"BAKE", "target":"BNB", "exchange":"BINANCE"},…]}, … }
+ **
+ ** @returns String "Coin data loaded"
+ */
+export default async function fetchCoins ({ getters, commit }) {
+  let symbols, coins, data
   try {
-    data = await getCoins(symbolsListed)
+    symbols = getters.getSymbols
+    coins = await getters.getCoins(symbols)
+    data = await getters.getTickers(coins)
   } catch (e) {
     console.warn(`Error in fetchCoins: ${e.message}`)
     return e.message
   }
+  console.log('fetchCoins', symbols, coins, data)
+
   for (const symbol in data) {
-    ctx.commit('setCoinData', data[symbol])
+    const symbolData = data[symbol]
+    symbolData.symbol = symbol
+    commit('setCoinData', symbolData)
   }
   return 'Loaded coin data for ' + Object.keys(data)
 }

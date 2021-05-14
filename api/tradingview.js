@@ -15,9 +15,12 @@ export default async function (req, res) {
 }
 
 /*
+** tradingView
+**
 ** Request -> config -> resolve -> Response
 */
 async function tradingView (req, res) {
+  res.setHeader('Content-Type', 'application/json')
   res.end(
     JSON.stringify(
       await resolve(
@@ -25,13 +28,46 @@ async function tradingView (req, res) {
 }
 
 /*
-** API request helper to configure requests based on the URL
+** config
+**
+** API request generator to configure requests based on the URL
+**
+** Usage for /search
+**
+**   const pair = `${symbol}USD`
+**   const response = await fetch(`/api/tradingview/search?pair=${pair}`)
+**   const json = response.status === 200 ? await response.json() : { status: response.status }
+**   const result = json.search[0] || {}
+**   const string = `${result.exchange}:${pair}`
+**   console.log('getTradingViewSymbol', json, string, exchange)
+**   return string
+**
+** Usage for /search/all
+**
+**   export async function loadTradingviewExchanges (commit) {
+**     const url = '/api/tradingview/search/all'
+**     const pairs = [['BAKE', 'USD'], ['BAKE', 'USDT']]
+**     const response = await fetch(url, { method: 'POST', body: JSON.stringify(pairs) })
+**     const data = await response.json()
+**
+**     for (const symbolPair in data) {
+**       const exchanges = data[symbolPair].map(entry => entry.exchange)
+**       commit('setSymbolExchanges', { symbolPair, exchanges })
+**
+**       const exchange = data[symbolPair][0].exchange
+**       const string = `${exchange}:${symbolPair}`
+**       const symbol = data[symbolPair][0].symbols[0] // If the api used "recourse" then instead of data[symbolPair][0] we could use data[symbolPair]
+**       commit('setTradingviewSymbol', { symbol, string })
+**     }
+**   }
 */
 function config (request) {
   const requests = []
   const url = new URL('http://example.com' + request.url)
 
+  // eslint-disable-next-line padded-blocks
   switch (url.pathname) {
+
     case '/search': {
       const params = {
         hl: true,
@@ -46,6 +82,7 @@ function config (request) {
       })
       break
     }
+
     case '/search/all': {
       const symbolpairs = JSON.parse(request.body)
       for (const symbols of symbolpairs) {
@@ -74,6 +111,8 @@ function config (request) {
 }
 
 /*
+** resolve
+**
 ** API request helper to make the configured requests
 **
 ** Uses 'process()' function for each request/response.
@@ -111,6 +150,8 @@ async function resolve (requests) {
 }
 
 /*
+** process
+**
 ** API individual response processor
 **
 ** searchall:
@@ -131,6 +172,8 @@ function process (request, response) {
 }
 
 /*
+** configRequest
+**
 ** API request helper for general endpoints
 **
 ** path = 'symbol_search/'

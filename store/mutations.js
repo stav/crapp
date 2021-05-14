@@ -127,13 +127,19 @@ export default {
     state.going = true
   },
 
-  setSymbolExchanges (state, { symbolPair, exchanges }) {
-    state.symbolExchanges[symbolPair] = exchanges
+  cacheFullCoinList (state, coins) {
+    if (coins.length !== state.fullCoinList.length) {
+      state.fullCoinList = coins
+    }
   },
 
-  setTradingviewSymbol (state, { symbol, string }) {
-    state.tradingviewSymbols[symbol] = string
-  },
+  // setSymbolExchanges (state, { symbolPair, exchanges }) {
+  //   state.symbolExchanges[symbolPair] = exchanges
+  // },
+
+  // setTradingviewSymbol (state, { symbol, string }) {
+  //   state.tradingviewSymbols[symbol] = string
+  // },
 
   setBinanceBalances (state, balances) {
     setGeneralAccounts(

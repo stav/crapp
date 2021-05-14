@@ -77,6 +77,7 @@ export default {
     { path: '/api/cryptocompare', handler: '~/api/cryptocompare' },
     { path: '/api/coinbasepro', handler: '~/api/coinbasepro' },
     { path: '/api/tradingview', handler: '~/api/tradingview' },
+    { path: '/api/coingecko', handler: '~/api/coingecko' },
     { path: '/api/coinbase', handler: '~/api/coinbase' },
     { path: '/api/bitfinex', handler: '~/api/bitfinex' },
     { path: '/api/binance', handler: '~/api/binance' },

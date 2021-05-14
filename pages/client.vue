@@ -8,6 +8,21 @@
     <v-container>
       <v-row>
         <v-col>
+          <v-card :loading="loadingTradingView" max-width="374" color="blue darken-4">
+            <v-card-title>TrradingView</v-card-title>
+            <v-card-actions>
+              <v-btn @click="testTradingViewPing"> Ping </v-btn>
+              <v-btn @click="testTradingViewCoinsList"> Coins List </v-btn>
+              <v-btn @click="resultTradingView = {}" text title="Clear"> X </v-btn>
+            </v-card-actions>
+            <v-card-text>
+              <json-view :data="resultTradingView" root-key="resultTradingView" class="pt-0 blue lighten-4" />
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
           <v-card :loading="loadingCryptoCompare" max-width="374" color="green darken-4">
             <v-card-title>CryptoCompare</v-card-title>
             <v-card-actions>
@@ -102,6 +117,9 @@ export default {
     resultBinance: {},
     loadingBinance: false,
 
+    resultTradingView: {},
+    loadingTradingView: false,
+
     resultBitfinex: {},
     loadingBitfinex: false,
 
@@ -116,6 +134,36 @@ export default {
   }),
 
   methods: {
+    /*
+    ** testTradingViewPing
+    **
+    ** https://www.coingecko.com/api/documentations/v3
+    ** https://www.coingecko.com/en/api#explore-api
+    **
+    ** https://assets.coingecko.com/reports/API/CoinGecko-API-Deck.pdf
+    ** ...we request that you include a linked attribution to our website.
+    ** An example would be adding a “Powered by CoinGecko API” link in your app.
+    ** For image assets... https://www.coingecko.com/en/branding
+    */
+    async testTradingViewPing () {
+      this.loadingTradingView = true
+      const url = 'https://api.coingecko.com/api/v3/ping'
+      const result = await this.fetchJson({ url })
+      console.log('testTradingViewPing', result)
+      this.resultTradingView = result
+      this.loadingTradingView = false
+    },
+    /*
+    ** testTradingViewCoinsList
+    */
+    async testTradingViewCoinsList () {
+      this.loadingTradingView = true
+      const url = 'https://api.coingecko.com/api/v3/coins/list'
+      const result = await this.fetchJson({ url })
+      console.log('testTradingViewCoinsList', result)
+      this.resultTradingView = result.slice(1000, 1010)
+      this.loadingTradingView = false
+    },
     /*
     ** testKrakenTime
     **
@@ -264,7 +312,6 @@ export default {
       if (params) {
         url = `${url}?${qs.stringify(params)}`
       }
-      console.log('fetchJson', url)
       try {
         response = await fetch(url, {
           method: 'GET', // *GET, POST, PUT, DELETE, etc.

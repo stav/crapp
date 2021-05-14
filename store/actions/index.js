@@ -1,22 +1,20 @@
 import { loadRepositorys } from '@/database'
 import loadKrakenSparks from './loadKrakenSparks'
-import { loadTradingviewExchanges } from './tradingView'
 import fetchPrices from './fetchPrices'
 import fetchCoins from './fetchCoins'
 
 export default {
 
-  async getThingsGoing (ctx) {
-    ctx.commit('setGoing')
-    await ctx.dispatch('loadRepositorys')
+  async getThingsGoing ({ dispatch, commit }) {
+    commit('setGoing')
+    await dispatch('loadRepositorys')
     await Promise.all([
-      ctx.dispatch('loadBinanceBalances'),
-      ctx.dispatch('loadCoinbaseAmateurAccounts'),
-      ctx.dispatch('loadCoinbaseProAccounts'),
+      dispatch('loadBinanceBalances'),
+      dispatch('loadCoinbaseAmateurAccounts'),
+      dispatch('loadCoinbaseProAccounts'),
     ])
-    ctx.dispatch('fetchPrices')
-    ctx.dispatch('fetchCoins')
-    await loadTradingviewExchanges(ctx.commit)
+    dispatch('fetchPrices')
+    dispatch('fetchCoins')
   },
 
   // nuxtServerInit (store, context) {
@@ -87,10 +85,29 @@ export default {
     }
   },
 
-  flyCoin (context, symbol) {
-    context.commit('setFlyoutDrawer', true)
-    context.commit('openCoinFlyout')
-    context.commit('setFlyoutCoin', { symbol })
+  flyCoin ({ commit }, symbol) {
+    commit('setFlyoutDrawer', true)
+    commit('openCoinFlyout')
+    commit('setFlyoutCoin', { symbol })
+  },
+
+  /**
+   ** cacheTickers
+   **
+   ** @param symbols Array [ "ADA", "BTC", "ETH" ]
+   */
+  async cacheTickers ({ getters, commit }, symbols) {
+    const allCoins = await getters.getAllCoins() // TODO return undefined if cached
+    commit('cacheFullCoinList', allCoins) // TODO Only commit if allCoins not undefined
+
+    const coins = await getters.getCoins(symbols)
+    const data = await getters.getTickers(coins)
+
+    for (const symbol in data) {
+      const symbolData = data[symbol]
+      symbolData.symbol = symbol
+      commit('setCoinData', symbolData)
+    }
   },
 
   async fetchPrice (context, done) {
