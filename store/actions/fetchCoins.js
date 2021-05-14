@@ -1,60 +1,27 @@
-/*
-** fetchCoins
-*/
-import { getCoins, getTickers } from './coingecko'
-
-/*
-** getSymbols
-**
-** return Array [ "ADA", "BNB", "BTC", "BUSD", "DOT", … ]
-*/
-function getSymbols(ctx) {
-  const symbols = ctx.getters.sortedUniqueSymbols
-  const symbolsUnlisted = ctx.getters.symbolsUnlisted
-  const symbolsListed = symbols.filter(symbol => !symbolsUnlisted.includes(symbol))
-  if (symbolsListed.length === 0) {
-    throw new Error(`No coins: listed ${symbols}; unlisted ${symbolsUnlisted}`)
-  }
-  return symbolsListed
-}
-
-/*
-** fetchCoins
-**
-*/
-export default async function fetchCoins (ctx) {
-  let symbols
+/** fetchCoins
+ **
+ ** @var symbols Array [ "BNB", "BTC", "BUSD",… ]
+ ** @var coins Array [ { "symbol":"BAKE", "id":"bakerytoken", "name":"BakerySwap" },… ]
+ ** @var data Object { "BAKE": {"name":"BakerySwap", "tickers":[{"base":"BAKE", "target":"BNB", "exchange":"BINANCE"},…]}, … }
+ **
+ ** @returns String "Coin data loaded"
+ */
+export default async function fetchCoins ({ getters, commit }) {
+  let symbols, coins, data
   try {
-    symbols = getSymbols(ctx)
-    console.log('fetchCoins symbols', symbols)
+    symbols = getters.getSymbols
+    coins = await getters.getCoins(symbols)
+    data = await getters.getTickers(coins)
   } catch (e) {
-    console.warn(`Error in fetchCoins symbols: ${e.message}`)
+    console.warn(`Error in fetchCoins: ${e.message}`)
     return e.message
   }
-
-  let coins
-  try {
-    coins = await getCoins(symbols)
-    console.log('fetchCoins coins', coins)
-  } catch (e) {
-    console.warn(`Error in fetchCoins coins: ${e.message}`)
-    return e.message
-  }
-
-  let data
-  try {
-    // data = await getCoinsFromCoinmarketcap(symbols)
-    data = await getTickers(coins)
-    console.log('fetchCoins data', data)
-  } catch (e) {
-    console.warn(`Error in fetchCoins data: ${e.message}`)
-    return e.message
-  }
+  console.log('fetchCoins', symbols, coins, data)
 
   for (const symbol in data) {
     const symbolData = data[symbol]
     symbolData.symbol = symbol
-    ctx.commit('setCoinData', symbolData)
+    commit('setCoinData', symbolData)
   }
   return 'Loaded coin data for ' + Object.keys(data)
 }

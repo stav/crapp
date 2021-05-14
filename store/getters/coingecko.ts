@@ -12,7 +12,7 @@ declare const fetch: Function
 /**
  ** getAllCoins
  **
- ** @return Array (7000+) [
+ ** @returns Array (7000+) [
  **   { "symbol": "BAKE", "id": "bakerytoken", "name": "BakerySwap" },
  **   { "symbol": "BTC", "id": "bitcoin", "name": "Bitcoin" },…
  ** ]
@@ -30,7 +30,7 @@ export function getAllCoins (state: any) {
     }
 
     // Otherwise go to CoinGecko and get the list
-    console.info('getAllCoins fetching new full coin list')
+    console.info('Fetching new full coin list from CoinGecko')
     const response = await fetch('https://api.coingecko.com/api/v3/coins/list')
     const coins = await response.json()
     if (coins.error) {
@@ -47,7 +47,7 @@ export function getAllCoins (state: any) {
  **
  ** @param symbols Array [ "ADA", "BTC", "ETH" ]
  **
- ** @return Array [
+ ** @returns Array [
  **   { "symbol": "BAKE", "id": "bakerytoken", "name": "BakerySwap" },
  **   { "symbol": "BTC", "id": "bitcoin", "name": "Bitcoin" },…
  ** ]
@@ -110,7 +110,7 @@ export function getTickers (state:any) {
   return async (coins:any[]) => {
     const coinTickers:any = {}
 
-    for (const coin of coins.splice(0, 3)) { // TODO: MAX 3 COINS should be unlimited but trying to avoid any spammy bugs
+    for (const coin of coins) {
       const url = `https://api.coingecko.com/api/v3/coins/${coin.id}/tickers/`
       const response = await fetch(url)
       const result = await response.json()
@@ -121,22 +121,22 @@ export function getTickers (state:any) {
   }
 }
 
-/*
-** getCoinsTickers
-*/
-export function getCoinsTickers (state:any) {
-  return async (coins:any) => {
-    const url = '/api/coingecko/ticker'
-    const response = await fetch(url, { method: 'POST', body: JSON.stringify(coins) })
-    const result = await response.json()
-    console.log('getTickers', result)
-    if (result.error) {
-      const e = result.error
-      throw new Error(`${e.message}: ${e.text}`)
-    }
-    return result
-  }
-}
+// /*
+// ** getTickersFromAPI
+// */
+// export function getTickersFromAPI (state:any) {
+//   return async (coins:any) => {
+//     const url = '/api/coingecko/ticker'
+//     const response = await fetch(url, { method: 'POST', body: JSON.stringify(coins) })
+//     const result = await response.json()
+//     console.log('getTickersFromAPI', result)
+//     if (result.error) {
+//       const e = result.error
+//       throw new Error(`${e.message}: ${e.text}`)
+//     }
+//     return result
+//   }
+// }
 
 /**
  ** symbolTicker

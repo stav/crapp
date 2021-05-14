@@ -1,20 +1,21 @@
 import {
-  repositorys,
-  repositoryFromSlug,
-  rangedRepositorys,
   flyoutRepo,
+  repositorys,
+  rangedRepositorys,
+  repositoryFromSlug,
 } from './repository'
 
 import {
   coinPriceUSD,
   coinSum,
-  symbolsUnlisted,
-  sortedUniqueSymbols,
-  sortedUniqueRangedSymbols,
-  symbolTicker,
-  getTickers,
-  getCoins,
   getAllCoins,
+  getCoins,
+  getSymbols,
+  getTickers,
+  sortedUniqueRangedSymbols,
+  sortedUniqueSymbols,
+  symbolsUnlisted,
+  symbolTicker,
 } from './coin'
 
 import {
@@ -28,23 +29,24 @@ import {
 
 export default {
 
+  flyoutRepo,
   repositorys,
   rangedRepositorys,
   repositoryFromSlug,
-  flyoutRepo,
 
-  coinSum,
   coinPriceUSD,
-  symbolsUnlisted,
-  sortedUniqueSymbols,
-  sortedUniqueRangedSymbols,
-  symbolTicker,
-  getTickers,
-  getCoins,
+  coinSum,
   getAllCoins,
+  getCoins,
+  getSymbols,
+  getTickers,
+  sortedUniqueRangedSymbols,
+  sortedUniqueSymbols,
+  symbolsUnlisted,
+  symbolTicker,
 
-  coinTransactions,
   transactions,
+  coinTransactions,
 
   getTradingViewSymbol,
 
